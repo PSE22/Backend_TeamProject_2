@@ -5,7 +5,17 @@ const routes = [
   {
     path: '/',
     component: () => import('../views/HomeView.vue')
-  }
+  },
+  // 로그인
+  {
+    path: "/login",
+    component: () => import("../views/LoginView.vue"),
+  },
+  // 회원가입
+  {
+    path: "/signup",
+    component: () => import("../views/SignUpView.vue"),
+  },
 ]
 
 const router = createRouter({

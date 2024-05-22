@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -37,9 +38,10 @@ public class LoginDetailServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String memberId) throws UsernameNotFoundException {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new UsernameNotFoundException("ID 없음:" + memberId));
-        GrantedAuthority authority = new SimpleGrantedAuthority(member.getMemberCode());
         Set<GrantedAuthority> authorities = new HashSet<>();
-        authorities.add(authority);
+
+        authorities.add(new SimpleGrantedAuthority(member.getMemberCode()));
+        authorities.add(new SimpleGrantedAuthority(member.getDeptCode()));
 
         return new LoginDto(
                 member.getMemberId(),

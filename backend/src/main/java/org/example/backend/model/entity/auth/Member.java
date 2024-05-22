@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
+import org.example.backend.model.common.BaseTimeEntity2;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -29,7 +30,7 @@ import org.hibernate.annotations.Where;
 @AllArgsConstructor
 @Where(clause = "STATUS = 'Y'")
 @SQLDelete(sql = "UPDATE TB_MEMBER SET STATUS = 'N', DEL_DATE = TO_CHAR(SYSDATE, 'YYYY-MM-DD HH:MI:SS') WHERE MEMBER_ID = ?")
-public class Member {
+public class Member extends BaseTimeEntity2 {
     @Id
     private String memberId;
     private String memberPw;
