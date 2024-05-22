@@ -2,7 +2,6 @@ package org.example.backend.model.entity.board;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,12 +32,6 @@ public class Reply extends BaseTimeEntity2 {
 //    @GeneratedValue(strategy = GenerationType.SEQUENCE
 //            , generator = "SEQ_TB_COUPON_CP_ID_GENERATOR"
 //    )
-
-//re_reply	number
-//uuid	varchar2(1000 byte)
-//nickname	varchar2(100 byte)
-//reply	varchar2(4000 byte)
-//code	varchar2(255 byte)
     private Long replyId;       // 댓글 pk
     private Long boardId;       // 글번호 fk
     private String memberId;    // 댓글작성자 fk
