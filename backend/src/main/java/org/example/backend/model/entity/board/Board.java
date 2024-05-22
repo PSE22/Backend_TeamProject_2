@@ -35,4 +35,5 @@ public class Board extends BaseTimeEntity2 {
     private String nickname;        // 별명
     private Integer good;           // 추천수
     private String code;            // 분류코드
+    private char noticeYn;          // 공지사항여부
 }
