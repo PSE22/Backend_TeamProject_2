@@ -1,7 +1,8 @@
-package org.example.backend.model.entity;
+package org.example.backend.model.entity.board;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.backend.model.common.BaseTimeEntity3;
 import org.example.backend.model.common.VoteIdMemberIdPk;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -10,7 +11,7 @@ import org.hibernate.annotations.Where;
 
 /**
  * packageName : org.example.backend.model.entity
- * fileName : VOTE
+ * fileName : Vote
  * author : gumiji
  * date : 5/22/24
  * description :
@@ -40,7 +41,7 @@ import org.hibernate.annotations.Where;
 @Where(clause = "STATUS = 'Y'")
 @SQLDelete(sql = "UPDATE TB_VOTE SET STATUS = 'N', DEL_DATE = TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI:SS') WHERE VOTE_ID = ?")
 @IdClass(VoteIdMemberIdPk.class)
-public class VOTE {
+public class Vote extends BaseTimeEntity3 {
     @Id
     private Long voteId;    // 투표 ID(PK)
 
