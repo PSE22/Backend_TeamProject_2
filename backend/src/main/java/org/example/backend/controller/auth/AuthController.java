@@ -81,7 +81,7 @@ public class AuthController {
     }
 
 
-    @GetMapping("/signUp/{memberId}")
+    @GetMapping("/signup/{memberId}")
     public ResponseEntity<Object> reId(@RequestParam String memberId) {
         try {
             if(memberService.existById(memberId)) {
@@ -95,7 +95,7 @@ public class AuthController {
     }
 
 
-    @PostMapping("/signUp")
+    @PostMapping("/signup")
     public ResponseEntity<Object> signUp(@RequestBody SignUpRequest signUpRequest) {
         try {
             if(memberService.existById(signUpRequest.getMemberId())) {

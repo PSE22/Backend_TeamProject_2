@@ -26,10 +26,12 @@ public class LoginResponse {
     private String tokenType = "Bearer";
     private String memberId;
     private String memberCode;
+    private String deptCode;
 
     public LoginResponse(String accessToken, String memberId, String memberCode) {
         this.accessToken = accessToken;
         this.memberId = memberId;
         this.memberCode = memberCode;
+        this.deptCode = deptCode;
     }
 }
