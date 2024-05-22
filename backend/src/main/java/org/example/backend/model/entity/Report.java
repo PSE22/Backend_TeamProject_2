@@ -2,6 +2,7 @@ package org.example.backend.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.backend.model.common.BaseTimeEntity2;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
@@ -9,7 +10,7 @@ import org.hibernate.annotations.Where;
 
 /**
  * packageName : org.example.backend.model.entity
- * fileName : REPORT
+ * fileName : Report
  * author : gumiji
  * date : 5/22/24
  * description :    신고
@@ -38,7 +39,7 @@ import org.hibernate.annotations.Where;
 // soft delete
 @Where(clause = "STATUS = 'Y'")
 @SQLDelete(sql = "UPDATE TB_REPORT SET STATUS = 'N', DEL_DATE = TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI:SS') WHERE REPORT_ID = ?")
-public class REPORT extends{
+public class Report extends BaseTimeEntity2 {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE
             , generator = "SEQ_TB_REPORT_REPORT_ID_GENERATOR"
