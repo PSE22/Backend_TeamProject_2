@@ -2,7 +2,9 @@
   <!-- Header -->
   <HeaderCom />
   <!-- 본문 -->
-  <router-view/>
+  <div class="container d-flex flex-column min-vh-100">
+    <router-view/>
+  </div>
 
   <!-- Footer -->
   <FooterCom />
