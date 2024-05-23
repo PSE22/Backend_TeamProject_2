@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 /**
  * packageName : org.example.backend.repository.board
- * fileName : DeptRepository
+ * fileName : BoardRepository
  * author : SAMSUNG
  * date : 2024-05-23
  * description :
@@ -18,5 +18,5 @@ import org.springframework.stereotype.Repository;
  * 2024-05-23         SAMSUNG          최초 생성
  */
 @Repository
-public interface DeptRepository extends JpaRepository<Board, Long> {
+public interface BoardRepository extends JpaRepository<Board, Long> {
 }
