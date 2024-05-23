@@ -38,5 +38,4 @@ public class ClubService {
         List<IClubDto> list = clubRepository.findByCodeAndNotice(code);
         return list;
     }
-
 }
