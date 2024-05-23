@@ -35,9 +35,7 @@ public class Reply extends BaseTimeEntity2 {
     private Long replyId;       // 댓글 pk
     private Long boardId;       // 글번호 fk
     private String memberId;    // 댓글작성자 fk
-    private Integer reReply;    // 대댓글
-    private String uuid = UUID.randomUUID().toString();        // 파일ID // 무작위 UUID를 생성후 UUID를 문자열로 반환
+    private Integer reReply;    // 대댓글 fk
     private String nickname;    // 별명
     private String reply;       // 내용
-    private String code;        // 분류코드
 }

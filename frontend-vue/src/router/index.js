@@ -16,6 +16,11 @@ const routes = [
     path: "/signup",
     component: () => import("../views/SignUpView.vue"),
   },
+  // 자유게시판
+  {
+    path: "/free-board",
+    component: () => import("../views/board/FreeBoard.vue"),
+  },
 ]
 
 const router = createRouter({
