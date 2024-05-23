@@ -24,5 +24,5 @@ public class ClubService {
     @Autowired
     ClubRepository clubRepository;
 
-    public Page<Board>
+//    public Page<Board>
 }

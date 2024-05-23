@@ -23,6 +23,9 @@ repositories {
 }
 
 dependencies {
+    // 모델매퍼 라이브러리 추가 - 김태완
+    implementation 'org.modelmapper:modelmapper:2.4.4'
+
     implementation 'org.hibernate.validator:hibernate-validator:6.2.0.Final'
 
     // sql 출력 결과를 보기위한 라이브러리 추가

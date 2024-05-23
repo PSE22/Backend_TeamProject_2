@@ -1,7 +1,11 @@
 package org.example.backend.repository.profile;
 
+import jakarta.transaction.Transactional;
 import org.example.backend.model.entity.Notify;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,5 +25,11 @@ import java.util.List;
  */
 @Repository
 public interface NotifyRepository extends JpaRepository<Notify, Long> {
-    List<Notify> findByMemberId(String memberId);
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE TB_NOTIFY\n" +
+            "SET NOTI_CHECK = 'Y'\n" +
+            "WHERE MEMBER_ID = :memberId\n" +
+            "AND NOTI_CHECK = 'N'", nativeQuery = true)
+    void updateNotiCheck(@Param("memberId") String memberId);
 }
