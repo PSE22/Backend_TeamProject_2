@@ -2,7 +2,7 @@ package org.example.backend.controller.board;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.entity.board.Board;
-import org.example.backend.service.board.BoardService;
+import org.example.backend.service.board.FreeBoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,10 +18,10 @@ import java.util.Optional;
 @Slf4j
 @RestController
 @RequestMapping("api/board")
-public class BoardController {
+public class FreeBoardController {
 
     @Autowired
-    BoardService boardService;
+    FreeBoardService freeBoardService;
 
     //    TODO: 전체 조회 함수 + 검색 + 페이징
     @GetMapping("/free-board")
@@ -35,7 +35,7 @@ public class BoardController {
 
 //            전체 조회 서비스 함수 실행
             Page<Board> pageList
-                    = boardService.findAllByBoardTitleContaining(boardTitle, pageable);
+                    = freeBoardService.findAllByFreeBoardTitleContaining(boardTitle, pageable);
 
 //            vue 로 json 데이터를 전송 : jsp (model == Map(키,값))
             Map<String, Object> response = new HashMap<>();
@@ -64,7 +64,7 @@ public class BoardController {
             @PathVariable long boardId
     ) {
         try {
-            Optional<Board> optionalBoard = boardService.findById(boardId);
+            Optional<Board> optionalBoard = freeBoardService.findById(boardId);
 
             if (optionalBoard.isEmpty() == true) {
 //                데이터 없음(203)
@@ -86,7 +86,7 @@ public class BoardController {
             @RequestBody Board board
     ) {
         try {
-            Board board2 = boardService.save(board);
+            Board board2 = freeBoardService.save(board);
 
             return new ResponseEntity<>(board2, HttpStatus.OK);
 
@@ -103,7 +103,7 @@ public class BoardController {
             @RequestBody Board board
     ) {
         try {
-            Board board2 = boardService.save(board);
+            Board board2 = freeBoardService.save(board);
 
             return new ResponseEntity<>(board2, HttpStatus.OK);
         } catch (Exception e) {
@@ -118,7 +118,7 @@ public class BoardController {
             @PathVariable long boardId
     ) {
         try {
-            boolean success = boardService.removeById(boardId);
+            boolean success = freeBoardService.removeById(boardId);
 
             if (success == true) {
                 return new ResponseEntity<>(HttpStatus.OK);
