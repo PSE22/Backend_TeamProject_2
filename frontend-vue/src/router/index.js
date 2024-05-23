@@ -16,12 +16,17 @@ const routes = [
     path: "/signup",
     component: () => import("../views/SignUpView.vue"),
   },
-  // 회원가입
+  // 동호회게시판
   {
     path: "/club",
     component: () => import("../views/board/ClubView.vue"),
   },
-];
+  // 자유게시판
+  {
+    path: "/free-board",
+    component: () => import("../views/board/FreeBoard.vue"),
+  },
+]
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
