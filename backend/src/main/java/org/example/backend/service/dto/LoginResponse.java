@@ -1,6 +1,7 @@
 package org.example.backend.service.dto;
 
 import lombok.*;
+import org.apache.kafka.common.protocol.types.Field;
 
 /**
  * packageName : org.example.backend.service.dto
@@ -28,7 +29,7 @@ public class LoginResponse {
     private String memberCode;
     private String deptCode;
 
-    public LoginResponse(String accessToken, String memberId, String memberCode) {
+    public LoginResponse(String accessToken, String memberId, String memberCode, String deptCode) {
         this.accessToken = accessToken;
         this.memberId = memberId;
         this.memberCode = memberCode;

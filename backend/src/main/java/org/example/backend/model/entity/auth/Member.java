@@ -35,7 +35,9 @@ public class Member extends BaseTimeEntity2 {
     private String memberId;
     private String memberPw;
     private String memberName;
+    private String memberEmail;
     private String memberExt;
     private String memberCode;
     private String deptCode;
+    private String posCode;
 }

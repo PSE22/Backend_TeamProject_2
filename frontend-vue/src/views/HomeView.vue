@@ -35,7 +35,7 @@
 </template>
 
 <script>
-// import boardService from '@/services/board/MainPage';
+import boardService from '@/services/board/MainPage';
 
 export default {
   data() {
