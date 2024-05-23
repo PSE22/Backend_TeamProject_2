@@ -13,12 +13,12 @@ import java.util.Optional;
 @Repository
 public interface FreeBoardRepository extends JpaRepository<Board, Long> {
     @Query(value = "SELECT B.* FROM TB_BOARD B " +
-            "WHERE B.CODE = 'BO03' " +
+            "WHERE B.BOCODE = 'BO03' " +
             "AND B.STATUS = 'Y' " +
             "AND B.BOARD_TITLE LIKE '%' || :boardTitle || '%' " +
             "ORDER BY B.ADD_DATE DESC",
             countQuery = "SELECT count(*) FROM TB_BOARD B " +
-                    "WHERE B.CODE = 'BO03' " +
+                    "WHERE B.BOCODE = 'BO03' " +
                     "AND B.STATUS = 'Y' " +
                     "AND B.BOARD_TITLE LIKE '%' || :boardTitle || '%'",
             nativeQuery = true)
@@ -26,7 +26,7 @@ public interface FreeBoardRepository extends JpaRepository<Board, Long> {
                                                  Pageable pageable
     );
 
-    @Query("SELECT b FROM Board b WHERE b.code = :code AND b.boardId = :boardId")
-    Optional<Board> findByCodeAndId(@Param("code") String code, @Param("boardId") Long boardId);
+    @Query("SELECT b FROM Board b WHERE b.bocode = :bocode AND b.boardId = :boardId")
+    Optional<Board> findByCodeAndId(@Param("bocode") String code, @Param("boardId") Long boardId);
 
 }

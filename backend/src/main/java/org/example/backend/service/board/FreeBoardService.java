@@ -42,7 +42,7 @@ public class FreeBoardService {
     //    TODO: 등록(insert),수정(update)
     public Board save(Board board) {
         // 분류코드를 설정
-        board.setCode("BO03");
+        board.setBocode("BO03");
         //    JPA 저장 함수 실행 : return 값 : 저장된 객체
         Board board2 = freeBoardRepository.save(board);
 
@@ -58,7 +58,7 @@ public class FreeBoardService {
         if (optionalBoard.isPresent()) {
             // 조회된 게시글의 분류코드가 BO03인지 확인
             Board board = optionalBoard.get();
-            if ("BO03".equals(board.getCode())) {
+            if ("BO03".equals(board.getBocode())) {
                 // BO03 분류코드에 해당하는 게시글이면 삭제
                 freeBoardRepository.deleteById(boardId);
                 return true;

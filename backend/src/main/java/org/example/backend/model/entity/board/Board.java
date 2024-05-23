@@ -34,7 +34,8 @@ public class Board extends BaseTimeEntity2 {
     private String boardContent;    // 글내용
     private String nickname;        // 별명
     private Integer good;           // 추천수
-    private String code;            // 분류코드
+    private String bocode;          // 게시판코드
+    private String smcode;          // 소메뉴코드
 
     @Column(name = "NOTICE_YN", columnDefinition = "CHAR(1)")
     private char noticeYn;          // 공지사항여부
