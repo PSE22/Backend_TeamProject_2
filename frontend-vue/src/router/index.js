@@ -1,10 +1,10 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
   // Home
   {
-    path: '/',
-    component: () => import('../views/HomeView.vue')
+    path: "/",
+    component: () => import("../views/HomeView.vue"),
   },
   // 로그인
   {
@@ -16,6 +16,11 @@ const routes = [
     path: "/signup",
     component: () => import("../views/SignUpView.vue"),
   },
+  // 동호회게시판
+  {
+    path: "/club",
+    component: () => import("../views/board/ClubView.vue"),
+  },
   // 자유게시판
   {
     path: "/free-board",
@@ -25,7 +30,7 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes
-})
+  routes,
+});
 
-export default router
+export default router;
