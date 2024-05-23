@@ -60,7 +60,7 @@ public class DeptBoardController {
     }
 
     // 부서별 게시판 전체조회 - 일반글
-    @GetMapping("/dept/notice")
+    @GetMapping("/dept")
     public ResponseEntity<Object> findAll(
             @RequestParam(defaultValue = "") String boardTitle,
             @RequestParam(defaultValue = "0") int page,
