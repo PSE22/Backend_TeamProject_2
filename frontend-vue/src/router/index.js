@@ -13,8 +13,8 @@ const routes = [
   },
   // 회원가입
   {
-    path: "/signup",
-    component: () => import("../views/SignUpView.vue"),
+    path: "/register",
+    component: () => import("../views/RegisterView.vue"),
   },
 ]
 

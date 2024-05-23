@@ -33,6 +33,9 @@ public class SignUpRequest {
     @NotBlank(message = "이름은 필수 입력 값입니다.")
     private String memberName;
 
+    @NotBlank(message = "이메일은 필수 입력 값입니다.")
+    private String memberEmail;
+
     @NotBlank(message = "전화번호는 필수 입력 값입니다.")
     private String memberExt;
 
@@ -41,4 +44,7 @@ public class SignUpRequest {
 
     @NotBlank
     private String deptCode;
+
+    @NotBlank
+    private String posCode;
 }

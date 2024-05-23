@@ -66,11 +66,13 @@ public class AuthController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = jwtUtils.generateJwtToken(authentication);
             String memberCode = new ArrayList(authentication.getAuthorities()).get(0).toString();
+            String deptCode = new ArrayList(authentication.getAuthorities()).get(1).toString();
 
             LoginResponse loginResponse = new LoginResponse(
                     jwt,
                     loginRequest.getMemberId(),
-                    memberCode
+                    memberCode,
+                    deptCode
             );
             return new ResponseEntity<>(loginResponse, HttpStatus.OK);
         } catch (BadCredentialsException e) {
@@ -81,7 +83,7 @@ public class AuthController {
     }
 
 
-    @GetMapping("/signup/{memberId}")
+    @GetMapping("/register/{memberId}")
     public ResponseEntity<Object> reId(@RequestParam String memberId) {
         try {
             if(memberService.existById(memberId)) {
@@ -95,7 +97,7 @@ public class AuthController {
     }
 
 
-    @PostMapping("/signup")
+    @PostMapping("/register")
     public ResponseEntity<Object> signUp(@RequestBody SignUpRequest signUpRequest) {
         try {
             if(memberService.existById(signUpRequest.getMemberId())) {
@@ -105,9 +107,11 @@ public class AuthController {
                     signUpRequest.getMemberId(),
                     passwordEncoder.encode(signUpRequest.getMemberPw()),
                     signUpRequest.getMemberName(),
+                    signUpRequest.getMemberEmail(),
                     signUpRequest.getMemberExt(),
                     signUpRequest.getMemberCode(),
-                    signUpRequest.getDeptCode()
+                    signUpRequest.getDeptCode(),
+                    signUpRequest.getPosCode()
             );
             memberService.save(member);
             return ResponseEntity.ok("회원가입이 완료되었습니다.");

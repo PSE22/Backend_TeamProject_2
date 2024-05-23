@@ -16,18 +16,8 @@ class LoginService {
     }
 
     // TODO: 회원가입 공통함수
-    signup(member) {
-        let data = {
-            memberId: member.memberId,
-            memberPw: member.memberPw,
-            rePw: member.memberPw,
-            memberExt: member.memberExt,
-            memberName: member.memberName,
-            memberCode: member.memberCode,
-            deptCode: member.deptCode,
-        }
-        console.log("뭐세요?:::: ", data);
-        return http.post("/auth/signup", data);
+    register(data) {
+        return http.post("/auth/register", data);
     }
 
     // TODO: 아이디 중복확인 함수
@@ -35,7 +25,7 @@ class LoginService {
         let data = {
             memberId: memberId
         };
-        return http.get(`/auth/signup/${memberId}?memberId=${memberId}`, data);
+        return http.get(`/auth/register/${memberId}?memberId=${memberId}`, data);
     }
 }
 

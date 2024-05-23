@@ -27,51 +27,51 @@
 </template>
 
 <script>
-import boardService from '@/services/board/MainPage';
+// import boardService from '@/services/board/MainPage';
 
-export default {
-  data() {
-    return {
-      boards: [],
-    };
-  },
-  mounted() {
-    this.fetchBoardData();
-  },
-  methods: {
-    async fetchBoardData() {
-      try {
-        const data = await boardService.getBoardData();
+// export default {
+//   data() {
+//     return {
+//       boards: [],
+//     };
+//   },
+//   mounted() {
+//     this.fetchBoardData();
+//   },
+//   methods: {
+//     async fetchBoardData() {
+//       try {
+//         const data = await boardService.getBoardData();
 
-        const freeBoard = { board: 'FreeBoard', items: [] };
-        const suggestionBoard = { board: 'SuggestionBoard', items: [] };
-        const praiseBoard = { board: 'PraiseBoard', items: [] };
+//         const freeBoard = { board: 'FreeBoard', items: [] };
+//         const suggestionBoard = { board: 'SuggestionBoard', items: [] };
+//         const praiseBoard = { board: 'PraiseBoard', items: [] };
 
-        data.forEach(item => {
-          const boardItem = {
-            title: item[1],
-            nickname: item[2],
-            good: item[3],
-            reply_count: item[4],
-            add_date: item[5],
-          };
+//         data.forEach(item => {
+//           const boardItem = {
+//             title: item[1],
+//             nickname: item[2],
+//             good: item[3],
+//             reply_count: item[4],
+//             add_date: item[5],
+//           };
 
-          if (item[0] === 'FreeBoard') {
-            freeBoard.items.push(boardItem);
-          } else if (item[0] === 'SuggestionBoard') {
-            suggestionBoard.items.push(boardItem);
-          } else if (item[0] === 'PraiseBoard') {
-            praiseBoard.items.push(boardItem);
-          }
-        });
+//           if (item[0] === 'FreeBoard') {
+//             freeBoard.items.push(boardItem);
+//           } else if (item[0] === 'SuggestionBoard') {
+//             suggestionBoard.items.push(boardItem);
+//           } else if (item[0] === 'PraiseBoard') {
+//             praiseBoard.items.push(boardItem);
+//           }
+//         });
 
-        this.boards = [freeBoard, suggestionBoard, praiseBoard];
-      } catch (error) {
-        console.error('Error fetching board data:', error);
-      }
-    },
-  },
-};
+//         this.boards = [freeBoard, suggestionBoard, praiseBoard];
+//       } catch (error) {
+//         console.error('Error fetching board data:', error);
+//       }
+//     },
+//   },
+// };
 </script>
 
 <style scoped>

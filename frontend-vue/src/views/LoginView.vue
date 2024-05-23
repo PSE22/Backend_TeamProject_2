@@ -1,51 +1,61 @@
 <template>
-  <div align="center" class="mt-5" to="login">
-    <h2>로그인</h2>
-  </div>
-  <div class="container mt-5 login-box">
-    <div align="center" class="mb-3">
-      <div class="logo">
-        <h2>서울쥐</h2>
+<div>
+    <div class="row justify-content-center">
+      <div class="col-xl-10 col-lg-12 col-md-9">
+        <div class="card mt-5">
+          <div class="card-body p-0">
+            <!-- {/* Nested Row within Card Body */} -->
+            <div class="row justify-content-center">
+              <div class="col-lg-7">
+                <div class="p-5">
+                  <div class="text-center">
+                <h1 class="h4 text-gray-900 mb-4">로그인</h1>
+              </div>
+                  <!-- 사용법 : @submit.prevent="함수" -->
+                  <!-- prevent : submit 의 기본 속성(다른 곳으로 이동) 막기 -->
+                  <form class="user" @submit.prevent="handleLogin">
+                    <div class="form-group">
+                      <input
+                        type="text"
+                        class="form-control form-control-user mb-3"
+                        placeholder="ID 입력"
+                        name="memberId"
+                        v-model="member.memberId"
+                      />
+                    </div>
+                    <div class="form-group">
+                      <input
+                        type="password"
+                        class="form-control form-control-user mb-3"
+                        placeholder="패스워드 입력"
+                        name="memberPw"
+                        v-model="member.memberPw"
+                      />
+                    </div>
+
+                    <button class="btn btn-primary btn-user w-100 mb-3">
+                      로그인
+                    </button>
+                  </form>
+                  <div v-if="errorMessage" class="alert alert-danger mt-3">
+                    {{ errorMessage }}
+                  </div>
+                  <hr />
+                  <div class="text-center">
+                    <a class="small" href="/forgot-password">
+                      비밀번호 찾기
+                    </a>
+                  </div>
+                  <div class="text-center">
+                    <a class="small" href="/register"> 회원가입 </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="mb-1">
-      <!-- 아이디 박스 -->
-      <label for="text" class="form-label"></label>
-      <input
-        type="text"
-        class="form-control"
-        placeholder="아이디"
-        name="text"
-        v-model="user.userId"
-      />
-      <!-- 비밀번호 박스 -->
-    </div>
-    <div class="mb-3">
-      <label for="password" class="form-label"></label>
-      <input
-        type="password"
-        class="form-control"
-        placeholder="비밀번호"
-        name="password"
-        v-model="user.userPw"
-      />
-    </div>
-    <!-- 로그인 박스 -->
-    <div align="center">
-      <button
-        type="button"
-        class="btn btn-primary me-auto col-12"
-        @click="handleLogin"
-      >
-        로그인
-      </button>
-    </div>
-
-    <!-- 회원 가입 -->
-    <nav class="mt-3 mb-3" align="center">
-      <router-link align="right" to="/signup">회원가입</router-link>
-    </nav>
-    <router-view />
   </div>
 </template>
 <script>
@@ -58,6 +68,7 @@ export default {
         memberId: "",
         memberPw: "",
       },
+      errorMessage: ""
     };
   },
   methods: {
@@ -71,6 +82,7 @@ export default {
         this.$router.push("/");
       } catch (e) {
         this.$store.commit("loginFailure");   
+        this.errorMessage = "로그인에 실패했습니다. 다시 시도해 주세요.";
         console.log(e); 
       }
     },
@@ -85,40 +97,5 @@ export default {
 };
 </script>
 <style>
-.login-box {
-  margin: 150px auto;
-  background-color: rgba(255, 255, 255, 1);
-  padding: 40px 30px;
-  border: 3px solid #505050;
-  width: 500px;
-  height: 400px;
-}
 
-.social-container {
-  margin: 30px 0;
-}
-.social-container a {
-  background-color: rgb(206, 206, 206);
-  border-radius: 50%;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0 20px;
-  height: 60px;
-  width: 60px;
-}
-
-@font-face {
-  font-family: "YClover-Bold";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/YClover-Bold.woff2")
-    format("woff2");
-  font-weight: 700;
-  font-style: normal;
-}
-
-.logo {
-  /* background-color: rgb(115, 235, 67); */
-  font-size: 30px;
-  font-family: "YClover-Bold";
-}
 </style>
