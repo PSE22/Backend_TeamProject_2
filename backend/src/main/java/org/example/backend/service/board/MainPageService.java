@@ -26,7 +26,18 @@ public class MainPageService {
     @Autowired
     private MainPageRepository mainPageRepository;
 
+//    메인페이지 조회함수
     public List<Object[]> getBoardData() {
         return mainPageRepository.findBoardData();
     }
+
+//    핫토픽 조회함수
+    public List<Object[]> getHotTopics() {
+        return mainPageRepository.findHotTopics();
+    }
+
+    //    핫토픽 조회함수
+//    public List<MainPageDto> getHotTopics() {
+//        return mainPageRepository.findHotTopics();
+//    }
 }
