@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.example.backend.model.common.BaseTimeEntity2;
+import org.example.backend.model.common.BaseTimeEntity3;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -27,7 +27,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Where(clause = "STATUS = 'Y'")
 @SQLDelete(sql = "UPDATE TB_BOARD_FILE SET STATUS = 'N', DEL_DATE = TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI:SS') WHERE UUID = ?")
-public class BoardFile extends BaseTimeEntity2 {
+public class BoardFile extends BaseTimeEntity3 {
     @Id
 //    @GeneratedValue(strategy = GenerationType.SEQUENCE
 //            , generator = "SEQ_TB_COUPON_CP_ID_GENERATOR"
@@ -35,7 +35,9 @@ public class BoardFile extends BaseTimeEntity2 {
 //    uuid	varchar2(1000 byte)
 //    boardId	number
 //    uuid2	varchar2(1000 byte)
-    private String uuid = UUID.randomUUID().toString();    // 파일ID pk // 무작위 UUID를 생성후 UUID를 문자열로 반환
+    private String uuid = UUID.randomUUID().toString();    // 게시판파일ID pk // 무작위 UUID를 생성후 UUID를 문자열로 반환
+    @Id
     private Long boardId;   // 글번호 pk
-    private String uuid2 = UUID.randomUUID().toString();   // 고유식별자 // 무작위 UUID를 생성후 UUID를 문자열로 반환
+    @Id
+    private String uuid2 = UUID.randomUUID().toString();   // 파일ID pk
 }

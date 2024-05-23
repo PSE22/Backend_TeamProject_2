@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.example.backend.model.common.BaseTimeEntity2;
+import org.example.backend.model.common.BaseTimeEntity3;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -28,7 +28,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Where(clause = "STATUS = 'Y'")
 @SQLDelete(sql = "UPDATE TB_FILE SET STATUS = 'N', DEL_DATE = TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI:SS') WHERE UUID = ?")
-public class File extends BaseTimeEntity2 {
+public class File extends BaseTimeEntity3 {
     @Id
 //    @GeneratedValue(strategy = GenerationType.SEQUENCE
 //            , generator = "SEQ_TB_COUPON_CP_ID_GENERATOR"
