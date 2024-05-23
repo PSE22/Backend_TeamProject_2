@@ -57,18 +57,18 @@ public class SecurityConfig {
         http.formLogin(req -> req.disable());
 
         http.authorizeHttpRequests(req -> req
-                .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
-                .requestMatchers("/api/admin/**").hasAuthority("AT01")
-                .requestMatchers("/api/profile/**").hasAuthority("AT02")
-                .requestMatchers("/api/board/BO01/DE01/**").hasAuthority("DE01")
-                .requestMatchers("/api/board/BO01/DE02/**").hasAuthority("DE02")
-                .requestMatchers("/api/board/BO01/DE03/**").hasAuthority("DE03")
-                .requestMatchers("/api/board/BO01/DE04/**").hasAuthority("DE04")
-                .requestMatchers("/api/board/**").hasAuthority("AT02")
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/").permitAll()
-                .anyRequest().authenticated());
-//                .anyRequest().permitAll()); // 임시로 권한 풀기 함수
+//                .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
+//                .requestMatchers("/api/admin/**").hasAuthority("AT01")
+//                .requestMatchers("/api/profile/**").hasAuthority("AT02")
+//                .requestMatchers("/api/board/BO01/DE01/**").hasAuthority("DE01")
+//                .requestMatchers("/api/board/BO01/DE02/**").hasAuthority("DE02")
+//                .requestMatchers("/api/board/BO01/DE03/**").hasAuthority("DE03")
+//                .requestMatchers("/api/board/BO01/DE04/**").hasAuthority("DE04")
+//                .requestMatchers("/api/board/**").hasAuthority("AT02")
+//                .requestMatchers("/api/auth/**").permitAll()
+//                .requestMatchers("/").permitAll()
+//                .anyRequest().authenticated());
+                .anyRequest().permitAll()); // 임시로 권한 풀기 함수
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

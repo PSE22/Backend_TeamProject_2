@@ -1,10 +1,13 @@
 package org.example.backend.service.board;
 
-import org.example.backend.model.entity.board.Board;
+import org.example.backend.model.dto.board.IClubDto;
 import org.example.backend.repository.board.ClubRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * packageName : org.example.backend.service.board
@@ -24,5 +27,15 @@ public class ClubService {
     @Autowired
     ClubRepository clubRepository;
 
-    public Page<Board>
+    //    동호회 게시판 전체조회
+    public Page<IClubDto> findByCode(String code, Pageable pageable) {
+        Page<IClubDto> page = clubRepository.findByCode(code, pageable);
+        return page;
+    }
+
+    //    동호회 공지 조회
+    public List<IClubDto> findByCodeAndNotice(String code) {
+        List<IClubDto> list = clubRepository.findByCodeAndNotice(code);
+        return list;
+    }
 }

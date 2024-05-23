@@ -1,9 +1,6 @@
 package org.example.backend.model.common;
 
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
+import jakarta.persistence.*;
 import lombok.Getter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -29,21 +26,12 @@ import java.time.format.DateTimeFormatter;
 public abstract class BaseTimeEntity {
 
     private String addDate;
-    private String modDate;
-  
+    private String delDate;
+
     @PrePersist
     void OnPrePersist() {
         this.addDate = LocalDateTime.now()
                 .format(DateTimeFormatter
                         .ofPattern("yyyy-MM-dd HH:mm:ss"));
-    }
-
-    @PreUpdate
-    void OnPreUpdate() {
-        this.modDate = LocalDateTime.now()
-                .format(DateTimeFormatter
-                        .ofPattern("yyyy-MM-dd HH:mm:ss"));
-        this.addDate = this.modDate;
-
     }
 }

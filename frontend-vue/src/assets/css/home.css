@@ -126,3 +126,118 @@ footer {
     list-style: none;
     float: right;
 }
+
+
+/* 메인페이지 게시판 */
+.main-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.hot-topics-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  border: 1px solid #ddd;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 20px;
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+
+.hot-topics-container h2 {
+  margin-bottom: 10px;
+  border-bottom: 2px solid #f4f4f4;
+  color: #333;
+  font-size: 24px;
+}
+
+.hot-topic-item {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.board-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.board-section {
+  flex: 1 1 calc(33.333% - 20px);
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.board-section h2 {
+  margin-bottom: 10px;
+  border-bottom: 2px solid #f4f4f4;
+  color: #333;
+  font-size: 20px;
+}
+
+.board-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.board-item .content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.board-item .good {
+  color: red;
+  font-weight: bold;
+  font-size: 20px;
+  margin-right: 10px;
+}
+
+.board-item .title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-left: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px;
+}
+
+.board-item .sub-info {
+  display: flex;
+  gap: 10px;
+  font-size: 14px;
+  color: #666;
+}
+
+.board-item .nickname,
+.board-item .reply_count,
+.board-item .add_date {
+  font-size: 14px;
+  color: #666;
+}
+
+.board-item .add_date {
+  font-size: 12px;
+  color: #999;
+  text-align: right;
+}

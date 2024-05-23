@@ -1,11 +1,15 @@
 package org.example.backend.model.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * packageName : org.example.backend.model.entity
@@ -20,12 +24,22 @@ import lombok.Setter;
  * -----------------------------------------------------------
  * 2024-05-22         kimtaewan          최초 생성
  */
+@Entity
+@Table(name = "TB_NOTIFY")
+@SequenceGenerator(
+        name = "TB_NOTIFY_SEQ_GENERATOR"
+        , sequenceName = "TB_NOTIFY_SEQ"
+        , initialValue = 1
+        , allocationSize = 1
+)
 @Getter
 @Setter
-@Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class Notify {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE
+            , generator = "TB_NOTIFY_SEQ_GENERATOR")
     private Long notifyId;
     private String memberId;
     private String notiCheck;
@@ -33,4 +47,11 @@ public class Notify {
     private String notiUrl;
     private String addDate;
     private String delDate;
+
+    @PrePersist
+    void OnPrePersist() {
+        this.addDate = LocalDateTime.now()
+                .format(DateTimeFormatter
+                        .ofPattern("yyyy-MM-dd HH:mm:ss"));
+    }
 }

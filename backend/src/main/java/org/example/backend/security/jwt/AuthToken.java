@@ -48,6 +48,8 @@ public class AuthToken extends OncePerRequestFilter {
 
                 UserDetails userDetails = loginDetailService.loadUserByUsername(memberId);
 
+
+
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                                 userDetails,
