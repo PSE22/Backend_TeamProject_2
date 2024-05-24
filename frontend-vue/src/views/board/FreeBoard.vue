@@ -48,18 +48,26 @@
                       >
                         <thead>
                           <tr role="row">
-                            <th>추천수</th>
+                            <th>글번호</th>
                             <th>제목</th>
                             <th>닉네임</th>
                             <th>등록일</th>
+                            <th>추천수</th>
                           </tr>
                         </thead>
                         <tbody>
                           <tr v-for="(data, index) in board" :key="index">
-                            <td>{{ data.good }}</td>
-                            <td>{{ data.boardTitle }}</td>
+                            <td>{{ data.boardId }}</td>
+                            <td>
+                              <router-link
+                                :to="`/free-view/${board.boardTitle}`"
+                              >
+                                {{ data.boardTitle }}
+                              </router-link>
+                            </td>
                             <td>{{ data.nickname }}</td>
                             <td>{{ data.addDate }}</td>
+                            <td>{{ data.good }}</td>
                           </tr>
                         </tbody>
                       </table>

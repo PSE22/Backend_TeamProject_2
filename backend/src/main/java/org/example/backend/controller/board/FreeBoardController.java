@@ -24,7 +24,7 @@ public class FreeBoardController {
     FreeBoardService freeBoardService;
 
     //    TODO: 전체 조회 함수 + 검색 + 페이징
-    @GetMapping("/free-board")
+    @GetMapping("/free")
     public ResponseEntity<Object> findAll(
             @RequestParam(defaultValue = "") String boardTitle,
             @RequestParam(defaultValue = "0") int page,
@@ -59,7 +59,7 @@ public class FreeBoardController {
     }
 
     //    TODO: 상세조회
-    @GetMapping("/free-board/{boardId}")
+    @GetMapping("/free/{boardId}")
     public ResponseEntity<Object> findById(
             @PathVariable long boardId
     ) {
@@ -81,7 +81,7 @@ public class FreeBoardController {
     }
 
     //    TODO: 저장 함수
-    @PostMapping("/free-board")
+    @PostMapping("/free")
     public ResponseEntity<Object> create(
             @RequestBody Board board
     ) {
@@ -97,7 +97,7 @@ public class FreeBoardController {
     }
 
     //    TODO: 수정함수
-    @PutMapping("/free-board/{boardId}")
+    @PutMapping("/free/{boardId}")
     public ResponseEntity<Object> update(
             @PathVariable long boardId,
             @RequestBody Board board
@@ -113,7 +113,7 @@ public class FreeBoardController {
     }
 
     //     TODO: 삭제 함수
-    @DeleteMapping("/free-board/deletion/{boardId}")
+    @DeleteMapping("/free/deletion/{boardId}")
     public ResponseEntity<Object> delete(
             @PathVariable long boardId
     ) {
