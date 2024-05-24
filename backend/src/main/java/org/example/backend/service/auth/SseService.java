@@ -1,6 +1,7 @@
 package org.example.backend.service.auth;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.backend.model.dto.NotifyDto;
 import org.example.backend.model.entity.Notify;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -28,13 +29,13 @@ public class SseService {
 
     private final Map<String, SseEmitter> sseEmitters = new ConcurrentHashMap<>();
 
-    void sendSseEvent(Notify notify) {
-        SseEmitter emitter = sseEmitters.get(notify.getMemberId());
+    void sendSseEvent(NotifyDto notifyDto) {
+        SseEmitter emitter = sseEmitters.get(notifyDto.getMemberId());
         if (emitter != null) {
             try {
-                emitter.send(SseEmitter.event().name("notification").data(notify));
+                emitter.send(SseEmitter.event().name("notification").data(notifyDto));
             } catch (IOException e) {
-                sseEmitters.remove(notify.getMemberId());
+                sseEmitters.remove(notifyDto.getMemberId());
             }
         }
     }
