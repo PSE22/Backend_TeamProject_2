@@ -42,7 +42,7 @@ public class Notify {
             , generator = "TB_NOTIFY_SEQ_GENERATOR")
     private Long notifyId;
     private String memberId;
-    private String notiCheck;
+    private String notiCheck = "N";
     private String notiContent;
     private String notiUrl;
     private String addDate;

@@ -1,5 +1,6 @@
 package org.example.backend.service.auth;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.NotifyDto;
 import org.example.backend.model.entity.Notify;
 import org.example.backend.model.entity.board.Board;
@@ -26,6 +27,7 @@ import java.util.Optional;
  * 2024-05-23         kimtaewan          최초 생성
  */
 @Service
+@Slf4j
 public class NotifyService {
     @Autowired
     NotifyRepository notifyRepository;
@@ -41,9 +43,10 @@ public class NotifyService {
     public void createBestNotify(Long boardId, NotifyDto notifyDto) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RuntimeException("Board not found"));
         String content = board.getBoardTitle() + "이 베스트에 선정되었습니다.";
-        notifyDto.setMemberId(board.getMemberId());
-        notifyDto.setNotiContent(content);
-        Notify notify = modelMapper.map(notifyDto, Notify.class);
+        Notify notify = new Notify();
+        notify.setMemberId(board.getMemberId());
+        notify.setNotiContent(content);
+        notify.setNotiUrl(notifyDto.getNotiUrl());
         notifyRepository.save(notify);
         sseService.sendSseEvent(notify);
     }
@@ -51,9 +54,10 @@ public class NotifyService {
     public void createHotTopicNotify(Long boardId, NotifyDto notifyDto) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RuntimeException("Board not found"));
         String content = board.getBoardTitle() + "이 핫토픽에 선정되었습니다.";
-        notifyDto.setMemberId(board.getMemberId());
-        notifyDto.setNotiContent(content);
-        Notify notify = modelMapper.map(notifyDto, Notify.class);
+        Notify notify = new Notify();
+        notify.setMemberId(board.getMemberId());
+        notify.setNotiContent(content);
+        notify.setNotiUrl(notifyDto.getNotiUrl());
         notifyRepository.save(notify);
         sseService.sendSseEvent(notify);
     }
@@ -61,9 +65,10 @@ public class NotifyService {
     public void createReplyNotify(Long boardId, NotifyDto notifyDto) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RuntimeException("Board not found"));
         String content = board.getBoardTitle() + "에 새로운 댓글이 있습니다.";
-        notifyDto.setMemberId(board.getMemberId());
-        notifyDto.setNotiContent(content);
-        Notify notify = modelMapper.map(notifyDto, Notify.class);
+        Notify notify = new Notify();
+        notify.setMemberId(board.getMemberId());
+        notify.setNotiContent(content);
+        notify.setNotiUrl(notifyDto.getNotiUrl());
         notifyRepository.save(notify);
         sseService.sendSseEvent(notify);
     }
