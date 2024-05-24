@@ -32,19 +32,22 @@ public interface ClubRepository extends JpaRepository<Board, Long> {
             "B.BOARD_TITLE AS boardTitle,\n" +
             "B.ADD_DATE AS addDate\n" +
             "FROM TB_BOARD B, TB_MEMBER M\n" +
-            "WHERE B.CODE LIKE 'SM02%'\n" +
+            "WHERE B.BOCODE LIKE 'SM02%'\n" +
             "AND B.MEMBER_ID = M.MEMBER_ID\n" +
+            "AND B.BOARD_TITLE LIKE '%' || :boardTitle || '%' " +
             "AND B.STATUS = 'Y'\n" +
             "AND B.NOTICE_YN = 'N'\n" +
             "ORDER BY B.ADD_DATE DESC",
             countQuery = "SELECT count(*)\n" +
                     "FROM TB_BOARD B, TB_MEMBER M\n" +
-                    "WHERE B.CODE LIKE 'SM02%'\n" +
+                    "WHERE B.BOCODE LIKE 'SM02%'\n" +
                     "AND B.MEMBER_ID = M.MEMBER_ID\n" +
+                    "AND B.BOARD_TITLE LIKE '%' || :boardTitle || '%' " +
+                    "AND B.NOTICE_YN = 'N'\n" +
                     "AND B.STATUS = 'Y'\n" +
                     "ORDER BY B.ADD_DATE DESC",
             nativeQuery = true)
-    Page<IClubDto> findByCode(@Param("code") String code, Pageable pageable);
+    Page<IClubDto> findByCode(@Param("boardTitle") String boardTitle, Pageable pageable);
 
     //    동호회 공지 전체조회
     @Query(value = "SELECT B.BOARD_ID AS boardId,\n" +
@@ -52,13 +55,13 @@ public interface ClubRepository extends JpaRepository<Board, Long> {
             "B.BOARD_TITLE AS boardTitle,\n" +
             "B.ADD_DATE AS addDate\n" +
             "FROM TB_BOARD B, TB_MEMBER M\n" +
-            "WHERE B.CODE LIKE 'SM02%'\n" +
+            "WHERE B.BOCODE LIKE 'SM02%'\n" +
             "AND B.MEMBER_ID = M.MEMBER_ID\n" +
             "AND B.STATUS = 'Y'\n" +
             "AND B.NOTICE_YN = 'Y'\n" +
             "ORDER BY B.ADD_DATE DESC",
             nativeQuery = true)
-    List<IClubDto> findByCodeAndNotice(@Param("code") String code);
+    List<IClubDto> findByCodeAndNotice();
 
 //    동호회 전체조회 유니온 쿼리문
 //    @Query(value = "WITH NoticeBoards AS (\n" +

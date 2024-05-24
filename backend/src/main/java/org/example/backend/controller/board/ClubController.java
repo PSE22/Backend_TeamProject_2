@@ -38,7 +38,7 @@ public class ClubController {
     //    동호회 게시판 전체조회
     @GetMapping("/club")
     public ResponseEntity<Object> findAll(
-            @RequestParam(defaultValue = "") String code,
+            @RequestParam(defaultValue = "") String boardTitle,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         try {
@@ -47,7 +47,7 @@ public class ClubController {
 
 //            전체 조회 서비스 실행
             Page<IClubDto> clubDtoPage
-                    = clubService.findByCode(code, pageable);
+                    = clubService.findByCode(boardTitle, pageable);
 
 //            공통 페이징 객체 생성 : 자료구조 맵 사용
             Map<String, Object> response = new HashMap<>();
@@ -73,12 +73,11 @@ public class ClubController {
 
     @GetMapping("/club-notice")
     public ResponseEntity<Object> findAll(
-            @RequestParam(defaultValue = "") String code
     ) {
         try {
 //            전체 조회 서비스 실행
             List<IClubDto> club
-                    = clubService.findByCodeAndNotice(code);
+                    = clubService.findByCodeAndNotice();
 
             if (club.isEmpty() == false) {
 //                조회 성공

@@ -28,14 +28,14 @@ public class ClubService {
     ClubRepository clubRepository;
 
     //    동호회 게시판 전체조회
-    public Page<IClubDto> findByCode(String code, Pageable pageable) {
-        Page<IClubDto> page = clubRepository.findByCode(code, pageable);
+    public Page<IClubDto> findByCode(String boardTitle, Pageable pageable) {
+        Page<IClubDto> page = clubRepository.findByCode(boardTitle, pageable);
         return page;
     }
 
     //    동호회 공지 조회
-    public List<IClubDto> findByCodeAndNotice(String code) {
-        List<IClubDto> list = clubRepository.findByCodeAndNotice(code);
+    public List<IClubDto> findByCodeAndNotice() {
+        List<IClubDto> list = clubRepository.findByCodeAndNotice();
         return list;
     }
 }
