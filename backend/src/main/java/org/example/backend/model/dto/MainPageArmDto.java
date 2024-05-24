@@ -2,22 +2,22 @@ package org.example.backend.model.dto;
 
 /**
  * packageName : org.example.backend.model.dto
- * fileName : MainPageDto
+ * fileName : MainPageArmDto
  * author : GGG
- * date : 2024-05-23
+ * date : 2024-05-24
  * description :
  * 요약 :
  * <p>
  * ===========================================================
  * DATE            AUTHOR             NOTE
  * -----------------------------------------------------------
- * 2024-05-23         GGG          최초 생성
+ * 2024-05-24         GGG          최초 생성
  */
-public interface MainPageDto {
-    String getBoardTitle();
-    String getNickName();
-    Integer getGood();
+public interface MainPageArmDto {
+    Long getNotifyId();
+    String getMemberId();
+    String getNotiContent();
+    String getNotiUrl();
     String getAddDate();
-    Integer getTotalReplyCount();
-    String getBoard();
+    String getNotiCheck();
 }

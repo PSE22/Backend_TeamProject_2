@@ -1,5 +1,6 @@
 package org.example.backend.service.board;
 
+import org.example.backend.model.dto.MainPageDto;
 import org.example.backend.repository.board.MainPageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,17 +28,13 @@ public class MainPageService {
     private MainPageRepository mainPageRepository;
 
 //    메인페이지 조회함수
-    public List<Object[]> getBoardData() {
+    public List<MainPageDto> getBoardData() {
         return mainPageRepository.findBoardData();
     }
 
-//    핫토픽 조회함수
-    public List<Object[]> getHotTopics() {
-        return mainPageRepository.findHotTopics();
-    }
 
     //    핫토픽 조회함수
-//    public List<MainPageDto> getHotTopics() {
-//        return mainPageRepository.findHotTopics();
-//    }
+    public List<MainPageDto> getHotTopics() {
+        return mainPageRepository.findHotTopics();
+    }
 }
