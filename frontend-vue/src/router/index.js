@@ -23,7 +23,7 @@ const routes = [
   },
   // 자유게시판
   {
-    path: "/free-board",
+    path: "/free",
     component: () => import("../views/board/FreeBoard.vue"),
   },
 ]
