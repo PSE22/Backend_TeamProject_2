@@ -50,7 +50,6 @@
                           <tr role="row">
                             <th>추천수</th>
                             <th>제목</th>
-                            <th>댓글</th>
                             <th>닉네임</th>
                             <th>등록일</th>
                           </tr>
@@ -59,7 +58,6 @@
                           <tr v-for="(data, index) in board" :key="index">
                             <td>{{ data.good }}</td>
                             <td>{{ data.boardTitle }}</td>
-                            <td>{{ 댓글수넣을예정 }}</td>
                             <td>{{ data.nickname }}</td>
                             <td>{{ data.addDate }}</td>
                           </tr>
