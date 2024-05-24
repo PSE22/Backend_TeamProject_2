@@ -4,7 +4,9 @@
   <!-- 본문 -->
   <div class="container d-flex flex-column min-vh-100">
     <router-view/>
-  </div>
+    <!-- AlertCom -->
+  <AlertCom/>
+   </div>
 
   <!-- Footer -->
   <FooterCom />
@@ -13,11 +15,13 @@
 <script>
 import HeaderCom from "./components/common/HeaderCom.vue";
 import FooterCom from "./components/common/FooterCom.vue";
+import AlertCom from "./components/common/AlertCom.vue";
 
 export default {
   components: {
     HeaderCom,
-    FooterCom
+    FooterCom,
+    AlertCom
   }
 }
 </script>
