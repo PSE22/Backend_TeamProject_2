@@ -9,6 +9,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import javax.security.auth.Subject;
 import java.util.Random;
 
 /**
@@ -30,32 +31,27 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    public void sendSimpleEmail(String to, String subject, String text) {
+    @Autowired
+    private MyRandomService myRandomService;
+
+    public void sendSimpleEmail(String to) {
+        int randomNumber = myRandomService.generateRandomNumber();
+        String text = "임시 비밀번호 : ";
+        String subject = "임시 비밀번호 발급해드립니다.";
+        String modifiedText = text + randomNumber;
+
         MimeMessage message = mailSender.createMimeMessage();
 
         try {
             MimeMessageHelper helper = new MimeMessageHelper(message, false);
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setText(text, true);
+            helper.setText(modifiedText, true);
 
             mailSender.send(message);
         } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Component
-    public class MyRandomGenerator {
-
-        private final Random random;
-
-        public MyRandomGenerator() {
-            this.random = new Random();
-        }
-
-        public int generateRandomNumber(int min, int max) {
-            return random.nextInt(max - min + 1) + min;
+            log.debug("이메일 전송에 실패하였습니다.", e);
+            throw new RuntimeException("이메일 전송에 실패하였습니다.", e);
         }
     }
 }

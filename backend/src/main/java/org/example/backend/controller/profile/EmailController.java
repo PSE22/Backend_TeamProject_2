@@ -25,8 +25,8 @@ public class EmailController {
     private EmailService emailService;
 
     @GetMapping("/sendEmail")
-    public String sendEmail(@RequestParam String to, @RequestParam String subject, @RequestParam String text) {
-        emailService.sendSimpleEmail(to, subject, text);
+    public String sendEmail(@RequestParam String to) {
+        emailService.sendSimpleEmail(to);
         return "Email sent successfully";
     }
 }

@@ -11,6 +11,7 @@
       <div class="header-right">
         <a href="#">로그인</a>
         <a href="#">회원가입</a>
+        <a href="/" @click.prevent="handleLogout">로그아웃</a>
       </div>
     </div>
     <nav class="header-nav">
@@ -25,7 +26,20 @@
   </header>
 </template>
   <script>
+  import LoginService from "@/services/login/LoginService";
   export default {
+    data() {
+      return {
+        
+      }
+    },
+    methods: {
+      handleLogout() {
+      LoginService.logout();
+      this.$store.commit("logout");
+      this.$router.push("/login");
+    },
+    },
   };
   </script>
   
