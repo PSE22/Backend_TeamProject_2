@@ -81,19 +81,6 @@
                     />
                   </div>
                   <div>
-                    <p>회원분류</p>
-                  </div>
-                  <div class="form-group">
-                    <select
-                      class="form-select form-control-select form-select-sm mb-3"
-                      name="memberCode"
-                      v-model="member.memberCode"
-                    >
-                      <option value="AT02">일반 회원</option>
-                      <option value="AT01">관리자</option>
-                    </select>
-                  </div>
-                  <div>
                     <p>부서분류</p>
                   </div>
                   <div class="form-group">
@@ -158,7 +145,7 @@ export default {
         memberExt: "",
         memberName: "",
         memberEmail: "",
-        memberCode: "AT02",
+        memberCode: "AT03",
         deptCode: "DE01",
         posCode: "AT0201",
       },
