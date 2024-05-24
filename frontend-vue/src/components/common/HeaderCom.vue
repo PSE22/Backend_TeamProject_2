@@ -18,7 +18,7 @@
       <ul>
         <li><a href="#">부서 게시판</a></li>
         <li><a href="#">동호회 게시판</a></li>
-        <li><a href="#">자유 게시판</a></li>
+        <li><router-link to="/free" class="router-link">자유 게시판</router-link></li>
         <li><a href="#">건의 게시판</a></li>
         <li><a href="#">칭찬 게시판</a></li>
       </ul>

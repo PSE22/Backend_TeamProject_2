@@ -1,16 +1,18 @@
 <template>
   <div class="main-page">
-    <div class="hot-topics-container">
-      <h2>핫토픽 게시판</h2>
-      <div v-for="hotTopic in hotTopics" :key="hotTopic" class="hot-topic-item">
-        <div class="content">
-          <div class="good">{{ hotTopic.good }}</div>
-          <div class="title">{{ hotTopic.title }}</div>
-        </div>
-        <div class="sub-info">
-          <span class="nickname">별명: {{ hotTopic.nickname }}</span>
-          <span class="reply_count">댓글 {{ hotTopic.reply_count }}</span>
-          <div class="add_date">{{ hotTopic.add_date }}</div>
+    <div class="board-container">
+      <div class="board-section hot-topics-section">
+        <h2>핫토픽 게시판</h2>
+        <div v-for="(hotTopic, index) in hotTopics.slice(0, 5)" :key="index" class="board-item">
+          <div class="content">
+            <div class="good">{{ hotTopic.good }}</div>
+            <div class="title">{{ hotTopic.boardTitle }}</div>
+          </div>
+          <div class="sub-info">
+            <span class="nickname">별명: {{ hotTopic.nickName }}</span>
+            <span class="reply_count">댓글 {{ hotTopic.totalReplyCount }}</span>
+            <div class="add_date">{{ hotTopic.addDate }}</div>
+          </div>
         </div>
       </div>
     </div>
@@ -18,7 +20,7 @@
     <div class="board-container">
       <div v-for="(group, index) in groupedBoards" :key="index" class="board-section">
         <h2>{{ group.board }}</h2>
-        <div v-for="item in group.items" :key="item.title" class="board-item">
+        <div v-for="(item, idx) in group.items.slice(0, 7)" :key="idx" class="board-item">
           <div class="content">
             <div class="good">{{ item.good }}</div>
             <div class="title">{{ item.title }}</div>
@@ -33,72 +35,64 @@
     </div>
   </div>
 </template>
-
 <script>
-import boardService from '@/services/board/MainPage';
+import MainPageService from '@/services/board/MainPage';
 
 export default {
   data() {
     return {
       boards: [],
       groupedBoards: [],
-      hotTopics: [] // 데이터 배열 추가
+      hotTopics: []
     };
   },
 
   methods: {
     async fetchBoardData() {
-      try {
-        const data = await boardService.getBoardData();
-        this.processBoardData(data);
-      } catch (error) {
-        console.error('Error fetching board data:', error);
-      }
+        try {
+            const response = await MainPageService.getBoardData();
+            if (response && response.data) {
+                this.processBoardData(response.data);
+            } else {
+                console.error('No data returned from getBoardData');
+            }
+        } catch (error) {
+            console.error('Error fetching board data:', error);
+        }
     },
-    
+
     async fetchHotTopics() {
       try {
-        const data = await boardService.getHotTopics();
-        console.log("Hot Topics Data:", data);
-        this.hotTopics = data.map(item => ({
-          title: item[1],
-          nickname: item[2],
-          good: item[3],
-          reply_count: item[4],
-          add_date: item[5]
-        }));
+        const data = await MainPageService.getHotTopics();
+        this.hotTopics = data.data;
       } catch (error) {
-        console.error('핫토픽 데이터를 가져오는 중 오류 발생:', error);
+        console.error('Error fetching hot topics:', error);
       }
     },
 
     processBoardData(data) {
-      const groups = data.reduce((acc, item) => {
-        const code = item[0];
-        if (!acc[code]) {
-          acc[code] = {
-            board: item[0],
-            items: []
-          };
-        }
-        acc[code].items.push({
-          title: item[1],
-          nickname: item[2],
-          good: item[3],
-          reply_count: item[4],
-          add_date: item[5]
-        });
-        return acc;
-      }, {});
-      
-      this.groupedBoards = Object.values(groups);
+        const groups = data.reduce((acc, item) => {
+            const boardName = item.board; // 'BO03', 'BO04' 등의 코드 대신 이름을 사용
+            if (!acc[boardName]) {
+                acc[boardName] = { board: boardName, items: [] };
+            }
+            acc[boardName].items.push({
+                title: item.boardTitle,
+                nickname: item.nickName,
+                good: item.good,
+                reply_count: item.totalReplyCount,
+                add_date: item.addDate
+            });
+            return acc;
+        }, {});
+        this.groupedBoards = Object.values(groups);
     }
-  },
+},
 
   mounted() {
     this.fetchBoardData();
-    this.fetchHotTopics(); // 핫토픽 데이터 불러오기
-  },
+    this.fetchHotTopics();
+  }
 }
 </script>
 <style scoped>
