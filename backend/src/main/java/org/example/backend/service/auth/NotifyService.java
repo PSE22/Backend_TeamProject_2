@@ -10,6 +10,7 @@ import org.example.backend.repository.profile.NotifyRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -34,12 +35,11 @@ public class NotifyService {
     @Autowired
     BoardRepository boardRepository;
     @Autowired
-    ReplyRepository replyRepository;
-    @Autowired
     SseService sseService;
     @Autowired
     ModelMapper modelMapper;
 
+    @Transactional
     public void createBestNotify(Long boardId, NotifyDto notifyDto) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RuntimeException("Board not found"));
         String content = board.getBoardTitle() + "이 베스트에 선정되었습니다.";
@@ -48,9 +48,12 @@ public class NotifyService {
         notify.setNotiContent(content);
         notify.setNotiUrl(notifyDto.getNotiUrl());
         notifyRepository.save(notify);
-        sseService.sendSseEvent(notify);
+
+        NotifyDto notifyDTO = modelMapper.map(notify, NotifyDto.class);
+        sseService.sendSseEvent(notifyDTO);
     }
 
+    @Transactional
     public void createHotTopicNotify(Long boardId, NotifyDto notifyDto) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RuntimeException("Board not found"));
         String content = board.getBoardTitle() + "이 핫토픽에 선정되었습니다.";
@@ -59,9 +62,12 @@ public class NotifyService {
         notify.setNotiContent(content);
         notify.setNotiUrl(notifyDto.getNotiUrl());
         notifyRepository.save(notify);
-        sseService.sendSseEvent(notify);
+
+        NotifyDto notifyDTO = modelMapper.map(notify, NotifyDto.class);
+        sseService.sendSseEvent(notifyDTO);
     }
 
+    @Transactional
     public void createReplyNotify(Long boardId, NotifyDto notifyDto) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RuntimeException("Board not found"));
         String content = board.getBoardTitle() + "에 새로운 댓글이 있습니다.";
@@ -70,13 +76,17 @@ public class NotifyService {
         notify.setNotiContent(content);
         notify.setNotiUrl(notifyDto.getNotiUrl());
         notifyRepository.save(notify);
-        sseService.sendSseEvent(notify);
+
+        NotifyDto notifyDTO = modelMapper.map(notify, NotifyDto.class);
+        sseService.sendSseEvent(notifyDTO);
     }
 
+    @Transactional
     public void readCheckAll(NotifyDto notifyDto) {
         notifyRepository.updateNotiCheck(notifyDto.getMemberId());
     }
 
+    @Transactional
     public void readCheck(Long notifyId) {
         Optional<Notify> notifyOptional = notifyRepository.findById(notifyId);
         notifyOptional.ifPresent(notify -> {
