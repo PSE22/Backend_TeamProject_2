@@ -2,17 +2,16 @@ package org.example.backend.service.auth;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.NotifyDto;
+import org.example.backend.service.RedisPubService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.*;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 /**
  * packageName : org.example.backend.service.auth
@@ -31,11 +30,13 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class SseService {
 
-    private final Map<String, SseEmitter> sseEmitters = new ConcurrentHashMap<>();
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    @Autowired
+    RedisPubService redisPubService;
 
-    @Transactional
-    void sendSseEvent(NotifyDto notifyDto) {
+    private final Map<String, SseEmitter> sseEmitters = new ConcurrentHashMap<>();
+    private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+
+    public void sendSseEvent(NotifyDto notifyDto) {
         SseEmitter emitter = sseEmitters.get(notifyDto.getMemberId());
         if (emitter != null) {
             try {
@@ -47,11 +48,11 @@ public class SseService {
         }
     }
 
-    @Transactional
     public SseEmitter subscribe(SseEmitter emitter, String memberId) {
         sseEmitters.put(memberId, emitter);
-        log.info("새로운 에미터 등록 {}", emitter);
-        log.info("등록된 에미터 수 {}", sseEmitters.size());
+        redisPubService.publish("notification", "새로운 구독자가 연결되었습니다.: " + memberId);
+        log.info("새로운 에미터가 등록되었습니다.: {}", emitter);
+        log.info("등록된 에미터 수: {}", sseEmitters.size());
 
         emitter.onError((error) -> {
             log.error("onError callback", error);
@@ -70,7 +71,18 @@ public class SseService {
             sseEmitters.remove(memberId, emitter);
         });
 
-        scheduler.scheduleAtFixedRate(() -> sendPing(emitter), 0, 1, TimeUnit.MINUTES);
+        // 비동기 처리
+        CompletableFuture.runAsync(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    sendPing(emitter);
+                    Thread.sleep(60000); // 1분에 한 번씩 보냄
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    log.error("SseTask interrupted", e);
+                }
+            }
+        }, executorService);
 
         return emitter;
     }
