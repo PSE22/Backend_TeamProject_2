@@ -39,7 +39,7 @@ public interface DeptBoardRepository extends JpaRepository<Board, Long> {
             "AND B.NOTICE_YN = 'Y'\n" +
             "AND B.SMCODE = :smcode\n" +
             "ORDER BY B.ADD_DATE DESC", nativeQuery = true)
-    List<IClubDto> findAllByBoard(@Param("smcode") String smcode);
+    List<IClubDto> findAllByNotice(@Param("smcode") String smcode);
 
     // 부서별 게시판 전체조회 - 일반글
     @Query(value = "SELECT \n" +
@@ -50,9 +50,10 @@ public interface DeptBoardRepository extends JpaRepository<Board, Long> {
             "FROM TB_BOARD B, TB_MEMBER M\n" +
             "WHERE B.MEMBER_ID = M.MEMBER_ID\n" +
             "AND B.BOCODE = 'BO01'\n" +
+            "AND B.BOARD_TITLE LIKE '%' || :boardtitle || '%'\n" +
             "AND B.STATUS = 'Y'\n" +
             "AND B.NOTICE_YN = 'N'\n" +
             "AND B.SMCODE = :smcode\n" +
             "ORDER BY B.ADD_DATE DESC", nativeQuery = true)
-    Page<IClubDto> findAllByNotice(@Param("smcode") String smcode, Pageable pageable);
+    Page<IClubDto> findAllByDept(@Param("boardtitle") String boardtitle, @Param("smcode") String smcode, Pageable pageable);
 }

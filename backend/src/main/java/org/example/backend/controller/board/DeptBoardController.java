@@ -41,12 +41,12 @@ public class DeptBoardController {
 
     // 부서별 게시판 전체조회 - 공지글
     @GetMapping("/dept/notice")
-    public ResponseEntity<Object> findAll(
+    public ResponseEntity<Object> findAllNotice(
             @RequestParam(defaultValue = "") String smcode
     ) {
         try {
             List<IClubDto> list
-                    = deptBoardService.findAllByBoard(smcode);
+                    = deptBoardService.findAllByNotice(smcode);
 
             if (list.isEmpty() == false) {
                 return new ResponseEntity<>(list, HttpStatus.OK);
@@ -61,31 +61,31 @@ public class DeptBoardController {
 
     // 부서별 게시판 전체조회 - 일반글
     @GetMapping("/dept")
-    public ResponseEntity<Object> findAll(
+    public ResponseEntity<Object> findAllByDept(
             @RequestParam(defaultValue = "") String boardTitle,
+            @RequestParam(defaultValue = "") String smcode,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         try {
             Pageable pageable = PageRequest.of(page, size);
-
-//            전체 조회 서비스 함수 실행
-            Page<IClubDto> pageList
-                    = deptBoardService.findAllByNotice(boardTitle, pageable);
+            Page<IClubDto> pageList = deptBoardService.findAllByDept(boardTitle, smcode, pageable);
             Map<String, Object> response = new HashMap<>();
             response.put("board", pageList.getContent());            // 게시판배열
-            response.put("currentPage", pageList.getNumber());       // 현재페이지 번호(x)
+//            response.put("currentPage", pageList.getNumber());       // 현재페이지번호(x)
             response.put("totalItems", pageList.getTotalElements()); // 전체데이터개수
-            response.put("totalPages", pageList.getTotalPages());    // 전체페이지수(x)
+//            response.put("totalPages", pageList.getTotalPages());    // 전체페이지수(x)
 
             if (pageList.isEmpty() == true) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                log.debug("log1 ::: ", response);
+                return new ResponseEntity<>("데이터 없음", HttpStatus.NO_CONTENT);
             } else {
+                log.debug("log2 ::: ", response);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
 
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("서버 오류가 발생했습니다", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
