@@ -1,8 +1,10 @@
 package org.example.backend.repository.board;
 
+import jakarta.transaction.Transactional;
 import org.example.backend.model.dto.MainPageArmDto;
 import org.example.backend.model.entity.Notify;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -40,4 +42,14 @@ public interface MainPageArmRepository extends JpaRepository<Notify, Integer> {
 
     @Query("SELECT COUNT(n) FROM Notify n WHERE n.memberId = :memberId AND n.notiCheck = 'N'")
     int CountNotiByMemberId(@Param("memberId") String memberId);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Notify n SET n.notiCheck = 'Y' WHERE n.notifyId = :notifyId")
+    void updateNotificationStatus(@Param("notifyId") Long notifyId);
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM Notify n WHERE n.notifyId = :notifyId")
+    void deleteById(@Param("notifyId") Long notifyId);
 }
