@@ -1,6 +1,7 @@
 package org.example.backend.service.board;
 
 import org.example.backend.model.dto.board.IClubDto;
+import org.example.backend.model.entity.CmCode;
 import org.example.backend.repository.board.ClubRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,6 +28,7 @@ public class ClubService {
     @Autowired
     ClubRepository clubRepository;
 
+
     //    동호회 게시판 전체조회
     public Page<IClubDto> findByCode(String boardTitle, Pageable pageable) {
         Page<IClubDto> page = clubRepository.findByCode(boardTitle, pageable);
@@ -36,6 +38,12 @@ public class ClubService {
     //    동호회 공지 조회
     public List<IClubDto> findByCodeAndNotice() {
         List<IClubDto> list = clubRepository.findByCodeAndNotice();
+        return list;
+    }
+
+//    동호회 소메뉴
+    public List<IClubDto> findBySmcode() {
+        List<IClubDto> list = clubRepository.findBySmcode();
         return list;
     }
 }

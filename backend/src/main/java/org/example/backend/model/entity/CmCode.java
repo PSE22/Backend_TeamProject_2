@@ -1,9 +1,11 @@
 package org.example.backend.model.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
+import org.example.backend.model.common.BaseTimeEntity3;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
@@ -32,11 +34,12 @@ import org.hibernate.annotations.Where;
 @DynamicInsert
 @DynamicUpdate
 @Where(clause = "STATUS = 'Y'")
-@SQLDelete(sql = "UPDATE TB_CM_CD SET STATUS = 'N', DEL_DATE = TO_CHAR(SYSDATE, 'YYYY-MM-DD HH:MI:SS') WHERE CM_CD = ?")
-public class CmCode {
+@SQLDelete(sql = "UPDATE TB_CM_CODE SET STATUS = 'N', DEL_DATE = TO_CHAR(SYSDATE, 'YYYY-MM-DD HH:MI:SS') WHERE CM_CD = ?")
+public class CmCode extends BaseTimeEntity3 {
     @Id
-    private String CmCd;
-    private String UpCmCd;
-    private String CmCdName;
-    private String CmCdComment;
+    @Column(name = "cm_cd")
+    private String cmCd;
+    private String upCmCd;
+    private String cmCdName;
+    private String cmCdComment;
 }
