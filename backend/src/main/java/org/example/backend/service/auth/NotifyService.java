@@ -7,6 +7,7 @@ import org.example.backend.model.entity.board.Board;
 import org.example.backend.repository.board.BoardRepository;
 import org.example.backend.repository.board.ReplyRepository;
 import org.example.backend.repository.profile.NotifyRepository;
+import org.example.backend.service.RedisPubService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,8 @@ public class NotifyService {
     @Autowired
     SseService sseService;
     @Autowired
+    RedisPubService redisPubService;
+    @Autowired
     ModelMapper modelMapper;
 
     @Transactional
@@ -50,7 +53,7 @@ public class NotifyService {
         notifyRepository.save(notify);
 
         NotifyDto notifyDTO = modelMapper.map(notify, NotifyDto.class);
-        sseService.sendSseEvent(notifyDTO);
+        redisPubService.publish("notification", notifyDTO);
     }
 
     @Transactional
@@ -64,7 +67,7 @@ public class NotifyService {
         notifyRepository.save(notify);
 
         NotifyDto notifyDTO = modelMapper.map(notify, NotifyDto.class);
-        sseService.sendSseEvent(notifyDTO);
+        redisPubService.publish("notification", notifyDTO);
     }
 
     @Transactional
@@ -78,7 +81,7 @@ public class NotifyService {
         notifyRepository.save(notify);
 
         NotifyDto notifyDTO = modelMapper.map(notify, NotifyDto.class);
-        sseService.sendSseEvent(notifyDTO);
+        redisPubService.publish("notification", notifyDTO);
     }
 
     @Transactional
