@@ -6,6 +6,7 @@ class LoginService {
         let data = {
             memberId: member.memberId,
             memberPw: member.memberPw,
+            memberCode: member.memberCode
         };
         return http.post("/auth/login", data);
     }

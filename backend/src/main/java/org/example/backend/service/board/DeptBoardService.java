@@ -28,14 +28,14 @@ public class DeptBoardService {
     DeptBoardRepository deptBoardRepository;
 
     // 부서별 게시판 전체조회 - 공지글
-    public List<IClubDto> findAllByBoard(String smcode) {
-        List<IClubDto> list = deptBoardRepository.findAllByBoard(smcode);
+    public List<IClubDto> findAllByNotice(String smcode) {
+        List<IClubDto> list = deptBoardRepository.findAllByNotice(smcode);
         return list;
     }
 
     // 부서별 게시판 전체조회 - 일반글
-    public Page<IClubDto> findAllByNotice(String smcode, Pageable pageable) {
-        Page<IClubDto> page = deptBoardRepository.findAllByNotice(smcode, pageable);
+    public Page<IClubDto> findAllByDept(String boardTitle, String smcode, Pageable pageable) {
+        Page<IClubDto> page = deptBoardRepository.findAllByDept(boardTitle, smcode, pageable);
         return page;
     }
 }

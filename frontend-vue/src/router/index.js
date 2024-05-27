@@ -16,6 +16,17 @@ const routes = [
     path: "/register",
     component: () => import("../views/RegisterView.vue"),
   },
+  // 부서게시판
+  {
+    path: "/board/dept",
+    name: 'TeamDetail',
+    component: () => import("../views/board/DeptBoardView.vue"),
+  },
+  // 부서게시판 상세글 조회
+  {
+    path: "/board/dept/:smcode/:boardId",
+    component: () => import("../views/board/DeptBoardDetailView.vue"),
+  },
   // 동호회게시판
   {
     path: "/club",
