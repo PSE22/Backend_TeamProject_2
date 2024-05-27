@@ -38,4 +38,13 @@ public class MainPageNotiService {
         return mainPageArmRepository.CountNotiByMemberId(memberId);
     }
 
+    // 알람 상태 업데이트
+    public void markNotificationAsRead(Long notifyId) {
+        mainPageArmRepository.updateNotificationStatus(notifyId);
+    }
+
+//    삭제함수(하드딜리트)
+    public void deleteNotification(Long notifyId) {
+        mainPageArmRepository.deleteById(notifyId);
+    }
 }

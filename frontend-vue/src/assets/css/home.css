@@ -233,3 +233,61 @@ footer {
   padding: 10px 0;
   border-bottom: 1px solid #eee;
 }
+
+.notification-icon {
+  position: relative;
+  font-size: 24px; /* 아이콘 크기 설정 */
+  cursor: pointer;
+}
+
+.notification-count {
+  position: absolute;
+  top: -4px; /* 뱃지 위치 조정 */
+  right: -4px; /* 뱃지 위치 조정 */
+  background-color: red; /* 배경색 */
+  color: white; /* 글자색 */
+  border-radius: 50%; /* 원형 뱃지 */
+  padding: 2px 6px; /* 내부 패딩 */
+  font-size: 14px; /* 글자 크기 */
+  min-width: 20px; /* 최소 너비 */
+  height: 20px; /* 높이 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0px 0px 3px #000; /* 그림자 효과 */
+}
+
+.notifications-popup {
+  position: absolute;
+  right: 210px;
+  top: 60px;
+  background-color: #f9f9f9; /* 배경색 변경 */
+  border: 1px solid #ccc; /* 테두리 추가 */
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.2); /* 그림자 진하게 조절 */
+  padding: 10px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  max-height: 300px;
+  overflow-y: auto; /* 스크롤 기능 추가 */
+  z-index: 100; /* 다른 요소 위에 올라오도록 z-index 설정 */
+}
+
+.notification-item {
+  padding: 5px;
+  margin-bottom: 10px;
+  background-color: rgba(255,255,255,0.9); /* 항목별 배경색 추가 및 투명도 설정 */
+  border-radius: 3px; /* 경계 둥글게 */
+}
+
+.notification-item p {
+  margin: 0;
+  color: #333; /* 글자색 변경 */
+  font-size: 14px;
+}
+
+.notification-item small {
+  display: block;
+  text-align: right;
+  color: #666; /* 날짜 글자색 변경 */
+}

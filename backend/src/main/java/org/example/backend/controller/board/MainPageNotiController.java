@@ -4,10 +4,7 @@ import org.example.backend.model.dto.MainPageArmDto;
 import org.example.backend.service.board.MainPageNotiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -43,5 +40,19 @@ public class MainPageNotiController {
     public ResponseEntity<Integer> getCountNotification(@PathVariable String memberId) {
         int count = mainPageNotiService.countNotification(memberId);
         return ResponseEntity.ok(count);
+    }
+
+//    알람내용 클릭시 NotiCheck Y로 변경
+    @PostMapping("/{notifyId}/read")
+    public ResponseEntity<?> markAsRead(@PathVariable Long notifyId) {
+        mainPageNotiService.markNotificationAsRead(notifyId);
+        return ResponseEntity.ok().build(); // 성공 응답
+    }
+
+//    알람 하드딜리트 함수
+    @DeleteMapping("/{notifyId}")
+    public ResponseEntity<Void> deleteNotification(@PathVariable Long notifyId) {
+        mainPageNotiService.deleteNotification(notifyId);
+        return ResponseEntity.ok().build();
     }
 }
