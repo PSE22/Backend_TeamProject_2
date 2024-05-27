@@ -1,14 +1,10 @@
 <template>
   <div class="w-80 p-3">
     <h1 class="text-center mb-5 mt-5">동호회 게시판</h1>
-    <div
-      class="d-flex justify-content-center mb-5 row"
-      v-for="(data, index) in smcode"
-      :key="index"
-    >
-      <button class="custom-btn col-1" @click="retrieveClub()">전체</button>
-      <button class="custom-btn col-1" @click="handleButtonClick('견적문의')">
-        {{ data.cmCdName }}
+    <div class="d-flex justify-content-center mb-5" v-for="(data, index) in smcode" :key="index">
+      <button class="custom-btn col" @click="this.$router.push('/club')">전체</button>
+      <button class="custom-btn col" @click="handleButtonClick('견적문의')">
+        {{ data.smCdName }}
       </button>
     </div>
     <div>
@@ -118,8 +114,6 @@ export default {
       console.log("page", this.page);
       try {
         this.retrieveClubNotice();
-        this.retrieveSmcode();
-
         // TODO: 공통 장바구니 전체 조회 서비스 함수 실행
         // TODO: 비동기 코딩
         let response = await ClubService.getAll(
@@ -151,8 +145,8 @@ export default {
       try {
         // TODO: 공통 장바구니 전체 조회 서비스 함수 실행
         // TODO: 비동기 코딩
-        let response = await ClubService.getSmcode();
-        this.smcode = response.data;
+        let response = await ClubService.getNoticeFive();
+        this.clubNotice = response.data;
         console.log(response.data); // 웹브라우저 콘솔탬에 백앤드 데이터 표시
       } catch (e) {
         console.log(e); // 웹브라우저 콘솔탭에 에러표시

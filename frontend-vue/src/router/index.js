@@ -21,12 +21,17 @@ const routes = [
     path: "/club",
     component: () => import("../views/board/ClubView.vue"),
   },
+  // 중메뉴게시판
+  {
+    path: "/club/:code",
+    component: () => import("../views/board/ClubSmView.vue"),
+  },
   // 자유게시판
   {
     path: "/free",
     component: () => import("../views/board/FreeBoard.vue"),
   },
-]
+];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),

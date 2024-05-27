@@ -2,6 +2,7 @@ package org.example.backend.controller.board;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.board.IClubDto;
+import org.example.backend.model.entity.CmCode;
 import org.example.backend.service.board.ClubService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -71,8 +72,9 @@ public class ClubController {
         }
     }
 
+//    동호회 공지 전체조회
     @GetMapping("/club-notice")
-    public ResponseEntity<Object> findAll(
+    public ResponseEntity<Object> findNotice(
     ) {
         try {
 //            전체 조회 서비스 실행
@@ -82,6 +84,26 @@ public class ClubController {
             if (club.isEmpty() == false) {
 //                조회 성공
                 return new ResponseEntity<>(club, HttpStatus.OK);
+            } else {
+//                데이터 없음
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+        } catch (Exception e) {
+            log.debug("에러 : " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+//    동호회 소메뉴
+    @GetMapping("/club-smcode")
+    public ResponseEntity<Object> findSmcode() {
+        try {
+//            전체 조회 서비스 실행
+            List<IClubDto> smcode
+                    = clubService.findBySmcode();
+            if (smcode.isEmpty() == false) {
+//                조회 성공
+                return new ResponseEntity<>(smcode, HttpStatus.OK);
             } else {
 //                데이터 없음
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);

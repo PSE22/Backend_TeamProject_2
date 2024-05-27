@@ -1,6 +1,7 @@
 package org.example.backend.repository.board;
 
 import org.example.backend.model.dto.board.IClubDto;
+import org.example.backend.model.entity.CmCode;
 import org.example.backend.model.entity.board.Board;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -62,6 +63,15 @@ public interface ClubRepository extends JpaRepository<Board, Long> {
             "ORDER BY B.ADD_DATE DESC",
             nativeQuery = true)
     List<IClubDto> findByCodeAndNotice();
+
+    //    동호회 소메뉴
+    @Query(value = "SELECT CM_CD_NAME AS cmCdName\n" +
+            "FROM TB_CM_CODE\n" +
+            "WHERE UP_CM_CD LIKE 'BO02'\n" +
+            "AND STATUS = 'Y'\n" +
+            "ORDER BY CM_CD",
+            nativeQuery = true)
+    List<IClubDto> findBySmcode();
 
 //    동호회 전체조회 유니온 쿼리문
 //    @Query(value = "WITH NoticeBoards AS (\n" +
