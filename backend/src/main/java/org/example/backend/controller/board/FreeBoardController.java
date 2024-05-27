@@ -1,6 +1,7 @@
 package org.example.backend.controller.board;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.backend.model.dto.board.FreeNoticeDto;
 import org.example.backend.model.entity.board.Board;
 import org.example.backend.service.board.FreeBoardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -54,6 +56,28 @@ public class FreeBoardController {
         } catch (Exception e) {
 //            TODO: INTERNAL_SERVER_ERROR(500) : 벡엔드 서버 에러
 //               아래 코드는 프론트로(웹브라우저) 신호를(500) 보냄
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //    자유게시판 공지 전체조회
+    @GetMapping("/free-notice")
+    public ResponseEntity<Object> findFreeNotice(
+    ) {
+        try {
+//            전체 조회 서비스 실행
+            List<FreeNoticeDto> list
+                    = freeBoardService.findByFreeCodeAndNotice();
+
+            if (list.isEmpty() == false) {
+//                조회 성공
+                return new ResponseEntity<>(list, HttpStatus.OK);
+            } else {
+//                데이터 없음
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+        } catch (Exception e) {
+            log.debug("에러 : " + e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

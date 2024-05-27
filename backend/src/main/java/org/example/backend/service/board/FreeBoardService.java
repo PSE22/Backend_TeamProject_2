@@ -1,5 +1,6 @@
 package org.example.backend.service.board;
 
+import org.example.backend.model.dto.board.FreeNoticeDto;
 import org.example.backend.model.entity.board.Board;
 import org.example.backend.repository.board.FreeBoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,12 @@ public class FreeBoardService {
     //    TODO: 전체조회(read)
     public List<Board> findAll() {
         List<Board> list = freeBoardRepository.findAll();
+        return list;
+    }
+
+    //    자유게시판 공지 조회
+    public List<FreeNoticeDto> findByFreeCodeAndNotice() {
+        List<FreeNoticeDto> list = freeBoardRepository.findByFreeCodeAndNotice();
         return list;
     }
 
