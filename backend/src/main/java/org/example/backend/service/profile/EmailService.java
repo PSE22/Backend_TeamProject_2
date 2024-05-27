@@ -1,16 +1,11 @@
 package org.example.backend.service.profile;
 
-import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-
-import javax.security.auth.Subject;
-import java.util.Random;
 
 /**
  * packageName : org.example.backend.service.profile
@@ -34,8 +29,8 @@ public class EmailService {
     @Autowired
     private MyRandomService myRandomService;
 
-    public void sendSimpleEmail(String to) {
-        int randomNumber = myRandomService.generateRandomNumber();
+    public void sendSimpleEmail(String to, String memberId) {
+        String randomNumber = myRandomService.generatePassword(memberId);
         String text = "임시 비밀번호 : ";
         String subject = "임시 비밀번호 발급해드립니다.";
         String modifiedText = text + randomNumber;

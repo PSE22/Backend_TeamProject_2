@@ -78,8 +78,6 @@ export default {
         console.log("ggg",response.data);
         localStorage.setItem("member", JSON.stringify(response.data));
         this.$store.commit("loginSuccess", response.data);
-        console.log("확인~", response.data)
-        console.log("확인", response.data.memberCode);
         if (response.data.memberCode == "AT03") {
           LoginService.logout();
           this.$store.commit("logout");
