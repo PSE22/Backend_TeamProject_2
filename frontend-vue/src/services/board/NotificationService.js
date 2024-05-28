@@ -23,6 +23,12 @@ class NotificationService {
   deleteNotification(notifyId) {
     return http.delete(`/notifications/${notifyId}`);
   }
+
+  // 알람 모두확인
+  markAsReadAll(memberId) {
+    return http.put(`/notifications/read-check/all`, { memberId }, { headers: LoginHeader() });
+  }
+
 }
 
 

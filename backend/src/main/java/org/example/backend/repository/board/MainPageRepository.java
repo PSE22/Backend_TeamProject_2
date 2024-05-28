@@ -23,7 +23,7 @@ import java.util.List;
  */
 @Repository
 public interface MainPageRepository extends JpaRepository<Board, Integer> {
-    //    메인페이지 조회 쿼리 (자유,건의,칭찬 게시판)
+    //  자유게시판 조회
     @Query(value =
             "WITH all_replies AS (" +
                     "    SELECT BOARD_ID, COUNT(*) AS total_reply_count" +
@@ -41,7 +41,17 @@ public interface MainPageRepository extends JpaRepository<Board, Integer> {
                     " FROM TB_BOARD B" +
                     " LEFT JOIN all_replies R ON B.BOARD_ID = R.BOARD_ID" +
                     " WHERE B.STATUS = 'Y' AND B.BOCODE = 'BO03'" +
-                    " UNION ALL" +
+                    " ORDER BY addDate DESC", nativeQuery = true)
+    List<MainPageDto> findFreeBoardData();
+
+    //  건의게시판 조회
+    @Query(value =
+            "WITH all_replies AS (" +
+                    "    SELECT BOARD_ID, COUNT(*) AS total_reply_count" +
+                    "    FROM TB_REPLY" +
+                    "    WHERE STATUS = 'Y'" +
+                    "    GROUP BY BOARD_ID" +
+                    ")" +
                     " SELECT '건의게시판' AS board," +
                     "        B.BOARD_TITLE AS boardTitle," +
                     "        B.NICKNAME AS nickName," +
@@ -52,7 +62,17 @@ public interface MainPageRepository extends JpaRepository<Board, Integer> {
                     " FROM TB_BOARD B" +
                     " LEFT JOIN all_replies R ON B.BOARD_ID = R.BOARD_ID" +
                     " WHERE B.STATUS = 'Y' AND B.BOCODE = 'BO04'" +
-                    " UNION ALL" +
+                    " ORDER BY addDate DESC", nativeQuery = true)
+    List<MainPageDto> findSuggestionBoardData();
+
+    //  칭찬게시판 조회
+    @Query(value =
+            "WITH all_replies AS (" +
+                    "    SELECT BOARD_ID, COUNT(*) AS total_reply_count" +
+                    "    FROM TB_REPLY" +
+                    "    WHERE STATUS = 'Y'" +
+                    "    GROUP BY BOARD_ID" +
+                    ")" +
                     " SELECT '칭찬게시판' AS board," +
                     "        B.BOARD_TITLE AS boardTitle," +
                     "        B.NICKNAME AS nickName," +
@@ -63,10 +83,10 @@ public interface MainPageRepository extends JpaRepository<Board, Integer> {
                     " FROM TB_BOARD B" +
                     " LEFT JOIN all_replies R ON B.BOARD_ID = R.BOARD_ID" +
                     " WHERE B.STATUS = 'Y' AND B.BOCODE = 'BO05'" +
-                    " ORDER BY board, addDate DESC", nativeQuery = true)
-    List<MainPageDto> findBoardData();
+                    " ORDER BY addDate DESC", nativeQuery = true)
+    List<MainPageDto> findPraiseBoardData();
 
-
+    //  핫토픽게시판 조회
     @Query(value =
             "WITH all_replies AS (" +
                     "    SELECT BOARD_ID, COUNT(*) AS total_reply_count" +

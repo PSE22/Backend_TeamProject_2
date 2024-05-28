@@ -27,9 +27,19 @@ public class MainPageService {
     @Autowired
     private MainPageRepository mainPageRepository;
 
-//    메인페이지 조회함수
-    public List<MainPageDto> getBoardData() {
-        return mainPageRepository.findBoardData();
+//    자유게시판
+    public List<MainPageDto> getFreeBoardData() {
+        return mainPageRepository.findFreeBoardData();
+    }
+
+//    건의게시판
+    public List<MainPageDto> getSuggestionBoardData() {
+        return mainPageRepository.findSuggestionBoardData();
+    }
+
+//    칭찬게시판
+    public List<MainPageDto> getPraiseBoardData() {
+        return mainPageRepository.findPraiseBoardData();
     }
 
 
