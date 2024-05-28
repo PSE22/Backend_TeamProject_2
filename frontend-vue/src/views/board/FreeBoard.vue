@@ -54,8 +54,8 @@
             </option>
           </select>
         </div>
-        <div class="col-1">
-          <button type="button" class="btn btn-dark">등록</button>
+        <div class="col-auto">
+          <button type="button" class="btn btn-dark" @click="moveToFreeWrite">등록</button>
         </div>
       </div>
       <div class="row">
@@ -142,6 +142,9 @@ export default {
     pageSizeChange() {
       this.page = 1; // 현재패이지번호 : 1
       this.retrieveFreeBoard(); // 재조회
+    },
+    moveToFreeWrite() {
+    this.$router.push('/free-write');
     },
   },
   mounted() {

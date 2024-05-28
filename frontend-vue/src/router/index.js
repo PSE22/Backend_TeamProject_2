@@ -39,18 +39,23 @@ const routes = [
   },
   // 동호회게시판
   {
-    path: "/club",
+    path: "/board/club",
     component: () => import("../views/board/ClubView.vue"),
   },
   // 중메뉴게시판
   {
-    path: "/club/:code",
+    path: "/board/club/:code",
     component: () => import("../views/board/ClubSmView.vue"),
   },
   // 자유게시판
   {
-    path: "/free",
+    path: "/board/free",
     component: () => import("../views/board/FreeBoard.vue"),
+  },
+  // 자유게시판 등록(글쓰기)
+  {
+    path: "/board/free-write",
+    component: () => import("../views/board/FreeWrite.vue"),
   },
 ];
 
