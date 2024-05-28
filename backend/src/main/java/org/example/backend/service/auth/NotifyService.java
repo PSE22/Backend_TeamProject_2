@@ -53,6 +53,7 @@ public class NotifyService {
         notifyRepository.save(notify);
 
         NotifyDto notifyDTO = modelMapper.map(notify, NotifyDto.class);
+        log.debug("0" + notifyDto);
         redisPubService.publish("notification", notifyDTO);
     }
 

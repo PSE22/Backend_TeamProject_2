@@ -1,6 +1,7 @@
 package org.example.backend.config;
 
 import lombok.RequiredArgsConstructor;
+import org.example.backend.model.dto.NotifyDto;
 import org.example.backend.service.RedisSubService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,7 +51,7 @@ public class RedisConfig {
         redisTemplate.setConnectionFactory(redisConnectionFactory());
 
         redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
+        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(NotifyDto.class));
         return redisTemplate;
     }
 }
