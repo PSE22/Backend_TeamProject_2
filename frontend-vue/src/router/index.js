@@ -16,6 +16,16 @@ const routes = [
     path: "/register",
     component: () => import("../views/RegisterView.vue"),
   },
+  // 비밀번호 찾기
+  {
+    path: "/find-password",
+    component: () => import("../views/FindPassword.vue"),
+  },
+  // 회원 프로필 메인
+  {
+    path: "/profile",
+    component: () => import("../views/profile/MyProfile.vue"),
+  },
   // 부서게시판
   {
     path: "/board/dept",

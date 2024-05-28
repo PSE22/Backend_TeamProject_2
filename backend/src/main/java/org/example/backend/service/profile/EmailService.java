@@ -1,7 +1,10 @@
 package org.example.backend.service.profile;
 
 import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.backend.model.entity.auth.Member;
+import org.example.backend.repository.auth.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -22,12 +25,14 @@ import org.springframework.stereotype.Service;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor // final 생성자 자동 완성
 public class EmailService {
-    @Autowired
-    private JavaMailSender mailSender;
 
-    @Autowired
-    private MyRandomService myRandomService;
+    private final JavaMailSender mailSender;
+
+    private final MyRandomService myRandomService;
+
+    final MemberRepository memberRepository;
 
     public void sendSimpleEmail(String to, String memberId) {
         String randomNumber = myRandomService.generatePassword(memberId);
