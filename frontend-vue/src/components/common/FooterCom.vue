@@ -29,5 +29,4 @@
   </script>
   
   <style>
-  @import "@/assets/css/home.css";
   </style>
