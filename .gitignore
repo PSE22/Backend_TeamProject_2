@@ -1,1 +1,5 @@
+# ignore .DS_Store
 .DS_Store
+
+# ignore Documents directory
+Documents/
