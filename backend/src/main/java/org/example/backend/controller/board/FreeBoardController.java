@@ -19,7 +19,7 @@ import java.util.Optional;
 
 @Slf4j
 @RestController
-@RequestMapping("api/board")
+@RequestMapping("/api/board")
 public class FreeBoardController {
 
     @Autowired
