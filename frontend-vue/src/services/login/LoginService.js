@@ -28,6 +28,11 @@ class LoginService {
         };
         return http.get(`/auth/register/${memberId}?memberId=${memberId}`, data);
     }
+
+    // TODO: 비밀번호 찾기 함수
+    find(to, memberId) {
+        return http.put(`/auth/sendEmail/${to}/${memberId}`);
+    }
 }
 
 export default new LoginService();

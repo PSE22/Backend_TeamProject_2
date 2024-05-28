@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 /**
  * packageName : org.example.backend.controller.auth
@@ -40,8 +41,7 @@ import java.util.ArrayList;
 @RequiredArgsConstructor
 public class AuthController {
 
-    @Autowired
-    MemberService memberService;
+    private final MemberService memberService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -118,6 +118,23 @@ public class AuthController {
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    //  회원 상세 조회
+    @GetMapping("/member/{memberId}/{memberEmail}")
+    public ResponseEntity<Object> findById(@PathVariable String memberId, @PathVariable String memberEmail) {
+        try {
+            Optional<Member> optionalMember = memberService.findByMemberIdAndMemberEmail(memberId, memberEmail);
+            if (optionalMember.isEmpty() == true) {
+                // 데이터 없음
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } else {
+                // 조회 성공
+                return new ResponseEntity<>(optionalMember.get(), HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
