@@ -1,13 +1,17 @@
 package org.example.backend.service.board;
 
+import org.example.backend.model.dto.board.BoardFileDto;
 import org.example.backend.model.dto.board.FreeNoticeDto;
 import org.example.backend.model.dto.board.VoteDto;
 import org.example.backend.model.entity.board.Board;
+import org.example.backend.model.entity.board.File;
+import org.example.backend.model.entity.board.Place;
 import org.example.backend.repository.board.FreeBoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +23,12 @@ public class FreeBoardService {
     FreeBoardRepository freeBoardRepository;
     @Autowired
     VoteService voteService;
+    @Autowired
+    PlaceService placeService;
+    @Autowired
+    FileService fileService;
+    @Autowired
+    BoardFileService boardFileService;
 
     //    TODO: 전체조회(read)
     public List<Board> findAll() {
@@ -49,8 +59,9 @@ public class FreeBoardService {
         return optionalFreeBoard;
     }
 
+    @Transactional
     //    TODO: 등록(insert),수정(update)
-    public void save(Board board, List<VoteDto> voteDtos) {
+    public void save(Board board, List<VoteDto> voteDtos, Place place, File file, List<BoardFileDto> boardFileDtos) {
         // 분류코드를 설정
         board.setBocode("BO03");
 
@@ -60,6 +71,10 @@ public class FreeBoardService {
         // 저장된 board의 boardId를 객체로 변환
         Long boardId = board2.getBoardId();
         voteService.saveVote(boardId, voteDtos);
+        placeService.savePlace(place);
+        fileService.saveFile(file);
+        String uuid = file.getUuid();
+        boardFileService.saveBoardFile(boardId, uuid, boardFileDtos);
         }
 
     public void update(Board board) {
