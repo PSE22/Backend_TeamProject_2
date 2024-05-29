@@ -26,6 +26,11 @@ const routes = [
     path: "/profile",
     component: () => import("../views/profile/MyProfile.vue"),
   },
+  // 회원 프로필 수정
+  {
+    path: "/profile-edit",
+    component: () => import("../views/profile/MyProfileEdit.vue"),
+  },
   // 부서게시판
   {
     path: "/board/dept",
@@ -43,10 +48,10 @@ const routes = [
     component: () => import("../views/board/ClubView.vue"),
   },
   // 중메뉴게시판
-  {
-    path: "/board/club/:code",
-    component: () => import("../views/board/ClubSmView.vue"),
-  },
+  // {
+  //   path: "/board/club/:code",
+  //   component: () => import("../views/board/ClubSmView.vue"),
+  // },
   // 자유게시판
   {
     path: "/board/free",

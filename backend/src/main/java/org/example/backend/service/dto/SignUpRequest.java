@@ -40,6 +40,9 @@ public class SignUpRequest {
     private String memberExt;
 
     @NotBlank
+    private String nickname;
+
+    @NotBlank
     private String memberCode;
 
     @NotBlank
