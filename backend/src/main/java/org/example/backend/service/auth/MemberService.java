@@ -5,6 +5,8 @@ import org.example.backend.repository.auth.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 /**
  * packageName : org.example.backend.service.auth
  * fileName : MemberService
@@ -34,5 +36,9 @@ public class MemberService {
         Member member2 = memberRepository.save(member);
 
         return member2;
+    }
+
+    public Optional<Member> findById(String memberId) {
+        return memberRepository.findById(memberId);
     }
 }

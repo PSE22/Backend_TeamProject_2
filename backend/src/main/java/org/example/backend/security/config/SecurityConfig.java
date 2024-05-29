@@ -65,6 +65,7 @@ public class SecurityConfig {
 //                .requestMatchers("/api/board/BO01/DE03/**").hasAuthority("DE03")
 //                .requestMatchers("/api/board/BO01/DE04/**").hasAuthority("DE04")
 //                .requestMatchers("/api/board/**").hasAnyAuthority("AT01", "AT02")
+//                .requestMatchers("/api/connect/**").hasAnyAuthority("AT01", "AT02")
 //                .requestMatchers("/api/auth/**").permitAll()
 //                .requestMatchers("/").permitAll()
 //                .anyRequest().authenticated());

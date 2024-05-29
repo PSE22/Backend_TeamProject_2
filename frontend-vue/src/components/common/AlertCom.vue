@@ -14,6 +14,7 @@
 import AlertService from "@/services/AlertService";
 import { NativeEventSource, EventSourcePolyfill } from "event-source-polyfill";
 import { mapState } from "vuex";
+import LoginHeader from "@/services/login/LoginHeader"
 const EventSource = NativeEventSource || EventSourcePolyfill;
 
 export default {
@@ -47,7 +48,7 @@ export default {
     connectSSE() {
       if (this.member) {
         this.eventSource = new EventSource(
-          `http://localhost:8000/api/connect/${this.member.memberId}`, { timeout: 3600000 }
+          `http://localhost:8000/api/connect/${this.member.memberId}`, {headers: LoginHeader()}, { timeout: 3600000 }
         );
 
         this.eventSource.addEventListener("connect", (event) => {
