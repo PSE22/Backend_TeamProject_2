@@ -1,109 +1,93 @@
 <template>
-  <div>
-    <div id="content-wrapper" class="d-flex flex-column">
-      <div id="content">
-        <!-- 자유게시판 시작 -->
-        <div class="container-fluid">
-          <!-- 검색어 -->
-          <div class="row mb-3 mt-3 justify-content-center">
-            <div class="col-12 w-50 input-group">
-              <input
-                type="text"
-                class="form-control"
-                placeholder="제목 검색"
-                v-model="searchBoardTitle"
-              />
-
-              <button
-                class="btn btn-outline-secondary"
-                type="button"
-                @click="retrieveFreeBoard"
-              >
-                검색
-              </button>
-            </div>
-          </div>
-
-          <div class="card shadow mb-4">
-            <div
-              class="card-header py-3 d-flex justify-content-between align-items-center text-center"
+  <div class="w-80 p-3">
+    <h1 class="text-center mb-5 mt-5">자유 게시판</h1>
+    <div>
+      <table class="table table-hover">
+        <thead class="table-light text-center">
+          <tr>
+            <th scope="col">글번호</th>
+            <th scope="col">제목</th>
+            <th scope="col">닉네임</th>
+            <th scope="col">등록일</th>
+            <th scope="col">추천수</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(data, index) in freeNotice" :key="index">
+            <td class="text-center col-1">{{ data.boardId }}</td>
+            <td class="col-5">
+              <span class="badge text-bg-dark me-2">공지</span
+              >{{ data.boardTitle }}
+            </td>
+            <td class="text-center col-2">{{ data.nickname }}</td>
+            <td class="text-center col-2">{{ data.addDate }}</td>
+          </tr>
+        </tbody>
+        <tbody>
+          <tr v-for="(data, index) in board" :key="index">
+            <td class="text-center">{{ data.boardId }}</td>
+            <td>
+              <router-link :to="`/free-view/${board.boardTitle}`">
+                {{ data.boardTitle }}
+              </router-link>
+            </td>
+            <td>{{ data.nickname }}</td>
+            <td class="text-center">{{ data.addDate }}</td>
+            <td class="text-center">{{ data.good }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <!-- {/* paging 시작 */} -->
+      <div class="row justify-content-between">
+        <div class="col-4 w-25 mb-3">
+          <select
+            class="form-select form-select-sm"
+            v-model="pageSize"
+            @change="pageSizeChange"
+          >
+            <option
+              v-for="(data, index) in pageSizes"
+              :key="index"
+              :value="data"
             >
-              <h5 class="m-0 font-weight-bold text-primary flex-grow-1">
-                자유 게시판
-              </h5>
-              <button type="button" class="btn btn-primary">등록</button>
-            </div>
-            <div class="card-body">
-              <div class="table-responsive">
-                <div v-if="!submitted">
-                  <div class="row">
-                    <div class="col-sm-12">
-                      <table
-                        class="table table-bordered dataTable text-center"
-                        width="100%"
-                        cellspacing="0"
-                        role="grid"
-                        aria-describedby="dataTable_info"
-                        style="width: 100%"
-                      >
-                        <thead>
-                          <tr role="row">
-                            <th>글번호</th>
-                            <th>제목</th>
-                            <th>닉네임</th>
-                            <th>등록일</th>
-                            <th>추천수</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr v-for="(data, index) in board" :key="index">
-                            <td>{{ data.boardId }}</td>
-                            <td>
-                              <router-link
-                                :to="`/free-view/${board.boardTitle}`"
-                              >
-                                {{ data.boardTitle }}
-                              </router-link>
-                            </td>
-                            <td>{{ data.nickname }}</td>
-                            <td>{{ data.addDate }}</td>
-                            <td>{{ data.good }}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-                <!-- 페이지 시작 -->
-                <div class="row">
-                  <div class="col-sm-12 col-md-5">
-                    <div
-                      class="dataTables_info"
-                      role="status"
-                      aria-live="polite"
-                    >
-                      검색결과 총 {{ count }} 건
-                    </div>
-                  </div>
-                  <div class="col-sm-12 col-md-7">
-                    <div class="dataTables_paginate paging_Simple_numbers">
-                      <b-pagination
-                        v-model="page"
-                        :total-rows="count"
-                        :per-page="pageSize"
-                        @click="retrieveFreeBoard"
-                      ></b-pagination>
-                    </div>
-                  </div>
-                </div>
-                <!-- 페이지 끝 -->
-              </div>
-            </div>
-          </div>
-          <!-- /.container-fluid -->
+              {{ data }}
+            </option>
+          </select>
+        </div>
+        <div class="col-auto">
+          <button type="button" class="btn btn-dark" @click="moveToFreeWrite">등록</button>
         </div>
       </div>
-      <!-- 게시판 끝 -->
+      <div class="row">
+        <b-pagination
+          class="col-12 mb-3 justify-content-center"
+          v-model="page"
+          :total-rows="count"
+          :per-page="pageSize"
+          @click="retrieveFreeBoard"
+        ></b-pagination>
+        <!-- {/* paging 끝 */} -->
+        <!-- {/* 검색어 start */} -->
+        <div class="col-md-4 mx-auto">
+          <div class="input-group mb-3">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="제목 검색"
+              v-model="searchBoardTitle"
+              @keyup.enter="retrieveFreeBoard"
+            />
+            <button
+              class="btn btn-outline-secondary"
+              type="button"
+              @click="retrieveFreeBoard"
+            >
+              검색
+            </button>
+          </div>
+        </div>
+        <!-- {/* 검색어 end */} -->
+      </div>
     </div>
   </div>
 </template>
@@ -115,6 +99,7 @@ export default {
     return {
       // 백엔드 연결
       board: [],
+      freeNotice: [],
       submitted: false,
       searchBoardTitle: "",
       page: 1,
@@ -127,6 +112,8 @@ export default {
   methods: {
     async retrieveFreeBoard() {
       try {
+        this.retrieveFreeNotice();
+
         let response = await FreeBoardService.getAll(
           this.searchBoardTitle,
           this.page - 1,
@@ -139,6 +126,25 @@ export default {
       } catch (e) {
         console.log(e);
       }
+    },
+    async retrieveFreeNotice() {
+      try {
+        // TODO: 공통 장바구니 전체 조회 서비스 함수 실행
+        // TODO: 비동기 코딩
+        let response = await FreeBoardService.getNoticeFree();
+        this.freeNotice = response.data;
+        console.log(response.data); // 웹브라우저 콘솔탬에 백앤드 데이터 표시
+      } catch (e) {
+        console.log(e); // 웹브라우저 콘솔탭에 에러표시
+      }
+    },
+    // TODO: 공통 페이징 함수 : select 태그
+    pageSizeChange() {
+      this.page = 1; // 현재패이지번호 : 1
+      this.retrieveFreeBoard(); // 재조회
+    },
+    moveToFreeWrite() {
+    this.$router.push('/free-write');
     },
   },
   mounted() {

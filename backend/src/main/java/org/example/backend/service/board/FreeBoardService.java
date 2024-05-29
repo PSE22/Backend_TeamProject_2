@@ -1,5 +1,7 @@
 package org.example.backend.service.board;
 
+import org.example.backend.model.dto.board.FreeNoticeDto;
+import org.example.backend.model.dto.board.VoteDto;
 import org.example.backend.model.entity.board.Board;
 import org.example.backend.repository.board.FreeBoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +17,18 @@ public class FreeBoardService {
 
     @Autowired
     FreeBoardRepository freeBoardRepository;
+    @Autowired
+    VoteService voteService;
 
     //    TODO: 전체조회(read)
     public List<Board> findAll() {
         List<Board> list = freeBoardRepository.findAll();
+        return list;
+    }
+
+    //    자유게시판 공지 조회
+    public List<FreeNoticeDto> findByFreeCodeAndNotice() {
+        List<FreeNoticeDto> list = freeBoardRepository.findByFreeCodeAndNotice();
         return list;
     }
 
@@ -40,13 +50,20 @@ public class FreeBoardService {
     }
 
     //    TODO: 등록(insert),수정(update)
-    public Board save(Board board) {
+    public void save(Board board, List<VoteDto> voteDtos) {
         // 분류코드를 설정
         board.setBocode("BO03");
-        //    JPA 저장 함수 실행 : return 값 : 저장된 객체
+
+        // JPA 저장 함수 실행 : return 값 : 저장된 객체
         Board board2 = freeBoardRepository.save(board);
 
-        return board2;
+        // 저장된 board의 boardId를 객체로 변환
+        Long boardId = board2.getBoardId();
+        voteService.saveVote(boardId, voteDtos);
+        }
+
+    public void update(Board board) {
+        freeBoardRepository.save(board);
     }
 
     // TODO: 삭제(delete)

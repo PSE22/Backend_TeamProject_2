@@ -1,5 +1,6 @@
 package org.example.backend.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.NotifyDto;
 import org.example.backend.service.auth.SseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import java.nio.charset.StandardCharsets;
  * 2024-05-26         kimtaewan          최초 생성
  */
 @Service
+@Slf4j
 public class RedisSubService implements MessageListener {
 
     @Autowired
@@ -34,8 +36,9 @@ public class RedisSubService implements MessageListener {
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
+        log.debug("1");
         NotifyDto notifyDto = (NotifyDto) redisTemplate.getValueSerializer().deserialize(message.getBody());
-
+        log.debug("2");
         sseService.sendSseEvent(notifyDto);
     }
 }

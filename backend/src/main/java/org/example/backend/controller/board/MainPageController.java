@@ -33,17 +33,40 @@ public class MainPageController {
     @Autowired
     private MainPageService mainPageService;
 
-//    메인페이지 조회함수
-@GetMapping("/board-data")
-public ResponseEntity<List<MainPageDto>> getBoardData() {
+//    자유게시판
+@GetMapping("/free_board")
+public ResponseEntity<List<MainPageDto>> getFreeBoardData() {
     try {
-        List<MainPageDto> boards = mainPageService.getBoardData();
+        List<MainPageDto> boards = mainPageService.getFreeBoardData();
         return ResponseEntity.ok(boards);
     } catch (Exception e) {
-        log.error("Error fetching board data: ", e);
+        log.error("Error fetching free board data: ", e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
     }
 }
+//  건의게시판
+    @GetMapping("/suggestion_board")
+    public ResponseEntity<List<MainPageDto>> getSuggestionBoardData() {
+        try {
+            List<MainPageDto> boards = mainPageService.getSuggestionBoardData();
+            return ResponseEntity.ok(boards);
+        } catch (Exception e) {
+            log.error("Error fetching suggestion board data: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+//    칭찬게시판
+    @GetMapping("/praise_board")
+    public ResponseEntity<List<MainPageDto>> getPraiseBoardData() {
+        try {
+            List<MainPageDto> boards = mainPageService.getPraiseBoardData();
+            return ResponseEntity.ok(boards);
+        } catch (Exception e) {
+            log.error("Error fetching praise board data: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 
 
     @GetMapping("/hot-topics")

@@ -1,6 +1,8 @@
 package org.example.backend.controller.board;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.backend.model.dto.board.FreeNoticeDto;
+import org.example.backend.model.dto.board.VoteDto;
 import org.example.backend.model.entity.board.Board;
 import org.example.backend.service.board.FreeBoardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,12 +14,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
 @RestController
-@RequestMapping("api/board")
+@RequestMapping("/api/board")
 public class FreeBoardController {
 
     @Autowired
@@ -58,6 +61,28 @@ public class FreeBoardController {
         }
     }
 
+    //    자유게시판 공지 전체조회
+    @GetMapping("/free-notice")
+    public ResponseEntity<Object> findFreeNotice(
+    ) {
+        try {
+//            전체 조회 서비스 실행
+            List<FreeNoticeDto> list
+                    = freeBoardService.findByFreeCodeAndNotice();
+
+            if (list.isEmpty() == false) {
+//                조회 성공
+                return new ResponseEntity<>(list, HttpStatus.OK);
+            } else {
+//                데이터 없음
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+        } catch (Exception e) {
+            log.debug("에러 : " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     //    TODO: 상세조회
     @GetMapping("/free/{boardId}")
     public ResponseEntity<Object> findById(
@@ -83,13 +108,11 @@ public class FreeBoardController {
     //    TODO: 저장 함수
     @PostMapping("/free")
     public ResponseEntity<Object> create(
-            @RequestBody Board board
-    ) {
+            @RequestBody Board board, @RequestBody List<VoteDto> voteDtos
+            ) {
         try {
-            Board board2 = freeBoardService.save(board);
-
-            return new ResponseEntity<>(board2, HttpStatus.OK);
-
+            freeBoardService.save(board, voteDtos);
+            return ResponseEntity.status(HttpStatus.CREATED).body(board.getBoardTitle() + " 게시글이 성공적으로 생성되었습니다.");
         } catch (Exception e) {
 //            500 전송
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -103,9 +126,8 @@ public class FreeBoardController {
             @RequestBody Board board
     ) {
         try {
-            Board board2 = freeBoardService.save(board);
-
-            return new ResponseEntity<>(board2, HttpStatus.OK);
+            freeBoardService.update(board);
+            return ResponseEntity.ok("게시글이 수정되었습니다.");
         } catch (Exception e) {
 //            DB 에러 (서버 에러) -> 500 신호(INTERNAL_SERVER_ERROR)
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

@@ -47,7 +47,8 @@ export default {
     connectSSE() {
       if (this.member) {
         this.eventSource = new EventSource(
-          `http://localhost:8000/api/connect/${this.member.memberId}`
+
+          `http://localhost:8000/api/connect/${this.member.memberId}`, { timeout: 3600000 }
         );
 
         this.eventSource.addEventListener("connect", (event) => {
