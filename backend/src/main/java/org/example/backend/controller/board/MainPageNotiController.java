@@ -1,5 +1,6 @@
 package org.example.backend.controller.board;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.MainPageArmDto;
 import org.example.backend.model.dto.NotifyDto;
 import org.example.backend.service.auth.NotifyService;
@@ -24,6 +25,7 @@ import java.util.List;
  * 2024-05-24         GGG          최초 생성
  */
 @RestController
+@Slf4j
 @RequestMapping("/api/notifications")
 public class MainPageNotiController {
 
