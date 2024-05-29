@@ -1,8 +1,14 @@
 package org.example.backend.repository.board;
 
+import org.example.backend.model.dto.board.IBoardDetailDto;
+import org.example.backend.model.entity.CmCode;
 import org.example.backend.model.entity.board.Board;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * packageName : org.example.backend.repository.board
@@ -19,4 +25,8 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
+    // 코드번호로 코드명 조회
+    @Query(value = "SELECT c.CM_CD AS cmCd, c.CM_CD_NAME AS cmCdName FROM TB_CM_CODE c WHERE c.CM_CD = :cmCd",
+            nativeQuery = true)
+    List<IBoardDetailDto> findCmCdName(@Param("cmCd") String cmCd);
 }

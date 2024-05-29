@@ -3,16 +3,16 @@
         <h1 class="text-center mb-5 mt-5">부서 게시판</h1>
         <!-- 게시판 소메뉴 버튼 (부서) -->
         <div class="d-flex justify-content-center mb-5">
-            <button class="custom-btn col">
+            <button class="custom-btn col" @click="smcodeChange('DE01')">
                 영업팀
             </button>
-            <button class="custom-btn col">
+            <button class="custom-btn col" @click="smcodeChange('DE02')">
                 인사팀
             </button>
-            <button class="custom-btn col">
+            <button class="custom-btn col" @click="smcodeChange('DE03')">
                 행정팀
             </button>
-            <button class="custom-btn col">
+            <button class="custom-btn col" @click="smcodeChange('DE04')">
                 보안팀
             </button>
         </div>
@@ -100,9 +100,11 @@ export default {
     },
     methods: {
         // 테스트
-        // redirectToTeam(teamCode) {
-        //     this.$router.push({ name: 'TeamDetail', params: { teamCode } });
-        // },
+        smcodeChange(dept) {
+            this.smcode = dept;
+            this.retrieveDeptNotice();
+            this.retrieveDept();
+        },
 
         // 부서 게시판 - 공지글 전체 조회
         async retrieveDeptNotice() {
