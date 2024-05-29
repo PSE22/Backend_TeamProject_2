@@ -57,6 +57,15 @@ const routes = [
     path: "/board/free-write",
     component: () => import("../views/board/FreeWrite.vue"),
   },
+  {
+    path: '/board/main-search',
+    name: 'SearchResults',
+    component: () => import("../views/board/SearchResults.vue"),
+  },
+  {
+    path: '/board/management',
+    component: () => import("../views/admin/BoardManagement.vue"),
+  },
 ];
 
 const router = createRouter({
