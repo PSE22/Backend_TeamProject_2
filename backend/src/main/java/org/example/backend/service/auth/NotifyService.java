@@ -5,7 +5,6 @@ import org.example.backend.model.dto.NotifyDto;
 import org.example.backend.model.entity.Notify;
 import org.example.backend.model.entity.board.Board;
 import org.example.backend.repository.board.BoardRepository;
-import org.example.backend.repository.board.ReplyRepository;
 import org.example.backend.repository.profile.NotifyRepository;
 import org.example.backend.service.RedisPubService;
 import org.modelmapper.ModelMapper;
@@ -54,7 +53,7 @@ public class NotifyService {
 
         NotifyDto notifyDTO = modelMapper.map(notify, NotifyDto.class);
         log.debug("0" + notifyDto);
-        redisPubService.publish("notification", notifyDTO);
+        redisPubService.notifyPublish("notification", notifyDTO);
     }
 
     @Transactional
@@ -68,7 +67,7 @@ public class NotifyService {
         notifyRepository.save(notify);
 
         NotifyDto notifyDTO = modelMapper.map(notify, NotifyDto.class);
-        redisPubService.publish("notification", notifyDTO);
+        redisPubService.notifyPublish("notification", notifyDTO);
     }
 
     @Transactional
@@ -82,7 +81,7 @@ public class NotifyService {
         notifyRepository.save(notify);
 
         NotifyDto notifyDTO = modelMapper.map(notify, NotifyDto.class);
-        redisPubService.publish("notification", notifyDTO);
+        redisPubService.notifyPublish("notification", notifyDTO);
     }
 
     @Transactional

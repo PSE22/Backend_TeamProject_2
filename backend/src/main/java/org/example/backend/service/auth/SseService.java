@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.concurrent.*;
 
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * packageName : org.example.backend.service.auth
@@ -69,7 +68,7 @@ public class SseService {
         sseEmitters.put(memberId, newEmitters);
 
         // 연결된 에미터 정보를 기록
-        redisPubService.publish("notification", "새로운 구독자가 연결되었습니다.: " + memberId);
+        redisPubService.notifyPublish("notification", "새로운 구독자가 연결되었습니다.: " + memberId);
         log.info("새로운 에미터가 등록되었습니다.: {}", emitter);
         log.info("등록된 에미터 수: {}", newEmitters.size());
 

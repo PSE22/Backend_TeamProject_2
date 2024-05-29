@@ -1,13 +1,11 @@
 package org.example.backend.service.board;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.kafka.common.protocol.types.Field;
 import org.example.backend.model.dto.board.IClubDto;
-import org.example.backend.model.entity.CmCode;
+import org.example.backend.model.dto.board.VoteDto;
 import org.example.backend.model.entity.board.Board;
 import org.example.backend.repository.board.BoardRepository;
 import org.example.backend.repository.board.ClubRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -34,6 +32,7 @@ import java.util.Optional;
 public class ClubService {
     private final ClubRepository clubRepository;    // DI
     private final BoardRepository boardRepository;
+    private final VoteService voteService;
 
     @Transactional
     //    동호회 게시판 중메뉴 목록조회
@@ -57,11 +56,19 @@ public class ClubService {
     }
 
     //    TODO: 상세조회
-    @Transactional
     public Optional<Board> findById(Long boardId) {
 //        DB 상세조회 실행
         Optional<Board> optionalBoard
                 = boardRepository.findById(boardId);
         return optionalBoard;
+    }
+
+    @Transactional
+    public void save(Board board, List<VoteDto> voteDtos) {
+        // JPA 저장 함수 실행 : return 값 : 저장된 객체
+        Board board2 = boardRepository.save(board);
+        // 저장된 board의 boardId를 객체로 변환
+        Long boardId = board2.getBoardId();
+        voteService.saveVote(boardId, voteDtos);
     }
 }

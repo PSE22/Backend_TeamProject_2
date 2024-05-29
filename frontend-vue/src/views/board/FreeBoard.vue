@@ -13,17 +13,6 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(data, index) in freeNotice" :key="index">
-            <td class="text-center col-1">{{ data.boardId }}</td>
-            <td class="col-5">
-              <span class="badge text-bg-dark me-2">공지</span
-              >{{ data.boardTitle }}
-            </td>
-            <td class="text-center col-2">{{ data.nickname }}</td>
-            <td class="text-center col-2">{{ data.addDate }}</td>
-          </tr>
-        </tbody>
-        <tbody>
           <tr v-for="(data, index) in board" :key="index">
             <td class="text-center">{{ data.boardId }}</td>
             <td>
@@ -31,7 +20,7 @@
                 {{ data.boardTitle }}
               </router-link>
             </td>
-            <td>{{ data.nickname }}</td>
+            <td class="text-center">{{ data.nickname }}</td>
             <td class="text-center">{{ data.addDate }}</td>
             <td class="text-center">{{ data.good }}</td>
           </tr>
@@ -99,7 +88,6 @@ export default {
     return {
       // 백엔드 연결
       board: [],
-      freeNotice: [],
       submitted: false,
       searchBoardTitle: "",
       page: 1,
@@ -127,24 +115,13 @@ export default {
         console.log(e);
       }
     },
-    async retrieveFreeNotice() {
-      try {
-        // TODO: 공통 장바구니 전체 조회 서비스 함수 실행
-        // TODO: 비동기 코딩
-        let response = await FreeBoardService.getNoticeFree();
-        this.freeNotice = response.data;
-        console.log(response.data); // 웹브라우저 콘솔탬에 백앤드 데이터 표시
-      } catch (e) {
-        console.log(e); // 웹브라우저 콘솔탭에 에러표시
-      }
-    },
     // TODO: 공통 페이징 함수 : select 태그
     pageSizeChange() {
       this.page = 1; // 현재패이지번호 : 1
       this.retrieveFreeBoard(); // 재조회
     },
     moveToFreeWrite() {
-    this.$router.push('/free-write');
+    this.$router.push('/board/free-write');
     },
   },
   mounted() {

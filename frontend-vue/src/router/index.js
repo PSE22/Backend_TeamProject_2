@@ -34,7 +34,7 @@ const routes = [
   // 부서게시판
   {
     path: "/board/dept",
-    name: 'TeamDetail',
+    name: "TeamDetail",
     component: () => import("../views/board/DeptBoardView.vue"),
   },
   // 부서게시판 상세글 조회
@@ -47,11 +47,16 @@ const routes = [
     path: "/board/club",
     component: () => import("../views/board/ClubView.vue"),
   },
-  // 중메뉴게시판
-  // {
-  //   path: "/board/club/:code",
-  //   component: () => import("../views/board/ClubSmView.vue"),
-  // },
+  // 동호회 - 중메뉴게시판
+  {
+    path: "/board/club/:boardId",
+    component: () => import("../views/board/ClubDetailView.vue"),
+  },
+  // 동호회 - 글쓰기
+  {
+    path: "/board/club/write",
+    component: () => import("../views/board/ClubWriteView.vue"),
+  },
   // 자유게시판
   {
     path: "/board/free",
@@ -61,6 +66,15 @@ const routes = [
   {
     path: "/board/free-write",
     component: () => import("../views/board/FreeWrite.vue"),
+  },
+  {
+    path: '/board/main-search',
+    name: 'SearchResults',
+    component: () => import("../views/board/SearchResults.vue"),
+  },
+  {
+    path: '/board/management',
+    component: () => import("../views/admin/BoardManagement.vue"),
   },
 ];
 

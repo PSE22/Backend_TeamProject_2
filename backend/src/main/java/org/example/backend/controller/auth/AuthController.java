@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.entity.auth.Member;
 import org.example.backend.security.jwt.JwtUtils;
+import org.example.backend.service.auth.LoginService;
 import org.example.backend.service.auth.MemberService;
 import org.example.backend.service.dto.LoginRequest;
 import org.example.backend.service.dto.LoginResponse;
@@ -44,6 +45,9 @@ public class AuthController {
     private final MemberService memberService;
 
     @Autowired
+    LoginService loginService;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -54,26 +58,9 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<Object> login(
-            @RequestBody LoginRequest loginRequest
-    ) {
+    public ResponseEntity<Object> login(@RequestBody LoginRequest loginRequest) {
         try {
-            Authentication authentication
-                    = authenticationManagerBuilder.getObject().authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.getMemberId(), loginRequest.getMemberPw())
-            );
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            String jwt = jwtUtils.generateJwtToken(authentication);
-            String memberCode = new ArrayList(authentication.getAuthorities()).get(0).toString();
-            String deptCode = new ArrayList(authentication.getAuthorities()).get(1).toString();
-
-            LoginResponse loginResponse = new LoginResponse(
-                    jwt,
-                    loginRequest.getMemberId(),
-                    memberCode,
-                    deptCode
-            );
+            LoginResponse loginResponse = loginService.authenticate(loginRequest);
             return new ResponseEntity<>(loginResponse, HttpStatus.OK);
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("ID 또는 비밀번호가 일치하지 않습니다.");

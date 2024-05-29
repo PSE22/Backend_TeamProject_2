@@ -119,10 +119,14 @@ export default {
       this.$store.commit("logout");
       this.$router.push("/login");
     },
+
     executeSearch() {
-      console.log("Searching for:", this.searchQuery);
-    }
-  },
+  if (this.searchQuery.trim()) {
+    this.$router.push({ path: '/board/main-search', query: { boardtitle: this.searchQuery.trim() } });
+  }
+}
+},
+
   mounted() {
     if (this.isLoggedIn) {
       this.fetchNotificationsCount();
