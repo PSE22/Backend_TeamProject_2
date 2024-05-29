@@ -2,6 +2,7 @@ package org.example.backend.controller.board;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.board.BoardFileDto;
+import org.example.backend.model.dto.board.FreeBoardCreateRequest;
 import org.example.backend.model.dto.board.FreeNoticeDto;
 import org.example.backend.model.dto.board.VoteDto;
 import org.example.backend.model.entity.board.Board;
@@ -65,28 +66,6 @@ public class FreeBoardController {
         }
     }
 
-    //    자유게시판 공지 전체조회
-    @GetMapping("/free-notice")
-    public ResponseEntity<Object> findFreeNotice(
-    ) {
-        try {
-//            전체 조회 서비스 실행
-            List<FreeNoticeDto> list
-                    = freeBoardService.findByFreeCodeAndNotice();
-
-            if (list.isEmpty() == false) {
-//                조회 성공
-                return new ResponseEntity<>(list, HttpStatus.OK);
-            } else {
-//                데이터 없음
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-        } catch (Exception e) {
-            log.debug("에러 : " + e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     //    TODO: 상세조회
     @GetMapping("/free/{boardId}")
     public ResponseEntity<Object> findById(
@@ -112,17 +91,14 @@ public class FreeBoardController {
     //    TODO: 저장 함수
     @PostMapping("/free-write")
     public ResponseEntity<Object> create(
-            @RequestBody Board board,
-            @RequestBody List<VoteDto> voteDtos,
-            @RequestBody Place place,
-            @RequestBody File file,
-            @RequestBody List<BoardFileDto> boardFileDtos
+            @RequestBody FreeBoardCreateRequest request
             ) {
         try {
-            freeBoardService.save(board, voteDtos, place, file, boardFileDtos);
-            return ResponseEntity.status(HttpStatus.CREATED).body(board.getBoardTitle() + " 게시글이 성공적으로 생성되었습니다.");
+            freeBoardService.save(request.getBoard(), request.getVoteDtos(), request.getPlace(), request.getFile(), request.getBoardFileDtos());
+            return ResponseEntity.status(HttpStatus.CREATED).body(request.getBoard().getBoardTitle() + " 게시글이 성공적으로 생성되었습니다.");
         } catch (Exception e) {
 //            500 전송
+            log.error("게시글 생성 중 오류 발생:", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
