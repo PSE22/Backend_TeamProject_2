@@ -1,6 +1,8 @@
 package org.example.backend.controller.board;
 
 import org.example.backend.model.dto.MainPageArmDto;
+import org.example.backend.model.dto.NotifyDto;
+import org.example.backend.service.auth.NotifyService;
 import org.example.backend.service.board.MainPageNotiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +28,10 @@ import java.util.List;
 public class MainPageNotiController {
 
     @Autowired
-    private MainPageNotiService mainPageNotiService;
+    MainPageNotiService mainPageNotiService;
+
+    @Autowired
+    NotifyService notifyService;
 
     // 멤버별 알람 상세 조회
     @GetMapping("/{memberId}")
@@ -45,7 +50,7 @@ public class MainPageNotiController {
 //    알람내용 클릭시 NotiCheck Y로 변경
     @PostMapping("/{notifyId}/read")
     public ResponseEntity<?> markAsRead(@PathVariable Long notifyId) {
-        mainPageNotiService.markNotificationAsRead(notifyId);
+        notifyService.readCheck(notifyId);
         return ResponseEntity.ok().build(); // 성공 응답
     }
 
@@ -54,5 +59,12 @@ public class MainPageNotiController {
     public ResponseEntity<Void> deleteNotification(@PathVariable Long notifyId) {
         mainPageNotiService.deleteNotification(notifyId);
         return ResponseEntity.ok().build();
+    }
+
+//    모두확인 함수
+    @PutMapping("/read-check/all")
+    public ResponseEntity<String> markAsReadAll(@RequestBody NotifyDto notifyDto) {
+        notifyService.readCheckAll(notifyDto);
+        return ResponseEntity.ok("알림을 확인했습니다.");
     }
 }

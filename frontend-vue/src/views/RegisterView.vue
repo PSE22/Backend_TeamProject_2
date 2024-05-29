@@ -118,7 +118,7 @@
                   등록
                 </button>
               </form>
-              <p v-if="message" class="alert alert-success" role="alert">
+              <p v-if="message" class="alert alert-danger" role="alert">
                 {{ message }}
               </p>
               <hr />

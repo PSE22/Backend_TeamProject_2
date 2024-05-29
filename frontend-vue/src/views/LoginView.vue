@@ -30,6 +30,7 @@
                         placeholder="패스워드 입력"
                         name="memberPw"
                         v-model="member.memberPw"
+                        @keyup.enter="handleLogin"
                       />
                     </div>
 
@@ -42,7 +43,7 @@
                   </div>
                   <hr />
                   <div class="text-center">
-                    <a class="small" href="/forgot-password"> 비밀번호 찾기 </a>
+                    <a class="small" href="/find-password"> 비밀번호 찾기 </a>
                   </div>
                   <div class="text-center">
                     <a class="small" href="/register"> 회원가입 </a>

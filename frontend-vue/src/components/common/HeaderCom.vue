@@ -6,33 +6,37 @@
         <button @click="executeSearch" class="search-button">검색</button>
       </div>
       <div class="header-center">
+        <router-link to="/" class="custom-link">
         <h1>서울쥐</h1>
+        </router-link>
       </div>
       <div class="header-right">
-        <div class="notification-icon" @click="toggleNotifications">
+        <div v-if="isLoggedIn" class="notification-icon" @click="toggleNotifications">
           🔔 <span class="notification-count">{{ notificationCount }}</span>
         </div>
-        <a href="#">로그인</a>
-        <a href="#">회원가입</a>
+        <a><router-link to="/login">로그인</router-link></a>
+        <a><router-link to="/register">회원가입</router-link></a>
         <a href="/" @click.prevent="handleLogout">로그아웃</a>
       </div>
     </div>
     <nav class="header-nav">
       <ul>
-        <li><a href="#">부서 게시판</a></li>
-        <li><a href="#">동호회 게시판</a></li>
-        <li><router-link to="/free" class="router-link">자유 게시판</router-link></li>
-        <li><a href="#">건의 게시판</a></li>
-        <li><a href="#">칭찬 게시판</a></li>
+        <li><router-link to="/board/dept" class="router-link">부서 게시판</router-link></li>
+        <li><router-link to="/board/club" class="router-link">동호회 게시판</router-link></li>
+        <li><router-link to="/board/free" class="router-link">자유 게시판</router-link></li>
+        <li><router-link to="/board/suggest" class="router-link">건의 게시판</router-link></li>
+        <li><router-link to="/board/praise" class="router-link">칭찬 게시판</router-link></li>
       </ul>
     </nav>
     <!-- 알림 팝업 -->
     <div v-if="showNotifications" class="notifications-popup">
+      <button class="mark-all-read" @click="markAllAsRead">모두 확인</button>
       <div v-for="notification in notifications" :key="notification.notifyId" class="notification-item">
-
         <p @click="handleNotificationClick(notification)">{{ notification.notiContent }}</p>
-        <button @click.stop="deleteNotification(notification.notifyId)">X</button>
-        <small>{{ notification.addDate }}</small>
+        <div class="notification-footer">
+          <small>{{ notification.addDate }}</small>
+          <button @click.stop="deleteNotification(notification.notifyId)">X</button>
+        </div>
       </div>
     </div>
   </header>
@@ -51,50 +55,61 @@ export default {
       searchQuery: '',
     };
   },
-  created() {
-    this.fetchNotificationsCount();
-    this.fetchNotifications();
+  computed: {
+    isLoggedIn() {
+      return this.$store.state.loggedIn;
+    }
+  },
+  watch: {
+    isLoggedIn(LoggedIn) {
+      if (LoggedIn) {
+        this.fetchNotificationsCount();
+        this.fetchNotifications();
+      }
+    }
   },
   methods: {
-    fetchNotificationsCount() {
-      const memberId = 'member1'; // 임시 memberId
-      NotificationService.fetchNotificationCount(memberId)
-        .then(response => {
-          this.notificationCount = response.data;
-        })
-        .catch(error => {
-          console.error('Error fetching notification count:', error);
-        });
+    async fetchNotificationsCount() {
+      try {
+        const response = await NotificationService.fetchNotificationCount(this.$store.state.member.memberId);
+        this.notificationCount = response.data;
+      } catch (error) {
+        console.error('Error fetching notification count:', error);
+      }
     },
-    fetchNotifications() {
-      const memberId = 'member1'; // 임시 memberId
-      NotificationService.getNotificationsByMemberId(memberId)
-        .then(response => {
-          this.notifications = response.data;
-        })
-        .catch(error => {
-          console.error('Error fetching notifications:', error);
-        });
+    async fetchNotifications() {
+      try {
+        const response = await NotificationService.getNotificationsByMemberId(this.$store.state.member.memberId);
+        this.notifications = response.data;
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
     },
-    deleteNotification(notifyId) {
-      NotificationService.deleteNotification(notifyId)
-        .then(() => {
-          this.notifications = this.notifications.filter(n => n.notifyId !== notifyId);
-          this.fetchNotificationsCount(); // Update the notification count
-        })
-        .catch(error => {
-          console.error('Error deleting notification:', error);
-        });
+    async deleteNotification(notifyId) {
+      try {
+        await NotificationService.deleteNotification(notifyId);
+        this.notifications = this.notifications.filter(n => n.notifyId !== notifyId);
+        await this.fetchNotificationsCount();
+      } catch (error) {
+        console.error('Error deleting notification:', error);
+      }
     },
-    handleNotificationClick(notification) {
-      // 상태 업데이트 후 URL로 리다이렉트
-      NotificationService.markAsRead(notification.notifyId)
-        .then(() => {
-          window.location.href = notification.notiUrl; // 해당 알림의 URL로 리다이렉트
-        })
-        .catch(error => {
-          console.error('Error marking notification as read:', error);
-        });
+    async handleNotificationClick(notification) {
+      try {
+        await NotificationService.markAsRead(notification.notifyId);
+        window.location.href = notification.notiUrl;
+      } catch (error) {
+        console.error('Error marking notification as read:', error);
+      }
+    },
+    async markAllAsRead() {
+      try {
+        await NotificationService.markAsReadAll(this.$store.state.member.memberId);
+        await this.fetchNotifications();
+        await this.fetchNotificationsCount();
+      } catch (error) {
+        console.error('Error marking all notifications as read:', error);
+      }
     },
     toggleNotifications() {
       this.showNotifications = !this.showNotifications;
@@ -107,9 +122,15 @@ export default {
     executeSearch() {
       console.log("Searching for:", this.searchQuery);
     }
+  },
+  mounted() {
+    if (this.isLoggedIn) {
+      this.fetchNotificationsCount();
+      this.fetchNotifications();
+    }
   }
 };
 </script>
 <style scoped>
-
+  @import "@/assets/css/home.css";
 </style>

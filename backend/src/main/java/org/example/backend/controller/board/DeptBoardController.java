@@ -1,5 +1,6 @@
 package org.example.backend.controller.board;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.board.IClubDto;
 import org.example.backend.model.entity.board.Board;
@@ -35,9 +36,9 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("api/board")
+@RequiredArgsConstructor
 public class DeptBoardController {
-    @Autowired
-    DeptBoardService deptBoardService;
+    private final DeptBoardService deptBoardService;
 
     // 부서별 게시판 전체조회 - 공지글
     @GetMapping("/dept/notice")
@@ -72,9 +73,7 @@ public class DeptBoardController {
             Page<IClubDto> pageList = deptBoardService.findAllByDept(boardTitle, smcode, pageable);
             Map<String, Object> response = new HashMap<>();
             response.put("board", pageList.getContent());            // 게시판배열
-//            response.put("currentPage", pageList.getNumber());       // 현재페이지번호(x)
             response.put("totalItems", pageList.getTotalElements()); // 전체데이터개수
-//            response.put("totalPages", pageList.getTotalPages());    // 전체페이지수(x)
 
             if (pageList.isEmpty() == true) {
                 log.debug("log1 ::: ", response);
@@ -88,4 +87,6 @@ public class DeptBoardController {
             return new ResponseEntity<>("서버 오류가 발생했습니다", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
 }

@@ -25,13 +25,13 @@ public class MemberService {
     @Autowired
     MemberRepository memberRepository; // DI
 
-    //    1) 회원 유무 확인 함수 : 회원가입
+    //  1) 회원 유무 확인 함수 : 회원가입
     public boolean existById(String memberId) {
         boolean result = memberRepository.existsById(memberId);
 
         return result;
     }
-    //    2) 저장 : 회원가입
+    //  2) 저장 : 회원가입
     public Member save(Member member) {
         Member member2 = memberRepository.save(member);
 
@@ -40,5 +40,10 @@ public class MemberService {
 
     public Optional<Member> findById(String memberId) {
         return memberRepository.findById(memberId);
+
+    //  3) 회원 상세 조회
+    public Optional<Member> findByMemberIdAndMemberEmail(String memberId, String memberEmail) {
+        Optional<Member> optionalMember = memberRepository.findByMemberIdAndMemberEmail(memberId, memberEmail);
+        return optionalMember;
     }
 }

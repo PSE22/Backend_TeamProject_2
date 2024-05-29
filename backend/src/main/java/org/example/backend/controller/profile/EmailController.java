@@ -1,5 +1,6 @@
 package org.example.backend.controller.profile;
 
+import org.example.backend.model.entity.auth.Member;
 import org.example.backend.service.profile.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +25,8 @@ public class EmailController {
     @Autowired
     private EmailService emailService;
 
-    @PutMapping("/{memberId}/sendEmail")
-    public String sendEmail(@PathVariable String memberId, @RequestParam(defaultValue = "") String to) { // rest api 에서 RequestParam 작동 이상함
+    @PutMapping("/sendEmail/{to}/{memberId}")
+    public String sendEmail(@PathVariable String to, @PathVariable String memberId) {
         emailService.sendSimpleEmail(to, memberId);
 
         return "Email sent successfully";

@@ -1,9 +1,13 @@
 package org.example.backend.controller.board;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.backend.model.dto.board.BoardFileDto;
 import org.example.backend.model.dto.board.FreeNoticeDto;
 import org.example.backend.model.dto.board.VoteDto;
 import org.example.backend.model.entity.board.Board;
+import org.example.backend.model.entity.board.BoardFile;
+import org.example.backend.model.entity.board.File;
+import org.example.backend.model.entity.board.Place;
 import org.example.backend.service.board.FreeBoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,7 +24,7 @@ import java.util.Optional;
 
 @Slf4j
 @RestController
-@RequestMapping("api/board")
+@RequestMapping("/api/board")
 public class FreeBoardController {
 
     @Autowired
@@ -106,12 +110,16 @@ public class FreeBoardController {
     }
 
     //    TODO: 저장 함수
-    @PostMapping("/free")
+    @PostMapping("/free-write")
     public ResponseEntity<Object> create(
-            @RequestBody Board board, @RequestBody List<VoteDto> voteDtos
+            @RequestBody Board board,
+            @RequestBody List<VoteDto> voteDtos,
+            @RequestBody Place place,
+            @RequestBody File file,
+            @RequestBody List<BoardFileDto> boardFileDtos
             ) {
         try {
-            freeBoardService.save(board, voteDtos);
+            freeBoardService.save(board, voteDtos, place, file, boardFileDtos);
             return ResponseEntity.status(HttpStatus.CREATED).body(board.getBoardTitle() + " 게시글이 성공적으로 생성되었습니다.");
         } catch (Exception e) {
 //            500 전송
