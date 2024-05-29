@@ -19,4 +19,5 @@ public interface IClubDto {
     String getBoardTitle();
     String getAddDate();
     String getCmCdName();
+    String getCmCd();
 }

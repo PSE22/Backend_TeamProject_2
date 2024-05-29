@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import AlertService from '@/services/AlertService'
+import AlertService from "@/services/AlertService";
 import { NativeEventSource, EventSourcePolyfill } from "event-source-polyfill";
 import { mapState } from "vuex";
 const EventSource = NativeEventSource || EventSourcePolyfill;
@@ -23,6 +23,7 @@ export default {
       notificationData: null,
       eventSource: null,
       showPopup: false,
+      retryCount: 0, // retryCount 변수 추가
     };
   },
   computed: {
@@ -46,7 +47,7 @@ export default {
     connectSSE() {
       if (this.member) {
         this.eventSource = new EventSource(
-          `HTTP://localhost:8000/api/connect/${this.member.memberId}`
+          `http://localhost:8000/api/connect/${this.member.memberId}`
         );
 
         this.eventSource.addEventListener("connect", (event) => {
@@ -66,10 +67,16 @@ export default {
 
         this.eventSource.onerror = (error) => {
           console.error("EventSource failed:", error);
-          // 연결이 끊어졌을 때 자동으로 재연결 시도
-          setTimeout(() => {
-            this.connectSSE();
-          }, 60000); // 재연결 시도 간격 60초
+
+          // 오류가 발생한 경우 재연결 시도
+          if (this.retryCount <= 10) {
+            setTimeout(() => {
+              this.connectSSE();
+            }, 5000);
+            this.retryCount++; // 재시도 횟수 증가
+          } else {
+            console.error("Retry limit exceeded.");
+          }
         };
       }
     },
@@ -98,11 +105,6 @@ export default {
 </script>
 
 <style scoped>
-#alerts {
-  margin-top: 20px;
-  cursor: pointer;
-}
-
 .popup {
   position: fixed;
   bottom: 20px;
