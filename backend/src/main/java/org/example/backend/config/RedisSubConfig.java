@@ -35,6 +35,7 @@ public class RedisSubConfig {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(redisConnectionFactory);
         container.addMessageListener(redisSubService, new ChannelTopic("notification"));
+        container.addMessageListener(redisSubService, new ChannelTopic("chat"));
         return container;
     }
 }
