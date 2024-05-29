@@ -43,10 +43,10 @@ const routes = [
     component: () => import("../views/board/ClubView.vue"),
   },
   // 중메뉴게시판
-  {
-    path: "/board/club/:code",
-    component: () => import("../views/board/ClubSmView.vue"),
-  },
+  // {
+  //   path: "/board/club/:code",
+  //   component: () => import("../views/board/ClubSmView.vue"),
+  // },
   // 자유게시판
   {
     path: "/board/free",
