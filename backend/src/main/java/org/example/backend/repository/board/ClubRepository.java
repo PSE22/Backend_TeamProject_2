@@ -80,4 +80,6 @@ public interface ClubRepository extends JpaRepository<Board, Long> {
             "ORDER BY CM_CD",
             nativeQuery = true)
     List<IClubDto> findBySmcode();
+
+//    @Query(value = "")
 }
