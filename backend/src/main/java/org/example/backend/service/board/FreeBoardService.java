@@ -36,12 +36,6 @@ public class FreeBoardService {
         return list;
     }
 
-    //    자유게시판 공지 조회
-    public List<FreeNoticeDto> findByFreeCodeAndNotice() {
-        List<FreeNoticeDto> list = freeBoardRepository.findByFreeCodeAndNotice();
-        return list;
-    }
-
     //    페이징 처리
     public Page<Board> findAllByFreeBoardTitleContaining(String boardTitle,
                                                                 Pageable pageable) {
@@ -59,7 +53,7 @@ public class FreeBoardService {
         return optionalFreeBoard;
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     //    TODO: 등록(insert),수정(update)
     public void save(Board board, List<VoteDto> voteDtos, Place place, File file, List<BoardFileDto> boardFileDtos) {
         // 분류코드를 설정

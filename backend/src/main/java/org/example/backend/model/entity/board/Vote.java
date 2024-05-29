@@ -25,8 +25,8 @@ import org.hibernate.annotations.Where;
 @Entity
 @Table(name="TB_VOTE")
 @SequenceGenerator(
-        name = "SEQ_TB_VOTE_VOTE_ID_GENERATOR"
-        , sequenceName = "SEQ_TB_VOTE_VOTE_ID"
+        name = "VOTE_ID_SEQ_GENERATOR"
+        , sequenceName = "VOTE_ID_SEQ"
         , initialValue = 1
         , allocationSize = 1
 )
@@ -41,7 +41,7 @@ import org.hibernate.annotations.Where;
 public class Vote extends BaseTimeEntity3 {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE
-            , generator = "SEQ_TB_VOTE_VOTE_ID_GENERATOR"
+            , generator = "VOTE_ID_SEQ_GENERATOR"
     )
     private Long voteId;    // 투표 ID(PK)
     private Long boardId;   // 글번호
