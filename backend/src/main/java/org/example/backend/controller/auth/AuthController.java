@@ -96,32 +96,17 @@ public class AuthController {
                     signUpRequest.getMemberName(),
                     signUpRequest.getMemberEmail(),
                     signUpRequest.getMemberExt(),
+                    signUpRequest.getNickname(),
                     signUpRequest.getMemberCode(),
                     signUpRequest.getDeptCode(),
                     signUpRequest.getPosCode()
+
             );
             memberService.save(member);
             return ResponseEntity.ok("회원가입이 완료되었습니다.");
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    //  회원 상세 조회
-    @GetMapping("/member/{memberId}/{memberEmail}")
-    public ResponseEntity<Object> findById(@PathVariable String memberId, @PathVariable String memberEmail) {
-        try {
-            Optional<Member> optionalMember = memberService.findByMemberIdAndMemberEmail(memberId, memberEmail);
-            if (optionalMember.isEmpty() == true) {
-                // 데이터 없음
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            } else {
-                // 조회 성공
-                return new ResponseEntity<>(optionalMember.get(), HttpStatus.OK);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

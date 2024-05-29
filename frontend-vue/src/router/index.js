@@ -26,6 +26,11 @@ const routes = [
     path: "/profile",
     component: () => import("../views/profile/MyProfile.vue"),
   },
+  // 회원 프로필 수정
+  {
+    path: "/profile-edit",
+    component: () => import("../views/profile/MyProfileEdit.vue"),
+  },
   // 부서게시판
   {
     path: "/board/dept",
