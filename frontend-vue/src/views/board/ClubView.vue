@@ -1,12 +1,12 @@
 <template>
-  <div class="w-80 p-3">
+  <div class="w-100 p-3">
     <h1 class="text-center mb-5 mt-5">동호회 게시판</h1>
     <div class="d-flex justify-content-center mb-5">
       <button
         class="custom-btn col-2"
         v-for="(data, index) in smcodeName"
         :key="index"
-        @click="retrieveClub(data.cmCd)"
+        @click="pageSizeChange(data.cmCd)"
       >
         {{ data.cmCdName }}
       </button>
@@ -22,19 +22,24 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(data, index) in clubNotice" :key="index">
+      <tr v-for="(data, index) in clubNotice" :key="index" @click="goClubDetail">
         <td class="text-center col-1">{{ data.boardId }}</td>
         <td class="col-7">
-          <span style="color: lightgray;">{{ data.cmCdName }}&nbsp;&nbsp;</span><span class="badge text-bg-dark me-2">공지</span>{{ data.boardTitle }}
+          <span style="color: lightgray">{{ data.cmCdName }}&nbsp;&nbsp;</span
+          ><span class="badge text-bg-dark me-2">공지</span
+          >{{ data.boardTitle }}
         </td>
         <td class="text-center col-2">{{ data.memberName }}</td>
         <td class="text-center col-2">{{ data.addDate }}</td>
       </tr>
     </tbody>
     <tbody>
-      <tr v-for="(data, index) in club" :key="index">
+      <tr v-for="(data, index) in club" :key="index" @click="goClubDetail">
         <td class="text-center">{{ data.boardId }}</td>
-        <td><span style="color: lightgray;">{{ data.cmCdName }}&nbsp;&nbsp;</span> {{ data.boardTitle }}</td>
+        <td>
+          <span style="color: lightgray">{{ data.cmCdName }}&nbsp;&nbsp;</span>
+          {{ data.boardTitle }}
+        </td>
         <td class="text-center">{{ data.memberName }}</td>
         <td class="text-center">{{ data.addDate }}</td>
       </tr>
@@ -46,7 +51,7 @@
       <select
         class="form-select form-select-sm"
         v-model="pageSize"
-        @change="pageSizeChange"
+        @change="retrieveClub()"
       >
         <option v-for="(data, index) in pageSizes" :key="index" :value="data">
           {{ data }}
@@ -54,7 +59,7 @@
       </select>
     </div>
     <div class="col-1">
-      <button type="button" class="btn btn-dark">글쓰기</button>
+      <button type="button" class="btn btn-dark" @click="goClubWrite">글쓰기</button>
     </div>
   </div>
   <div class="row">
@@ -99,6 +104,7 @@ export default {
       searchTitle: "",
       smcodeName: [],
       boardId: this.$route.params.boardId,
+      boardCode: "BO0201",
       // 공통 페이징 속성
       page: 1, // 현재 페이지 번호
       count: 0, // 전체 데이터 개수
@@ -108,16 +114,16 @@ export default {
     };
   },
   methods: {
-    async retrieveClub(cmCd) {
+    async retrieveClub() {
       console.log("page", this.page);
       try {
-        this.retrieveClubNotice(cmCd);
+        this.retrieveClubNotice();
         this.retrieveSmcode();
         // TODO: 공통 장바구니 전체 조회 서비스 함수 실행
         // TODO: 비동기 코딩
         let response = await ClubService.getAll(
           this.searchTitle,
-          cmCd,
+          this.boardCode,
           this.page - 1,
           this.pageSize
         );
@@ -129,23 +135,25 @@ export default {
       } catch (e) {
         console.log(e); // 웹브라우저 콘솔탭에 에러표시
       }
-      
     },
     async retriveBoardId(boardId) {
       // TODO: 공통 주문 상세조회 서비스 함수 실행
       try {
         let response = await ClubService.get(boardId);
-        this.simpleOrder = response.data;
+        this.boardId = response.data;
         // 로깅
         console.log(response.data); // 웹브라우저 콘솔탭
       } catch (e) {
         console.log(e); // 웹브라우저 콘솔탭
       }
     },
-    async retrieveClubNotice(cmCd) {
+    async retrieveClubNotice() {
       try {
         // TODO: 비동기 코딩
-        let response = await ClubService.getNotice(cmCd);
+        let response = await ClubService.getNotice(
+          this.boardCode,
+
+        );
         this.clubNotice = response.data;
         console.log(response.data); // 웹브라우저 콘솔탬에 백앤드 데이터 표시
       } catch (e) {
@@ -164,44 +172,54 @@ export default {
       }
     },
     // TODO: 공통 페이징 함수 : select 태그
-    pageSizeChange() {
+    pageSizeChange(cmCd) {
+      this.boardCode = cmCd // 코드 저장
       this.page = 1; // 현재패이지번호 : 1
       this.retrieveClub(); // 재조회
+    },
+    // 게시글 상세 페이지로 이동
+    goClubDetail(boardId) {
+      this.$router.push(`/board/club/${boardId}`);
+    },
+    goClubWrite() {
+    this.$router.push('/board/club/write');
     },
   },
   mounted() {
     this.retrieveClub();
-    this.retrieveSmcode();
   },
 };
 </script>
 
 <style>
 .custom-btn {
-  background-color: transparent; /* 배경 투명 */
-  border: none; /* 테두리 없음 */
-  color: #333; /* 글씨 색상 */
-  font-size: 16px; /* 글씨 크기 */
-  padding: 10px 20px; /* 안쪽 여백 */
-  margin: 0 5px; /* 버튼 간격 */
-  cursor: pointer; /* 커서 스타일 */
-  position: relative; /* indicator 위치 조정 */
+  background-color: transparent;
+  border: none;
+  color: #333;
+  font-size: 16px;
+  padding: 15px 20px;
+  cursor: pointer;
+  position: relative;
+}
+
+.custom-btn::after { /* 모든 버튼에 기본 밑줄 추가 */
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background-color: lightgray; /* 밝은 회색 밑줄 */
+  transition: background-color 0.3s ease; /* 색상 변화 애니메이션 */
 }
 
 .custom-btn.active,
 .custom-btn:hover {
-  color: #000000; /* 활성/호버 시 글씨 색상 */
+  color: #000;
 }
 
-.custom-btn.active::after,
+.custom-btn.active::after, /* 활성/호버 시 밑줄 색상 변경 */
 .custom-btn:hover::after {
-  /* indicator 스타일 */
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -2px; /* 아래 여백 */
-  width: 100%;
-  height: 2px;
-  background-color: #000000; /* indicator 색상 */
+  background-color: #000; /* 검정색 밑줄 */
 }
 </style>

@@ -21,7 +21,6 @@ import org.springframework.data.repository.query.Param;
  */
 public interface VoteRepository extends JpaRepository<Vote, Long> {
     @Query(value = "UPDATE TB_VOTE\n" +
-            "UPDATE TB_VOTE\n" +
             "SET vote_cnt = vote_cnt + 1\n" +
             "WHERE voteId = :voteId\n" +
             "AND NOT EXISTS (\n" +
