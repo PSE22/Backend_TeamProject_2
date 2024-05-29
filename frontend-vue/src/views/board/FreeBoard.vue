@@ -144,7 +144,7 @@ export default {
       this.retrieveFreeBoard(); // 재조회
     },
     moveToFreeWrite() {
-    this.$router.push('/free-write');
+    this.$router.push('/board/free-write');
     },
   },
   mounted() {

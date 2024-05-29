@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.backend.model.common.BaseTimeEntity3;
+import org.example.backend.model.common.BoardFileIdPk;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -13,6 +14,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "TB_BOARD_FILE")
+@IdClass(BoardFileIdPk.class)
 @SequenceGenerator(
         name = "TB_BOARD_FILE_SEQ_GENERATOR"
         , sequenceName = "TB_BOARD_FILE_SEQ"

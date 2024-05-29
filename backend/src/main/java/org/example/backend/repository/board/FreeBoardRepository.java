@@ -46,7 +46,4 @@ public interface FreeBoardRepository extends JpaRepository<Board, Long> {
             "ORDER BY B.ADD_DATE DESC",
             nativeQuery = true)
     List<FreeNoticeDto> findByFreeCodeAndNotice();
-    
-//    자유게시판 등록
-
 }
