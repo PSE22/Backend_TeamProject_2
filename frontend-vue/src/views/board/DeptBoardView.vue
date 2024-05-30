@@ -1,18 +1,18 @@
 <template>
-    <div class="w-80 p-3">
+    <div class="w-100 p-3">
         <h1 class="text-center mb-5 mt-5">부서 게시판</h1>
         <!-- 게시판 소메뉴 버튼 (부서) -->
         <div class="d-flex justify-content-center mb-5">
-            <button class="custom-btn col" @click="smcodeChange('DE01')">
+            <button class="custom-btn col-2" @click="pageSizeChange('DE01')">
                 영업팀
             </button>
-            <button class="custom-btn col" @click="smcodeChange('DE02')">
+            <button class="custom-btn col-2" @click="pageSizeChange('DE02')">
                 인사팀
             </button>
-            <button class="custom-btn col" @click="smcodeChange('DE03')">
+            <button class="custom-btn col-2" @click="pageSizeChange('DE03')">
                 행정팀
             </button>
-            <button class="custom-btn col" @click="smcodeChange('DE04')">
+            <button class="custom-btn col-2" @click="pageSizeChange('DE04')">
                 보안팀
             </button>
         </div>
@@ -99,13 +99,6 @@ export default {
         };
     },
     methods: {
-        // 테스트
-        smcodeChange(dept) {
-            this.smcode = dept;
-            this.retrieveDeptNotice();
-            this.retrieveDept();
-        },
-
         // 부서 게시판 - 공지글 전체 조회
         async retrieveDeptNotice() {
             try {
@@ -138,8 +131,11 @@ export default {
             this.$router.push(`/board/dept/${smcode}/${boardId}`);
         },
         // 페이징 : select 태그에 바인딩
-        pageSizeChange() {
+        pageSizeChange(dept) {
+            
             this.page = 1;          // 현재패이지번호 : 1
+            this.smcode = dept;
+            this.retrieveDeptNotice();
             this.retrieveDept();    // 재조회
         },
     },
@@ -150,43 +146,35 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .custom-btn {
-    background-color: transparent;
-    /* 배경 투명 */
-    border: none;
-    /* 테두리 없음 */
-    color: #333;
-    /* 글씨 색상 */
-    font-size: 16px;
-    /* 글씨 크기 */
-    padding: 10px 20px;
-    /* 안쪽 여백 */
-    margin: 0 5px;
-    /* 버튼 간격 */
-    cursor: pointer;
-    /* 커서 스타일 */
-    position: relative;
-    /* indicator 위치 조정 */
+  background-color: transparent;
+  border: none;
+  color: #333;
+  font-size: 16px;
+  padding: 15px 20px;
+  cursor: pointer;
+  position: relative;
+}
+
+.custom-btn::after { /* 모든 버튼에 기본 밑줄 추가 */
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background-color: lightgray; /* 밝은 회색 밑줄 */
+  transition: background-color 0.3s ease; /* 색상 변화 애니메이션 */
 }
 
 .custom-btn.active,
 .custom-btn:hover {
-    color: #000000;
-    /* 활성/호버 시 글씨 색상 */
+  color: #000;
 }
 
-.custom-btn.active::after,
+.custom-btn.active::after, /* 활성/호버 시 밑줄 색상 변경 */
 .custom-btn:hover::after {
-    /* indicator 스타일 */
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -2px;
-    /* 아래 여백 */
-    width: 100%;
-    height: 2px;
-    background-color: #000000;
-    /* indicator 색상 */
+  background-color: #000; /* 검정색 밑줄 */
 }
 </style>

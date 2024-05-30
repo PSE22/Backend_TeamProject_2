@@ -16,4 +16,10 @@ package org.example.backend.model.dto.board;
 public interface IBoardDetailDto {
     String getCmCd();           // 코드번호
     String getCmCdName();       // 코드명
+    // ---------------------------------------------
+    Long getBoardId();      // 게시판 ID
+    String getUuid();       // 파일 ID
+    String getFileUrl();    // 파일 URL
+
+
 }
