@@ -12,20 +12,24 @@ import java.util.Optional;
 
 @Repository
 public interface FreeBoardRepository extends JpaRepository<Board, Long> {
-    @Query(value = "SELECT B.* FROM TB_BOARD B " +
+    @Query(value = "SELECT B.*, M.NICKNAME " +
+            "FROM TB_BOARD B " +
+            "LEFT JOIN TB_MEMBER M ON B.MEMBER_ID = M.MEMBER_ID " +
             "WHERE B.BOCODE = 'BO03' " +
             "AND B.STATUS = 'Y' " +
             "AND B.NOTICE_YN = 'N' " +
             "AND B.BOARD_TITLE LIKE '%' || :boardTitle || '%' " +
             "ORDER BY B.ADD_DATE DESC",
-            countQuery = "SELECT count(*) FROM TB_BOARD B " +
+            countQuery = "SELECT count(*) " +
+                    "FROM TB_BOARD B " +
+                    "LEFT JOIN TB_MEMBER M ON B.MEMBER_ID = M.MEMBER_ID " +
                     "WHERE B.BOCODE = 'BO03' " +
                     "AND B.STATUS = 'Y' " +
-                    "AND B.NOTICE_YN = 'N'\n" +
+                    "AND B.NOTICE_YN = 'N' " +
                     "AND B.BOARD_TITLE LIKE '%' || :boardTitle || '%'",
             nativeQuery = true)
     Page<Board> findAllByFreeBoardTitleContaining(@Param("boardTitle") String boardTitle,
-                                                 Pageable pageable
+                                                  Pageable pageable
     );
 
     @Query("SELECT b FROM Board b WHERE b.bocode = :bocode AND b.boardId = :boardId")

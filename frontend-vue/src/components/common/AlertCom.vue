@@ -14,7 +14,7 @@
 import AlertService from "@/services/AlertService";
 import { NativeEventSource, EventSourcePolyfill } from "event-source-polyfill";
 import { mapState } from "vuex";
-import LoginHeader from "@/services/login/LoginHeader"
+import LoginHeader from "@/services/login/LoginHeader";
 const EventSource = NativeEventSource || EventSourcePolyfill;
 
 export default {
@@ -24,16 +24,14 @@ export default {
       notificationData: null,
       eventSource: null,
       showPopup: false,
-      retryCount: 0, // retryCount 변수 추가
+      retryCount: 0,
     };
+  },
+  mounted() {
+    window.addEventListener("beforeunload", this.handleBeforeUnload);
   },
   computed: {
     ...mapState(["loggedIn", "member"]),
-  },
-  created() {
-    if (this.loggedIn) {
-      this.connectSSE();
-    }
   },
   watch: {
     loggedIn(newValue) {
@@ -45,10 +43,15 @@ export default {
     },
   },
   methods: {
+    handleBeforeUnload() {
+      this.disconnectSSE();
+    },
     connectSSE() {
       if (this.member) {
         this.eventSource = new EventSource(
-          `http://localhost:8000/api/connect/${this.member.memberId}`, {headers: LoginHeader()}, { timeout: 3600000 }
+          `http://localhost:8000/api/connect/${this.member.memberId}`,
+          { headers: LoginHeader() },
+          { timeout: 3600000 }
         );
 
         this.eventSource.addEventListener("connect", (event) => {
@@ -100,7 +103,7 @@ export default {
     },
   },
   beforeUnmount() {
-    this.disconnectSSE();
+    window.removeEventListener('beforeunload', this.handleBeforeUnload);
   },
 };
 </script>

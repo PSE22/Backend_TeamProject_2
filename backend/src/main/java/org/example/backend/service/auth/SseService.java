@@ -10,6 +10,9 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.*;
+import java.io.IOException;
+import java.util.Map;
+
 
 /**
  * packageName : org.example.backend.service.auth
@@ -31,7 +34,7 @@ public class SseService {
     @Autowired
     RedisPubService redisPubService;
 
-    private final ConcurrentHashMap<String, CopyOnWriteArrayList<SseEmitter>> sseEmitters = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, CopyOnWriteArrayList<SseEmitter>> sseEmitters = new ConcurrentHashMap<>();
     private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
 
     public void sendSseEvent(NotifyDto notifyDto) {
@@ -51,24 +54,24 @@ public class SseService {
     }
 
     public SseEmitter subscribe(SseEmitter emitter, String memberId) {
-        // 이미 존재하는 리스트가 있는지 확인
+        // 아이디가 이미 구독중인지 확인
         CopyOnWriteArrayList<SseEmitter> emitters = sseEmitters.get(memberId);
         if (emitters != null) {
-            // 이미 존재하는 리스트가 있다면 그냥 해당 리스트에서 가져와서 반환
+            // 이미 구독중인 아이디일 경우 에미터만 추가 생성
             emitters.add(emitter);
-            log.info("이미 등록된 에미터 리스트를 사용합니다.: {}", emitters);
+            log.info("이미 구독중인 아이디를 사용합니다.: {}" + memberId, emitters);
             log.info("등록된 에미터 수: {}", emitters.size());
             return emitter;
         }
 
-        // 새로운 리스트를 생성하고 에미터를 추가
+        // 새로운 아이디로 구독하기
         CopyOnWriteArrayList<SseEmitter> newEmitters = new CopyOnWriteArrayList<>();
         newEmitters.add(emitter);
         sseEmitters.put(memberId, newEmitters);
 
-        // 연결된 에미터 정보를 기록
+        // 연결된 구독정보를 기록
         redisPubService.notifyPublish("notification", "새로운 구독자가 연결되었습니다.: " + memberId);
-        log.info("새로운 에미터가 등록되었습니다.: {}", emitter);
+        log.info("새로운 구독자가 등록되었습니다.: {}" + memberId, emitter);
         log.info("등록된 에미터 수: {}", newEmitters.size());
 
         // 에러, 완료, 타임아웃 콜백 설정
@@ -93,7 +96,7 @@ public class SseService {
         CompletableFuture.runAsync(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    sendPing(emitter);
+                    sendPing(memberId);
                     Thread.sleep(60000); // 1분에 한 번씩 보냄
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -105,12 +108,29 @@ public class SseService {
         return emitter;
     }
 
-    private void sendPing(SseEmitter emitter) {
-        try {
-            emitter.send("ping");
-            log.info("핑 {}", emitter);
-        } catch (Exception e) {
-            log.error("Error sending ping", e);
+    private void sendPing(String memberId) {
+        CopyOnWriteArrayList<SseEmitter> emitters = sseEmitters.get(memberId);
+        if (emitters != null) {
+            for (SseEmitter emitter : emitters) {
+                try {
+                    emitter.send("ping");
+                    log.info("핑 발송: {}", emitter);
+                } catch (IOException e) {
+                    log.error("에러 발생: {}", emitter, e);
+                    removeFromEmitterList(emitter);
+                }
+            }
         }
+    }
+
+    public static void removeFromEmitterList(SseEmitter emitter) {
+        // 완료된 SseEmitter를 감지하여 리스트에서 삭제
+        sseEmitters.forEach((memberId, emitters) -> {
+            if (emitters.contains(emitter)) {
+                emitters.remove(emitter);
+                log.info("에미터 삭제: {}", emitter);
+                log.info("현재 에미터 수: {}", emitters.size());
+            }
+        });
     }
 }

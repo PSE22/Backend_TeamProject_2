@@ -96,7 +96,7 @@ public class AuthController {
                     signUpRequest.getPosCode()
 
             );
-            memberService.save(member);
+            memberService.insert(member);
             return ResponseEntity.ok("회원가입이 완료되었습니다.");
 
         } catch (Exception e) {

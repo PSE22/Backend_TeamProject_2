@@ -29,6 +29,7 @@ public interface BoardManageRepository extends JpaRepository<CmCode , String> {
             "CM_CD_COMMENT AS cmCdComment \n" +
             "FROM TB_CM_CODE\n" +
             "WHERE CM_CD LIKE 'BO%' \n" +
-            "   OR CM_CD LIKE 'SM%'", nativeQuery = true)
+            "   OR CM_CD LIKE 'SM%' \n" +
+            "ORDER BY NVL(CM_CD ,UP_CM_CD ),CM_CD, UP_CM_CD", nativeQuery = true)
     List<BoardManageDto> retrieveCmCode();
 }

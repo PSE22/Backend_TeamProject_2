@@ -1,5 +1,6 @@
 package org.example.backend.service.board;
 
+import lombok.RequiredArgsConstructor;
 import org.example.backend.model.dto.board.BoardFileDto;
 import org.example.backend.model.dto.board.VoteDto;
 import org.example.backend.model.entity.board.Board;
@@ -16,18 +17,14 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class FreeBoardService {
 
-    @Autowired
-    FreeBoardRepository freeBoardRepository;
-    @Autowired
-    VoteService voteService;
-    @Autowired
-    PlaceService placeService;
-    @Autowired
-    FileService fileService;
-    @Autowired
-    BoardFileService boardFileService;
+    private final FreeBoardRepository freeBoardRepository;
+    private final VoteService voteService;
+    private final PlaceService placeService;
+    private final FileService fileService;
+    private final BoardFileService boardFileService;
 
     //    TODO: 전체조회(read)
     public List<Board> findAll() {

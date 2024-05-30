@@ -1,5 +1,6 @@
 package org.example.backend.service.board;
 
+import lombok.RequiredArgsConstructor;
 import org.example.backend.model.dto.board.BoardFileDto;
 import org.example.backend.model.entity.board.BoardFile;
 import org.example.backend.repository.board.BoardFileRepository;
@@ -10,9 +11,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class BoardFileService {
-    @Autowired
-    BoardFileRepository boardFileRepository;
+
+    private final BoardFileRepository boardFileRepository;
     @Autowired
     ModelMapper modelMapper;
 

@@ -4,9 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.ChatMessageDto;
 import org.example.backend.model.entity.auth.Member;
 import org.example.backend.service.RedisPubService;
+import org.example.backend.service.auth.ChatService;
 import org.example.backend.service.auth.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
@@ -31,15 +33,18 @@ public class ChatController {
     RedisPubService redisPubService;
     @Autowired
     MemberService memberService;
+    @Autowired
+    ChatService chatService;
 
     @MessageMapping("/message")
     public void sendMessage(ChatMessageDto message) {
+        log.debug("Sending message: {}", message);
         Optional<Member> member = memberService.findById(message.getMemberId());
-        if (member.isEmpty() == false) {
+        if (member.isPresent()) {
             message.setNickname(member.get().getNickname());
-            redisPubService.chatPublish("chat", message);
+            chatService.message(message);
         } else {
-            log.debug("ID가 존재하지 않습니다.");
+            log.debug("메세지 생성에 실패했습니다.");
         }
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -48,19 +49,46 @@ public class MemberController {
         }
     }
 
-    //  회원 정보 수정
-    @PutMapping("/profile-edit/{memberId}")
-    public ResponseEntity<Object> update(
-            @PathVariable String memberId,
+    //  회원 전체 조회
+    @GetMapping("/profile")
+    public ResponseEntity<Object> findAll() {
+        try {
+            List<Member> memberList = memberService.findAll();
+            if (memberList.isEmpty() == true) {
+                // 데이터 없음
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } else {
+                // 조회 성공
+                return new ResponseEntity<>(memberList, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //  회원정보 수정
+    @PutMapping("/profile-edit")
+    public ResponseEntity<Object> updateProfile(
             @RequestBody Member member
     ) {
-        log.debug("11"+ member);
         try {
-            Member member2 = memberService.save(member); // 수정
+            Member member2 = memberService.insert(member); // 수정
             return new ResponseEntity<>(member2, HttpStatus.OK);
         } catch (Exception e) {
 //            DB 에러 (서버 에러) -> 500 신호(INTERNAL_SERVER_ERROR)
-            log.debug("확인 ::" + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/profile-edit/password")
+    public ResponseEntity<Object> updatePassword(
+            @RequestBody Member member
+    ) {
+        try {
+            Member member2 = memberService.update(member); // 수정
+            return new ResponseEntity<>(member2, HttpStatus.OK);
+        } catch (Exception e) {
+//            DB 에러 (서버 에러) -> 500 신호(INTERNAL_SERVER_ERROR)
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

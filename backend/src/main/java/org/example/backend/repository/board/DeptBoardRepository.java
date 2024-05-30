@@ -50,10 +50,20 @@ public interface DeptBoardRepository extends JpaRepository<Board, Long> {
             "FROM TB_BOARD B, TB_MEMBER M\n" +
             "WHERE B.MEMBER_ID = M.MEMBER_ID\n" +
             "AND B.BOCODE = 'BO01'\n" +
-            "AND B.BOARD_TITLE LIKE '%' || :boardtitle || '%'\n" +
+            "AND B.BOARD_TITLE LIKE '%' || :boardTitle || '%'\n" +
             "AND B.STATUS = 'Y'\n" +
             "AND B.NOTICE_YN = 'N'\n" +
             "AND B.SMCODE = :smcode\n" +
-            "ORDER BY B.ADD_DATE DESC", nativeQuery = true)
-    Page<IClubDto> findAllByDept(@Param("boardtitle") String boardtitle, @Param("smcode") String smcode, Pageable pageable);
+            "ORDER BY B.ADD_DATE DESC"
+            , countQuery = "SELECT count(*)" +
+                            "FROM TB_BOARD B, TB_MEMBER M\n" +
+                            "WHERE B.MEMBER_ID = M.MEMBER_ID\n" +
+                            "AND B.BOCODE = 'BO01'\n" +
+                            "AND B.BOARD_TITLE LIKE '%' || :boardTitle || '%'\n" +
+                            "AND B.STATUS = 'Y'\n" +
+                            "AND B.NOTICE_YN = 'N'\n" +
+                            "AND B.SMCODE = :smcode\n" +
+                            "ORDER BY B.ADD_DATE DESC"
+            , nativeQuery = true)
+    Page<IClubDto> findAllByDept(@Param("boardTitle") String boardTitle, @Param("smcode") String smcode, Pageable pageable);
 }

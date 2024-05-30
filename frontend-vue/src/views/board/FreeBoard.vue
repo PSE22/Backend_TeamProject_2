@@ -15,11 +15,7 @@
         <tbody>
           <tr v-for="(data, index) in board" :key="index">
             <td class="text-center">{{ data.boardId }}</td>
-            <td>
-              <router-link :to="`/free-view/${board.boardTitle}`">
-                {{ data.boardTitle }}
-              </router-link>
-            </td>
+            <td class="text-center">{{ data.boardTitle }}</td>
             <td class="text-center">{{ data.nickname }}</td>
             <td class="text-center">{{ data.addDate }}</td>
             <td class="text-center">{{ data.good }}</td>
@@ -88,7 +84,6 @@ export default {
     return {
       // 백엔드 연결
       board: [],
-      submitted: false,
       searchBoardTitle: "",
       page: 1,
       count: 0,
@@ -100,8 +95,6 @@ export default {
   methods: {
     async retrieveFreeBoard() {
       try {
-        this.retrieveFreeNotice();
-
         let response = await FreeBoardService.getAll(
           this.searchBoardTitle,
           this.page - 1,
@@ -130,7 +123,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .table th {
   white-space: nowrap; /* 줄바꿈 방지 */
   text-overflow: ellipsis; /* 텍스트 생략 */
