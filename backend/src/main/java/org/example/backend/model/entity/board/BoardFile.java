@@ -32,7 +32,7 @@ public class BoardFile extends BaseTimeEntity3 {
     @GeneratedValue(strategy = GenerationType.SEQUENCE
             , generator = "TB_BOARD_FILE_SEQ_GENERATOR"
     )
-    private String fileBid;    // 게시판파일ID pk
+    private Long fileBid;    // 게시판파일ID pk
     @Id
     private Long boardId;   // 게시글ID pk
     @Id
