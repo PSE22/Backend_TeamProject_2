@@ -3,8 +3,10 @@ package org.example.backend.service.auth;
 import org.example.backend.model.entity.auth.Member;
 import org.example.backend.repository.auth.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -25,14 +27,24 @@ public class MemberService {
     @Autowired
     MemberRepository memberRepository; // DI
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     //  1) 회원 유무 확인 함수 : 회원가입
     public boolean existById(String memberId) {
         boolean result = memberRepository.existsById(memberId);
 
         return result;
     }
-    //  2) 저장/수정 : 회원가입/회원정보수정
-    public Member save(Member member) {
+    //  2) 저장/수정 : 회원가입/회원정보 변경
+    public Member insert(Member member) {
+        Member member2 = memberRepository.save(member);
+
+        return member2;
+    }
+    //  3) 수정 : 비밀번호 변경
+    public Member update(Member member) {
+        member.setMemberPw(passwordEncoder.encode(member.getMemberPw()));
         Member member2 = memberRepository.save(member);
 
         return member2;
@@ -42,9 +54,15 @@ public class MemberService {
         return memberRepository.findById(memberId);
     }
 
-    //  3) 회원 상세 조회
+    //  4) 회원 상세 조회
     public Optional<Member> findByMemberId(String memberId) {
         Optional<Member> optionalMember = memberRepository.findByMemberId(memberId);
         return optionalMember;
+    }
+
+    //  5) 회원 전체 조회
+    public List<Member> findAll() {
+        List<Member> memberList = memberRepository.findAll();
+        return memberList;
     }
 }

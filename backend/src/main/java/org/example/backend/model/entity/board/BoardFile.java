@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.backend.model.common.BaseTimeEntity3;
-import org.example.backend.model.common.BoardFileIdPk;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -14,7 +13,6 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "TB_BOARD_FILE")
-@IdClass(BoardFileIdPk.class)
 @SequenceGenerator(
         name = "TB_BOARD_FILE_SEQ_GENERATOR"
         , sequenceName = "TB_BOARD_FILE_SEQ"
@@ -32,9 +30,7 @@ public class BoardFile extends BaseTimeEntity3 {
     @GeneratedValue(strategy = GenerationType.SEQUENCE
             , generator = "TB_BOARD_FILE_SEQ_GENERATOR"
     )
-    private String fileBid;    // 게시판파일ID pk
-    @Id
-    private Long boardId;   // 게시글ID pk
-    @Id
-    private String uuid = UUID.randomUUID().toString();   // 파일ID pk // 무작위 UUID를 생성후 UUID를 문자열로 반환
+    private Long fileBid;    // 게시판파일ID pk
+    private Long boardId;   // 게시글ID fk
+    private String uuid = UUID.randomUUID().toString();   // 파일ID fk // 무작위 UUID를 생성후 UUID를 문자열로 반환
 }
