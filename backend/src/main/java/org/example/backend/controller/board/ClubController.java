@@ -1,5 +1,6 @@
 package org.example.backend.controller.board;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.board.IClubDto;
 import org.example.backend.model.entity.CmCode;
@@ -34,9 +35,9 @@ import java.util.Optional;
 @Slf4j
 @RestController
 @RequestMapping("api/board")
+@RequiredArgsConstructor
 public class ClubController {
-    @Autowired
-    ClubService clubService;
+    private final ClubService clubService;
 
     //    동호회 게시판 전체조회
     @GetMapping("/club")
@@ -52,6 +53,7 @@ public class ClubController {
 //            전체 조회 서비스 실행
             Page<IClubDto> clubDtoPage
                     = clubService.findByCode(boardTitle, bocode, pageable);
+            log.debug("왜11 : " + clubDtoPage);
 
 //            공통 페이징 객체 생성 : 자료구조 맵 사용
             Map<String, Object> response = new HashMap<>();
@@ -98,16 +100,16 @@ public class ClubController {
         }
     }
 
-    //    동호회 소메뉴
-    @GetMapping("/club-smcode")
-    public ResponseEntity<Object> findSmcode() {
+    //    동호회 중분류
+    @GetMapping("/club-bocode")
+    public ResponseEntity<Object> findBocode() {
         try {
 //            전체 조회 서비스 실행
-            List<IClubDto> smcode
-                    = clubService.findBySmcode();
-            if (smcode.isEmpty() == false) {
+            List<IClubDto> bocode
+                    = clubService.findByBocode();
+            if (bocode.isEmpty() == false) {
 //                조회 성공
-                return new ResponseEntity<>(smcode, HttpStatus.OK);
+                return new ResponseEntity<>(bocode, HttpStatus.OK);
             } else {
 //                데이터 없음
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -118,23 +120,22 @@ public class ClubController {
         }
     }
 
-    //    동호회 게시물 상세조회
-    @GetMapping("/club/{boardId}")
-    public ResponseEntity<Object> findById(
-            @PathVariable Long boardId
-    ) {
+    //    동호회 소분류
+    @GetMapping("/club-smcode")
+    public ResponseEntity<Object> findSmcode() {
         try {
-//            상세조회 서비스 실행
-            Optional<Board> optionalBoard
-                    = clubService.findById(boardId);
-            if (optionalBoard.isEmpty() == true) {
+//            전체 조회 서비스 실행
+            List<CmCode> smcode
+                    = clubService.findByCmCdNameAndSmcode();
+            if (smcode.isEmpty() == false) {
+//                조회 성공
+                return new ResponseEntity<>(smcode, HttpStatus.OK);
+            } else {
 //                데이터 없음
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            } else {
-//                조회 성공
-                return new ResponseEntity<>(optionalBoard.get(), HttpStatus.OK);
             }
         } catch (Exception e) {
+            log.debug("에러 : " + e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

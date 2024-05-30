@@ -5,8 +5,11 @@ import org.example.backend.model.entity.board.Vote;
 import org.example.backend.repository.board.VoteRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -41,6 +44,17 @@ public class VoteService {
             // Dto를 Vote 엔티티로 변환
             Vote vote = modelMapper.map(voteDto, Vote.class);
 
+            voteRepository.save(vote);
+        }
+    }
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void voteScheduler() {
+        String date = LocalDateTime.now()
+                .format(DateTimeFormatter
+                        .ofPattern("yyyy-MM-dd"));
+        List<Vote> votes = voteRepository.findByDelDate(date);
+        for (Vote vote : votes) {
+            vote.setStatus("N");
             voteRepository.save(vote);
         }
     }
