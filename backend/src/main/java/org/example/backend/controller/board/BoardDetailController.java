@@ -62,5 +62,4 @@ public class BoardDetailController {
             return new ResponseEntity<>("서버 오류가 발생했습니다", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 }

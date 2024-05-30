@@ -4,7 +4,7 @@
     <div class="d-flex justify-content-center mb-5">
       <button
         class="custom-btn col-2"
-        v-for="(data, index) in smcodeName"
+        v-for="(data, index) in bocodeName"
         :key="index"
         @click="pageSizeChange(data.cmCd)"
       >
@@ -16,18 +16,24 @@
     <thead class="table-light text-center">
       <tr>
         <th scope="col">글번호</th>
+        <th scope="col"></th>
         <th scope="col">제목</th>
         <th scope="col">작성자</th>
         <th scope="col">작성일</th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(data, index) in clubNotice" :key="index" @click="goClubDetail">
+      <tr
+        v-for="(data, index) in clubNotice"
+        :key="index"
+        @click="goClubDetail"
+      >
         <td class="text-center col-1">{{ data.boardId }}</td>
-        <td class="col-7">
-          <span style="color: lightgray">{{ data.cmCdName }}&nbsp;&nbsp;</span
-          ><span class="badge text-bg-dark me-2">공지</span
-          >{{ data.boardTitle }}
+        <td class="col-1" style="color: lightgray">
+          {{ data.cmCdName }}
+        </td>
+        <td class="col-6">
+          <span class="badge text-bg-dark me-2">공지</span>{{ data.boardTitle }}
         </td>
         <td class="text-center col-2">{{ data.memberName }}</td>
         <td class="text-center col-2">{{ data.addDate }}</td>
@@ -36,8 +42,8 @@
     <tbody>
       <tr v-for="(data, index) in club" :key="index" @click="goClubDetail">
         <td class="text-center">{{ data.boardId }}</td>
+        <td style="color: lightgray">{{ data.cmCdName }}</td>
         <td>
-          <span style="color: lightgray">{{ data.cmCdName }}&nbsp;&nbsp;</span>
           {{ data.boardTitle }}
         </td>
         <td class="text-center">{{ data.memberName }}</td>
@@ -59,7 +65,9 @@
       </select>
     </div>
     <div class="col-1">
-      <button type="button" class="btn btn-dark" @click="goClubWrite">글쓰기</button>
+      <button type="button" class="btn btn-dark" @click="goClubWrite">
+        글쓰기
+      </button>
     </div>
   </div>
   <div class="row">
@@ -102,7 +110,7 @@ export default {
       clubNotice: [],
       club: [],
       searchTitle: "",
-      smcodeName: [],
+      bocodeName: [],
       boardId: this.$route.params.boardId,
       boardCode: "BO0201",
       // 공통 페이징 속성
@@ -116,9 +124,10 @@ export default {
   methods: {
     async retrieveClub() {
       console.log("page", this.page);
+      console.log("boardCode:", this.boardCode); // boardCode 값 출력
       try {
         this.retrieveClubNotice();
-        this.retrieveSmcode();
+        this.retrieveBocode();
         // TODO: 공통 장바구니 전체 조회 서비스 함수 실행
         // TODO: 비동기 코딩
         let response = await ClubService.getAll(
@@ -127,11 +136,13 @@ export default {
           this.page - 1,
           this.pageSize
         );
+        console.log("ClubService.getAll response:", response);
         const { club, totalItems } = response.data;
         this.club = club;
         this.count = totalItems;
         // 로깅
-        console.log(response.data); // 웹브라우저 콘솔탬에 백앤드 데이터 표시
+        console.log("club data:", this.club); // club 데이터 출력
+        console.log("이거 왜 안뜸", response.data); // 웹브라우저 콘솔탬에 백앤드 데이터 표시
       } catch (e) {
         console.log(e); // 웹브라우저 콘솔탭에 에러표시
       }
@@ -150,10 +161,7 @@ export default {
     async retrieveClubNotice() {
       try {
         // TODO: 비동기 코딩
-        let response = await ClubService.getNotice(
-          this.boardCode,
-
-        );
+        let response = await ClubService.getNotice(this.boardCode);
         this.clubNotice = response.data;
         console.log(response.data); // 웹브라우저 콘솔탬에 백앤드 데이터 표시
       } catch (e) {
@@ -161,11 +169,11 @@ export default {
       }
     },
     // 중메뉴 조회
-    async retrieveSmcode() {
+    async retrieveBocode() {
       try {
         // TODO: 비동기 코딩
-        let response = await ClubService.getSmcode();
-        this.smcodeName = response.data;
+        let response = await ClubService.getBocode();
+        this.bocodeName = response.data;
         console.log(response.data); // 웹브라우저 콘솔탬에 백앤드 데이터 표시
       } catch (e) {
         console.log(e); // 웹브라우저 콘솔탭에 에러표시
@@ -173,7 +181,7 @@ export default {
     },
     // TODO: 공통 페이징 함수 : select 태그
     pageSizeChange(cmCd) {
-      this.boardCode = cmCd // 코드 저장
+      this.boardCode = cmCd; // 코드 저장
       this.page = 1; // 현재패이지번호 : 1
       this.retrieveClub(); // 재조회
     },
@@ -182,7 +190,7 @@ export default {
       this.$router.push(`/board/club/${boardId}`);
     },
     goClubWrite() {
-    this.$router.push('/board/club/write');
+      this.$router.push("/board/club/write");
     },
   },
   mounted() {
@@ -202,7 +210,8 @@ export default {
   position: relative;
 }
 
-.custom-btn::after { /* 모든 버튼에 기본 밑줄 추가 */
+.custom-btn::after {
+  /* 모든 버튼에 기본 밑줄 추가 */
   content: "";
   position: absolute;
   left: 0;

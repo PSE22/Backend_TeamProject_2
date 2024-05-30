@@ -1,28 +1,30 @@
 package org.example.backend.model.dto.board;
 
 import lombok.*;
+import org.example.backend.model.entity.board.Board;
+
+import java.util.List;
 
 /**
  * packageName : org.example.backend.model.dto.board
- * fileName : VoteDto
- * author : kimtaewan
- * date : 2024-05-28
+ * fileName : BoardWriteDto
+ * author : gumiji
+ * date : 5/30/24
  * description :
  * 요약 :
  * <p>
  * ===========================================================
  * DATE            AUTHOR             NOTE
  * -----------------------------------------------------------
- * 2024-05-28         kimtaewan          최초 생성
+ * 5/30/24         gumiji          최초 생성
  */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class VoteDto {
-    private Long boardId;   // 글번호
-    private String voteName;    // 투표명
-    private String voteListName;    // 투표항목명
-    private String delDate;
+public class BoardWriteDto {
+    private Board board;
+    private List<VoteDto> voteDtos;
+
 }

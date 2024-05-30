@@ -37,7 +37,7 @@ public interface ClubRepository extends JpaRepository<Board, Long> {
             "WHERE B.BOCODE = :bocode\n" +
             "AND B.MEMBER_ID = M.MEMBER_ID\n" +
             "AND B.SMCODE = C.CM_CD\n" +
-            "AND B.BOARD_TITLE LIKE '%' ||:boardTitle|| '%'\n" +
+            "AND B.BOARD_TITLE LIKE '%' || :boardTitle || '%'\n" +
             "AND B.STATUS = 'Y'\n" +
             "AND B.NOTICE_YN = 'N'\n" +
             "ORDER BY B.ADD_DATE DESC",
@@ -71,7 +71,7 @@ public interface ClubRepository extends JpaRepository<Board, Long> {
             nativeQuery = true)
     List<IClubDto> findByCodeAndNotice(@Param("bocode") String bocode);
 
-    //    동호회 소메뉴
+    //    동호회 중메뉴
     @Query(value = "SELECT CM_CD_NAME AS cmCdName,\n" +
             "CM_CD AS cmCd " +
             "FROM TB_CM_CODE\n" +
@@ -79,7 +79,5 @@ public interface ClubRepository extends JpaRepository<Board, Long> {
             "AND STATUS = 'Y'\n" +
             "ORDER BY CM_CD",
             nativeQuery = true)
-    List<IClubDto> findBySmcode();
-
-//    @Query(value = "")
+    List<IClubDto> findByBocode();
 }

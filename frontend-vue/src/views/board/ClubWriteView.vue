@@ -15,18 +15,16 @@
           </div>
           <div class="col-4">
             <select class="form-select" aria-label="Default select example">
-              <option selected>Open this select menu</option>
-              <option value="1">One</option>
-              <option value="2">Two</option>
-              <option value="3">Three</option>
+              <option value="bocode" v-for="(data, index) in bocode" :key="index">
+                {{ data.cmCdName }}
+              </option>
             </select>
           </div>
           <div class="col-4">
             <select class="form-select" aria-label="Default select example">
-              <option selected>Open this select menu</option>
-              <option value="1">One</option>
-              <option value="2">Two</option>
-              <option value="3">Three</option>
+              <option value="smcode" v-for="(data, index) in smcode" :key="index">
+                {{ data.cmCdName }}
+              </option>
             </select>
           </div>
         </div>
@@ -119,7 +117,41 @@
 </template>
 
 <script>
-export default {};
+import ClubService from "@/services/board/ClubService";
+export default {
+  data() {
+    return {
+      bocode: [],
+      smcode: [],
+    };
+  },
+  methods: {
+    async retrieveBocode() {
+      try {
+        // TODO: 비동기 코딩
+        let response = await ClubService.getBocode();
+        this.bocode = response.data;
+        console.log(response.data); // 웹브라우저 콘솔탬에 백앤드 데이터 표시
+      } catch (e) {
+        console.log(e); // 웹브라우저 콘솔탭에 에러표시
+      }
+    },
+    async retrieveSmcode() {
+      try {
+        let response = await ClubService.getSmcode();
+        this.smcode = response.data;
+        // 로깅
+        console.log(response.data); // 웹브라우저 콘솔탭
+      } catch (e) {
+        console.log(e); // 웹브라우저 콘솔탭
+      }
+    },
+  },
+  mounted() {
+    this.retrieveBocode();
+    this.retrieveSmcode();
+  },
+};
 </script>
 
 <style>
