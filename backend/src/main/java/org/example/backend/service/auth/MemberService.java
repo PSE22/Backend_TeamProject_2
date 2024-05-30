@@ -40,7 +40,8 @@ public class MemberService {
 
     public Optional<Member> findById(String memberId) {
         return memberRepository.findById(memberId);
-
+    }
+    
     //  3) 회원 상세 조회
     public Optional<Member> findByMemberId(String memberId) {
         Optional<Member> optionalMember = memberRepository.findByMemberId(memberId);
