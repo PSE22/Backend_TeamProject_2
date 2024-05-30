@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 /**
  * packageName : org.example.backend.repository.board
  * fileName : VoteRepository
@@ -31,5 +33,5 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
             ")", nativeQuery = true)
     void updateVoteCnt(@Param("voteId") Long voteId, @Param("memberId") String memberId, @Param("boardId") Long boardId);
 
-
+    List<Vote> findByDelDate(String date);
 }

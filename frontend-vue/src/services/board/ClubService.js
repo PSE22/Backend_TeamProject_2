@@ -4,6 +4,7 @@ import LoginHeader from "../login/LoginHeader";
 class ClubService {
   // 동호회 전체조회
   getAll(boardTitle, bocode, page, size) {
+    console.log("들어오나", boardTitle, bocode, page, size)
     return http.get(
       `/board/club?boardTitle=${boardTitle}&bocode=${bocode}&page=${page}&size=${size}`,
       {
@@ -17,15 +18,20 @@ class ClubService {
       headers: LoginHeader(),
     });
   }
-  // 중메뉴
-  getSmcode() {
-    return http.get(`/board/club-smcode`, {
+  // 동호회 게시판 상세조회
+  get(boardId) {
+    return http.get(`/board-detail/${boardId}`, {
       headers: LoginHeader(),
     });
   }
-  // 중메뉴
-  get(boardId) {
-    return http.get(`/board/club/${boardId}`, {
+  // 중분류
+  getBocode() {
+    return http.get(`/board/club-bocode`, {
+      headers: LoginHeader(),
+    });
+  }
+  getSmcode() {
+    return http.get(`/board/club-smcode`, {
       headers: LoginHeader(),
     });
   }
