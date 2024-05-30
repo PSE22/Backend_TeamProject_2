@@ -3,18 +3,13 @@ package org.example.backend.controller.board;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.board.BoardWriteDto;
-import org.example.backend.model.dto.board.VoteDto;
-import org.example.backend.model.entity.board.Board;
 import org.example.backend.service.board.BoardWriteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 /**
  * packageName : org.example.backend.controller.board
@@ -41,7 +36,9 @@ public class BoardWriteController {
             @RequestBody BoardWriteDto boardWriteDto
             ) {
         try {
-            boardWriteService.save(boardWriteDto.getBoard(),boardWriteDto.getVoteDtos());
+            boardWriteService.save(boardWriteDto.getBoard(),boardWriteDto.getVoteDtos()
+                    ,boardWriteDto.getPlace(),boardWriteDto.getFiles(),boardWriteDto.getBoardFileDtos()
+            );
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("등록을 실패하였습니다.",HttpStatus.INTERNAL_SERVER_ERROR);

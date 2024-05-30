@@ -1,7 +1,6 @@
 package org.example.backend.repository.board;
 
 import org.example.backend.model.dto.board.IClubDto;
-import org.example.backend.model.entity.CmCode;
 import org.example.backend.model.entity.board.Board;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

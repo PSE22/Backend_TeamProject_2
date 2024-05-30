@@ -2,10 +2,6 @@ package org.example.backend.model.entity.board;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.example.backend.model.common.BaseTimeEntity3;
-import org.example.backend.model.common.VoteIdMemberIdPk;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 

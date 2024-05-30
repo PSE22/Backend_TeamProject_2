@@ -1,7 +1,6 @@
 package org.example.backend.service.board;
 
 import org.example.backend.model.dto.board.IClubDto;
-import org.example.backend.model.entity.board.Board;
 import org.example.backend.repository.board.DeptBoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -9,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * packageName : org.example.backend.service.board

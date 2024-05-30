@@ -32,10 +32,17 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
             ")", nativeQuery = true)
     void updateVoteCnt(@Param("voteId") Long voteId, @Param("memberId") String memberId, @Param("boardId") Long boardId);
 
+
+    @Query(value = "UPDATE TB_VOTE " +
+            "SET STATUS = 'N' " +
+            "WHERE DEL_DATE = :delDate ", nativeQuery = true)
+    List<Vote> updateStatus(@Param("delDate") String delDate);
+
     // 글번호로 투표 조회
     @Query(value = "SELECT *\n" +
             "FROM TB_VOTE\n" +
             "WHERE BOARD_ID = :boardId AND STATUS = 'Y'"
             , nativeQuery = true)
     List<Vote> findByBoardId(@Param("boardId") Long boardId);
+
 }

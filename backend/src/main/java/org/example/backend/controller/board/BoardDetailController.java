@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.board.IBoardDetailDto;
+import org.example.backend.model.entity.board.Board;
 import org.example.backend.model.dto.board.IBoardDto;
 import org.example.backend.model.dto.board.IReplyDto;
 import org.example.backend.model.entity.board.Place;
@@ -33,6 +34,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("api/board")
 @RequiredArgsConstructor
+@RestControllerAdvice   // 전역적으로 예외처리
 public class BoardDetailController {
 
     private final BoardDetailService boardDetailService;

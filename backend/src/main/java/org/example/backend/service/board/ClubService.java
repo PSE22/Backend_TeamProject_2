@@ -2,11 +2,8 @@ package org.example.backend.service.board;
 
 import lombok.RequiredArgsConstructor;
 import org.example.backend.model.dto.board.IClubDto;
-import org.example.backend.model.dto.board.VoteDto;
 import org.example.backend.model.entity.CmCode;
-import org.example.backend.model.entity.board.Board;
 import org.example.backend.repository.auth.CmCodeRepository;
-import org.example.backend.repository.board.BoardRepository;
 import org.example.backend.repository.board.ClubRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * packageName : org.example.backend.service.board
@@ -63,14 +59,5 @@ public class ClubService {
         List<CmCode> list = cmCodeRepository.findByCmCdNameAndSmcode();
         return list;
 
-    }
-
-    @Transactional
-    public void save(Board board, List<VoteDto> voteDtos) {
-        // JPA 저장 함수 실행 : return 값 : 저장된 객체
-        Board board2 = boardRepository.save(board);
-        // 저장된 board의 boardId를 객체로 변환
-        Long boardId = board2.getBoardId();
-        voteService.saveVote(boardId, voteDtos);
     }
 }

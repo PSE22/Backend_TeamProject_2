@@ -9,6 +9,8 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import BootstrapVue3 from 'bootstrap-vue-3'
 // TODO: bootstartp vue3 css import
 import 'bootstrap-vue-3/dist/bootstrap-vue-3.css'
+// TODO: bootstartp 아이콘
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 createApp(App)
 .use(BootstrapVue3)
