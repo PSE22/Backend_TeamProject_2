@@ -34,6 +34,8 @@ import java.util.Optional;
 public class ClubService {
     private final ClubRepository clubRepository;    // DI
     private final CmCodeRepository cmCodeRepository;
+    private final BoardRepository boardRepository;
+    private final VoteService voteService;
 
     @Transactional
     //    동호회 게시판 중메뉴 목록조회

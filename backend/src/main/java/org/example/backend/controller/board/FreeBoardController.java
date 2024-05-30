@@ -1,5 +1,6 @@
 package org.example.backend.controller.board;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.board.BoardFileDto;
 import org.example.backend.model.dto.board.FreeBoardCreateRequest;
@@ -25,11 +26,11 @@ import java.util.Optional;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/board")
 public class FreeBoardController {
 
-    @Autowired
-    FreeBoardService freeBoardService;
+    private final FreeBoardService freeBoardService;
 
     //    TODO: 전체 조회 함수 + 검색 + 페이징
     @GetMapping("/free")
