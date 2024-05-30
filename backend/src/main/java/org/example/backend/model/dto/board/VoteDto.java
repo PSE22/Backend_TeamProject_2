@@ -24,4 +24,5 @@ public class VoteDto {
     private Long boardId;   // 글번호
     private String voteName;    // 투표명
     private String voteListName;    // 투표항목명
+    private String delDate;    // 투표종료일
 }

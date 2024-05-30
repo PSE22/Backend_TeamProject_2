@@ -10,7 +10,8 @@ public class PlaceService {
     @Autowired
     PlaceRepository placeRepository;
 
-    public Place savePlace(Place place) {
+    public Place savePlace(Long boardId, Place place) {
+        place.setBoardId(boardId);
         Place place2 = placeRepository.save(place);
 
         return place2;
