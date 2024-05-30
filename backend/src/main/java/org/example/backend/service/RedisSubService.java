@@ -1,15 +1,15 @@
 package org.example.backend.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.backend.model.dto.ChatMessageDto;
 import org.example.backend.model.dto.NotifyDto;
 import org.example.backend.service.auth.SseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-
-import java.nio.charset.StandardCharsets;
 
 /**
  * packageName : org.example.backend.service
@@ -29,16 +29,23 @@ import java.nio.charset.StandardCharsets;
 public class RedisSubService implements MessageListener {
 
     @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private RedisTemplate<String, Object> notifyRedisTemplate;
+
+    @Autowired
+    private RedisTemplate<String, Object> chatRedisTemplate;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @Autowired
     private SseService sseService;
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
-        log.debug("1");
-        NotifyDto notifyDto = (NotifyDto) redisTemplate.getValueSerializer().deserialize(message.getBody());
-        log.debug("2");
+        NotifyDto notifyDto = (NotifyDto) notifyRedisTemplate.getValueSerializer().deserialize(message.getBody());
         sseService.sendSseEvent(notifyDto);
+
+        ChatMessageDto chatMessage = (ChatMessageDto) chatRedisTemplate.getValueSerializer().deserialize(message.getBody());
+        messagingTemplate.convertAndSend("/topic/messages", chatMessage);
     }
 }

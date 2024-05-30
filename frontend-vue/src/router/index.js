@@ -26,6 +26,11 @@ const routes = [
     path: "/profile",
     component: () => import("../views/profile/MyProfile.vue"),
   },
+  // 회원 프로필 수정
+  {
+    path: "/profile-edit",
+    component: () => import("../views/profile/MyProfileEdit.vue"),
+  },
   // 부서게시판
   {
     path: "/board/dept",
@@ -61,6 +66,15 @@ const routes = [
   {
     path: "/board/free-write",
     component: () => import("../views/board/FreeWrite.vue"),
+  },
+  {
+    path: '/board/main-search',
+    name: 'SearchResults',
+    component: () => import("../views/board/SearchResults.vue"),
+  },
+  {
+    path: '/board/management',
+    component: () => import("../views/admin/BoardManagement.vue"),
   },
 ];
 

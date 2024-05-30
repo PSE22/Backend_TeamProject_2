@@ -60,5 +60,15 @@ public class ClubService {
     public List<CmCode> findByCmCdNameAndSmcode() {
         List<CmCode> list = cmCodeRepository.findByCmCdNameAndSmcode();
         return list;
+
+    }
+
+    @Transactional
+    public void save(Board board, List<VoteDto> voteDtos) {
+        // JPA 저장 함수 실행 : return 값 : 저장된 객체
+        Board board2 = boardRepository.save(board);
+        // 저장된 board의 boardId를 객체로 변환
+        Long boardId = board2.getBoardId();
+        voteService.saveVote(boardId, voteDtos);
     }
 }

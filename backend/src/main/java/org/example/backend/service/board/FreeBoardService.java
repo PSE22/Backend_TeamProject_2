@@ -13,8 +13,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class FreeBoardService {
@@ -36,12 +38,6 @@ public class FreeBoardService {
         return list;
     }
 
-    //    자유게시판 공지 조회
-    public List<FreeNoticeDto> findByFreeCodeAndNotice() {
-        List<FreeNoticeDto> list = freeBoardRepository.findByFreeCodeAndNotice();
-        return list;
-    }
-
     //    페이징 처리
     public Page<Board> findAllByFreeBoardTitleContaining(String boardTitle,
                                                                 Pageable pageable) {
@@ -59,7 +55,7 @@ public class FreeBoardService {
         return optionalFreeBoard;
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     //    TODO: 등록(insert),수정(update)
     public void save(Board board, List<VoteDto> voteDtos, Place place, File file, List<BoardFileDto> boardFileDtos) {
         // 분류코드를 설정
@@ -71,10 +67,15 @@ public class FreeBoardService {
         // 저장된 board의 boardId를 객체로 변환
         Long boardId = board2.getBoardId();
         voteService.saveVote(boardId, voteDtos);
-        placeService.savePlace(place);
+
+        placeService.savePlace(boardId, place);
+
         fileService.saveFile(file);
-        String uuid = file.getUuid();
-        boardFileService.saveBoardFile(boardId, uuid, boardFileDtos);
+        // boardFileDtos가 null인 경우 빈 리스트로 초기화
+        if (boardFileDtos == null) {
+            boardFileDtos = new ArrayList<>();
+        }
+        boardFileService.saveBoardFile(boardId, boardFileDtos);
         }
 
     public void update(Board board) {

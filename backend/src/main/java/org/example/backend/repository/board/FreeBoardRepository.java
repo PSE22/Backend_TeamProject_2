@@ -32,18 +32,4 @@ public interface FreeBoardRepository extends JpaRepository<Board, Long> {
 
     @Query("SELECT b FROM Board b WHERE b.bocode = :bocode AND b.boardId = :boardId")
     Optional<Board> findByCodeAndId(@Param("bocode") String code, @Param("boardId") Long boardId);
-
-    //    자유게시판 공지 전체조회
-    @Query(value = "SELECT B.BOARD_ID AS boardId,\n" +
-            "B.BOARD_TITLE AS boardTitle,\n" +
-            "M.MEMBER_NAME AS memberName,\n" +
-            "B.ADD_DATE AS addDate\n" +
-            "FROM TB_BOARD B, TB_MEMBER M\n" +
-            "WHERE B.BOCODE LIKE 'BO03'\n" +
-            "AND B.MEMBER_ID = M.MEMBER_ID\n" +
-            "AND B.STATUS = 'Y'\n" +
-            "AND B.NOTICE_YN = 'Y'\n" +
-            "ORDER BY B.ADD_DATE DESC",
-            nativeQuery = true)
-    List<FreeNoticeDto> findByFreeCodeAndNotice();
 }

@@ -31,16 +31,20 @@ public class MemberService {
 
         return result;
     }
-    //  2) 저장 : 회원가입
+    //  2) 저장/수정 : 회원가입/회원정보수정
     public Member save(Member member) {
         Member member2 = memberRepository.save(member);
 
         return member2;
     }
 
+    public Optional<Member> findById(String memberId) {
+        return memberRepository.findById(memberId);
+    }
+    
     //  3) 회원 상세 조회
-    public Optional<Member> findByMemberIdAndMemberEmail(String memberId, String memberEmail) {
-        Optional<Member> optionalMember = memberRepository.findByMemberIdAndMemberEmail(memberId, memberEmail);
+    public Optional<Member> findByMemberId(String memberId) {
+        Optional<Member> optionalMember = memberRepository.findByMemberId(memberId);
         return optionalMember;
     }
 }

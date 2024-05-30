@@ -25,8 +25,7 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, String> {
     @Query(value = "SELECT *\n" +
             "FROM TB_MEMBER\n" +
-            "WHERE MEMBER_ID = :memberId\n" +
-            "AND MEMBER_EMAIL = :memberEmail"
+            "WHERE MEMBER_ID = :memberId\n"
     , nativeQuery = true)
-    Optional<Member> findByMemberIdAndMemberEmail(@Param("memberId") String memberId, @Param("memberEmail") String memberEmail);
+    Optional<Member> findByMemberId(@Param("memberId") String memberId);
 }
