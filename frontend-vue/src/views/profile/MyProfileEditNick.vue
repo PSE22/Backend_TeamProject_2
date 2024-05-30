@@ -17,29 +17,11 @@
         <div class="user-info">
           <div class="details">
             <div class="detail-item">
-              <span class="label">이름</span>
-              <span class="label">{{ member.memberName }}</span>
-            </div>
-            <div class="detail-item">
-              <span class="label">이메일</span>
-              <span class="label">{{ member.memberEmail }}</span>
-            </div>
-            <div class="detail-item">
-              <span class="label">번호</span>
-              <span class="label">{{ member.memberExt }}</span>
-            </div>
-            <div class="detail-item">
-              <span class="label">부서</span>
-              <span class="label">{{ deptName }}</span>
-            </div>
-            <div class="detail-item">
-              <span class="label">직급</span>
-              <span class="label">{{ posName }}</span>
+              <span class="label">닉네임</span>
+              <input class="edit-box" v-model="member.nickname" />
             </div>
           </div>
-          <div class="edit">
-            <router-link to="/profile-edit" class="edit-link"><button class="edit-button">수정</button></router-link>
-          </div>
+          <button class="edit-button" @click="editProfile">수정</button>
         </div>
       </div>
     </div>
@@ -55,34 +37,6 @@ export default {
       member: {},
     };
   },
-  computed: {
-    deptName() {
-      if (this.member.deptCode === "DE01") {
-        return "영업팀";
-      } else if (this.member.deptCode === "DE02") {
-        return "인사팀";
-      } else if (this.member.deptCode === "DE03") {
-        return "행정팀";
-      } else if (this.member.deptCode === "DE04") {
-        return "보안팀";
-      } else {
-        return this.member.deptCode;
-      }
-    },
-    posName() {
-      if (this.member.posCode === "PO01") {
-        return "사원";
-      } else if (this.member.posCode === "PO02") {
-        return "주임";
-      } else if (this.member.posCode === "PO03") {
-        return "대리";
-      } else if (this.member.posCode === "PO04") {
-        return "과장";
-      } else {
-        return this.member.posCode;
-      }
-    },
-  },
   methods: {
     async getProfile() {
       try {
@@ -91,6 +45,27 @@ export default {
         );
         this.member = response.data;
         console.log(response.data);
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    async editProfile() {
+      try {
+        let data = {
+          memberId: this.member.memberId,
+          memberPw: this.member.memberPw,
+          memberName: this.member.memberName,
+          memberEmail: this.member.memberEmail,
+          memberExt: this.member.memberExt,
+          nickname: this.member.nickname,
+          memberCode: this.member.memberCode,
+          deptCode: this.member.deptCode,
+          posCode: this.member.posCode,
+        };
+        let response = await MemberService.updateProfile(data);
+        console.log(response.data);
+        alert("회원정보가 변경되었습니다.");
+        this.$router.push("/profile");
       } catch (e) {
         console.log(e);
       }
@@ -121,7 +96,7 @@ export default {
 
 .sidebar {
   width: 220px;
-  background: #b3000f;
+  background: #b3000f; /* #b3000f 색상 */
   color: white;
   padding: 30px 20px;
   display: flex;
@@ -201,30 +176,35 @@ export default {
   font-weight: 500;
 }
 
-.edit {
-  display: flex;
-  justify-content: center;
+.edit-box {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  width: 70%;
 }
 
-.edit-link {
-  color: white;
-  text-decoration: none;
+.edit-box:focus {
+  border-color: #b3000f;
+  box-shadow: 0 0 5px rgba(179, 0, 15, 0.5);
 }
 
 .edit-button {
-  background-color: #b3000f;
-  color: white;
+  background-color: #b3000f; /* #b3000f 색상 */
   border: none;
   padding: 10px 20px;
   border-radius: 20px;
+  color: white;
   cursor: pointer;
   font-size: 16px;
   transition: background 0.3s;
   display: block;
-  margin: 0;
+  margin: 20px auto 0;
 }
 
 .edit-button:hover {
-  background-color: #80000b;
+  background-color: #80000b; /* #b3000f 색상의 어두운 버전 */
 }
 </style>

@@ -4,14 +4,15 @@
       <h1 class="sidebar-title">{{ member.memberName }}님</h1>
       <hr class="sidebar-divider" />
       <ul class="sidebar-list">
-        <li class="sidebar-menu mb-5">회원정보수정</li>
-        <li class="sidebar-menu mb-5">비밀번호변경</li>
-        <li class="sidebar-menu">활동내역</li>
+        <router-link to="/profile-edit" class="profile-link"><li class="sidebar-menu mb-5">회원정보수정</li></router-link>
+        <router-link to="/profile-edit/password" class="profile-link"><li class="sidebar-menu mb-5">비밀번호변경</li></router-link>
+        <router-link to="/profile-edit/nickname" class="profile-link"><li class="sidebar-menu mb-5">닉네임변경</li></router-link>
+        <router-link to="/profile-activity" class="profile-link"><li class="sidebar-menu">활동내역</li></router-link>
       </ul>
     </div>
     <div class="main-content">
       <div class="section">
-        <h3>Profile</h3>
+        <router-link to="/profile" class="profile-main"><h3>Profile</h3></router-link>
         <hr />
         <div class="user-info">
           <div class="details">
@@ -51,6 +52,7 @@
 
 <script>
 import MemberService from "@/services/member/MemberService";
+import LoginService from "@/services/login/LoginService";
 
 export default {
   data() {
@@ -73,20 +75,29 @@ export default {
     async editProfile() {
       try {
         let data = {
-          memberId: this.$store.state.member?.memberId,
+          memberId: this.member.memberId,
+          memberPw: this.member.memberPw,
+          memberName: this.member.memberName,
           memberEmail: this.member.memberEmail,
           memberExt: this.member.memberExt,
+          nickname: this.member.nickname,
+          memberCode: "AT03",
           deptCode: this.member.deptCode,
           posCode: this.member.posCode,
         };
-        let response = await MemberService.update(this.$store.state.member?.memberId, data);
+        let response = await MemberService.updateProfile(data);
         console.log(response.data);
+        LoginService.logout();
+        this.$store.commit("logout");
+        alert("관리자 승인 후 로그인 가능합니다.")
+        this.$router.push("/login");
       } catch (e) {
         console.log(e);
       }
     },
   },
   mounted() {
+    alert("수정 요청 후 자동 로그아웃됩니다.\n이후 관리자 승인 시까지 로그인이 불가하오니 주의바랍니다.")
     this.getProfile();
   },
 };
@@ -97,6 +108,16 @@ export default {
   display: flex;
   height: 100vh;
   font-family: "Arial, sans-serif";
+}
+
+.profile-link {
+  color: white;
+  text-decoration: none;
+}
+
+.profile-main {
+  color: black;
+  text-decoration: none;
 }
 
 .sidebar {

@@ -31,6 +31,21 @@ const routes = [
     path: "/profile-edit",
     component: () => import("../views/profile/MyProfileEdit.vue"),
   },
+  // 비밀번호 수정
+  {
+    path: "/profile-edit/password",
+    component: () => import("../views/profile/MyProfileEditPw.vue"),
+  },
+  // 닉네임 수정
+  {
+    path: "/profile-edit/nickname",
+    component: () => import("../views/profile/MyProfileEditNick.vue"),
+  },
+  // 닉네임 수정
+  {
+    path: "/profile-activity",
+    component: () => import("../views/profile/MyActivity.vue"),
+  },
   // 부서게시판
   {
     path: "/board/dept",
@@ -73,8 +88,12 @@ const routes = [
     component: () => import("../views/board/SearchResults.vue"),
   },
   {
-    path: '/board/management',
+    path: '/admin/board-mgmt',
     component: () => import("../views/admin/BoardManagement.vue"),
+  },
+  {
+    path: '/admin/register-mgmt',
+    component: () => import("../views/admin/AdminRegisterMgmt.vue"),
   },
 ];
 

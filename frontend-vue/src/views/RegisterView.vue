@@ -170,15 +170,12 @@ export default {
         alert("아이디는 영문자와 숫자 조합의 8자리 이상이어야 합니다.");
         return;
       }
-      this.failMessage = "";
-      this.successMessage = "";
       try {
         this.successMessage = "";
         let response = await LoginService.reId(this.member.memberId);
         this.message = "사용가능한 ID 입니다.";
         return response.data;
       } catch (e) {
-        this.failMessage = "";
         this.message = "중복된 ID 입니다.";
         console.log(e);
       }
