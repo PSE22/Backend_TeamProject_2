@@ -2,8 +2,6 @@ package org.example.backend.controller.board;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.backend.model.dto.board.FreeBoardCreateRequest;
-import org.example.backend.model.dto.board.IClubDto;
 import org.example.backend.model.dto.board.IFreeBoardDto;
 import org.example.backend.model.entity.board.Board;
 import org.example.backend.service.board.FreeBoardService;
@@ -15,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
