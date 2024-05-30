@@ -10,8 +10,8 @@
           <input
             type="text"
             class="form-control"
-            placeholder="자유게시판"
             disabled
+            v-model="bocode"
           />
         </div>
         <div class="form-group col-3">
@@ -111,8 +111,8 @@
 export default {
   data() {
     return {
-      bocode: [],
-      nickname: []
+      // 백 연결
+      board: [],
     }
   },
 };

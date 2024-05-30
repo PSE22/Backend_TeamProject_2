@@ -16,7 +16,7 @@
           <tr v-for="(data, index) in board" :key="index">
             <td class="text-center">{{ data.boardId }}</td>
             <td class="text-center">{{ data.boardTitle }}</td>
-            <td class="text-center">{{ data.nickname }}</td>
+            <td class="text-center">{{ data.nickName }}</td>
             <td class="text-center">{{ data.addDate }}</td>
             <td class="text-center">{{ data.good }}</td>
           </tr>

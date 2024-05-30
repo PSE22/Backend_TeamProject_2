@@ -2,16 +2,11 @@ package org.example.backend.controller.board;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.backend.model.dto.board.BoardFileDto;
 import org.example.backend.model.dto.board.FreeBoardCreateRequest;
-import org.example.backend.model.dto.board.FreeNoticeDto;
-import org.example.backend.model.dto.board.VoteDto;
+import org.example.backend.model.dto.board.IClubDto;
+import org.example.backend.model.dto.board.IFreeBoardDto;
 import org.example.backend.model.entity.board.Board;
-import org.example.backend.model.entity.board.BoardFile;
-import org.example.backend.model.entity.board.File;
-import org.example.backend.model.entity.board.Place;
 import org.example.backend.service.board.FreeBoardService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -43,8 +38,7 @@ public class FreeBoardController {
             Pageable pageable = PageRequest.of(page, size);
 
 //            전체 조회 서비스 함수 실행
-            Page<Board> pageList
-                    = freeBoardService.findAllByFreeBoardTitleContaining(boardTitle, pageable);
+            Page<IFreeBoardDto> pageList = freeBoardService.findAllByBoardTitleContaining(boardTitle, pageable);
 
 //            vue 로 json 데이터를 전송 : jsp (model == Map(키,값))
             Map<String, Object> response = new HashMap<>();
@@ -63,6 +57,28 @@ public class FreeBoardController {
         } catch (Exception e) {
 //            TODO: INTERNAL_SERVER_ERROR(500) : 벡엔드 서버 에러
 //               아래 코드는 프론트로(웹브라우저) 신호를(500) 보냄
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //    자유게시판 공지 전체조회
+    @GetMapping("/free-notice")
+    public ResponseEntity<Object> findNotice(
+    ) {
+        try {
+//            전체 조회 서비스 실행
+            List<IFreeBoardDto> free
+                    = freeBoardService.findByCodeAndNotice();
+
+            if (free.isEmpty() == false) {
+//                조회 성공
+                return new ResponseEntity<>(free, HttpStatus.OK);
+            } else {
+//                데이터 없음
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+        } catch (Exception e) {
+            log.debug("에러 : " + e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
