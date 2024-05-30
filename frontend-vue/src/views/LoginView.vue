@@ -76,6 +76,7 @@ export default {
     async handleLogin() {
       try {
         let response = await LoginService.login(this.member);
+        console.log("로그인 성공",response.data);
         localStorage.setItem("member", JSON.stringify(response.data));
         this.$store.commit("loginSuccess", response.data);
         if (response.data.memberCode == "AT03") {

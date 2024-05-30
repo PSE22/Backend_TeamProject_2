@@ -14,36 +14,26 @@ import java.util.Optional;
 
 @Repository
 public interface FreeBoardRepository extends JpaRepository<Board, Long> {
-    @Query(value = "SELECT B.* FROM TB_BOARD B " +
+    @Query(value = "SELECT B.*, M.NICKNAME " +
+            "FROM TB_BOARD B " +
+            "LEFT JOIN TB_MEMBER M ON B.MEMBER_ID = M.MEMBER_ID " +
             "WHERE B.BOCODE = 'BO03' " +
             "AND B.STATUS = 'Y' " +
             "AND B.NOTICE_YN = 'N' " +
             "AND B.BOARD_TITLE LIKE '%' || :boardTitle || '%' " +
             "ORDER BY B.ADD_DATE DESC",
-            countQuery = "SELECT count(*) FROM TB_BOARD B " +
+            countQuery = "SELECT count(*) " +
+                    "FROM TB_BOARD B " +
+                    "LEFT JOIN TB_MEMBER M ON B.MEMBER_ID = M.MEMBER_ID " +
                     "WHERE B.BOCODE = 'BO03' " +
                     "AND B.STATUS = 'Y' " +
-                    "AND B.NOTICE_YN = 'N'\n" +
+                    "AND B.NOTICE_YN = 'N' " +
                     "AND B.BOARD_TITLE LIKE '%' || :boardTitle || '%'",
             nativeQuery = true)
     Page<Board> findAllByFreeBoardTitleContaining(@Param("boardTitle") String boardTitle,
-                                                 Pageable pageable
+                                                  Pageable pageable
     );
 
     @Query("SELECT b FROM Board b WHERE b.bocode = :bocode AND b.boardId = :boardId")
     Optional<Board> findByCodeAndId(@Param("bocode") String code, @Param("boardId") Long boardId);
-
-    //    자유게시판 공지 전체조회
-    @Query(value = "SELECT B.BOARD_ID AS boardId,\n" +
-            "B.BOARD_TITLE AS boardTitle,\n" +
-            "M.MEMBER_NAME AS memberName,\n" +
-            "B.ADD_DATE AS addDate\n" +
-            "FROM TB_BOARD B, TB_MEMBER M\n" +
-            "WHERE B.BOCODE LIKE 'BO03'\n" +
-            "AND B.MEMBER_ID = M.MEMBER_ID\n" +
-            "AND B.STATUS = 'Y'\n" +
-            "AND B.NOTICE_YN = 'Y'\n" +
-            "ORDER BY B.ADD_DATE DESC",
-            nativeQuery = true)
-    List<FreeNoticeDto> findByFreeCodeAndNotice();
 }

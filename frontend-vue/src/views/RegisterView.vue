@@ -80,6 +80,15 @@
                       v-model="member.memberExt"
                     />
                   </div>
+                  <div class="form-group">
+                    <input
+                      type="text"
+                      class="form-control form-control-user mb-3"
+                      placeholder="닉네임 입력"
+                      name="nickname"
+                      v-model="member.nickname"
+                    />
+                  </div>
                   <div>
                     <p>부서분류</p>
                   </div>
@@ -104,10 +113,10 @@
                       name="deptCode"
                       v-model="member.posCode"
                     >
-                      <option value="AT0201">사원</option>
-                      <option value="AT0202">주임</option>
-                      <option value="AT0203">대리</option>
-                      <option value="AT0204">과장</option>
+                      <option value="PO01">사원</option>
+                      <option value="PO02">주임</option>
+                      <option value="PO03">대리</option>
+                      <option value="PO04">과장</option>
                     </select>
                   </div>
                 </div>
@@ -118,7 +127,7 @@
                   등록
                 </button>
               </form>
-              <p v-if="message" class="alert alert-danger" role="alert">
+              <p v-if="message" class="alert alert-primary" role="alert">
                 {{ message }}
               </p>
               <hr />
@@ -142,12 +151,13 @@ export default {
         memberId: "",
         memberPw: "",
         rePw: "",
-        memberExt: "",
         memberName: "",
         memberEmail: "",
+        memberExt: "",
+        nickname: "",
         memberCode: "AT03",
         deptCode: "DE01",
-        posCode: "AT0201",
+        posCode: "PO01",
       },
       message: "",
     };
@@ -160,15 +170,12 @@ export default {
         alert("아이디는 영문자와 숫자 조합의 8자리 이상이어야 합니다.");
         return;
       }
-      this.failMessage = "";
-      this.successMessage = "";
       try {
         this.successMessage = "";
         let response = await LoginService.reId(this.member.memberId);
         this.message = "사용가능한 ID 입니다.";
         return response.data;
       } catch (e) {
-        this.failMessage = "";
         this.message = "중복된 ID 입니다.";
         console.log(e);
       }
@@ -185,6 +192,7 @@ export default {
           memberCode: this.member.memberCode,
           deptCode: this.member.deptCode,
           posCode: this.member.posCode,
+          nickname: this.member.nickname,
         };
         // TODO: 공통 사용자 등록 서비스 함수 실행
         let response = await LoginService.register(temp);

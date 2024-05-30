@@ -9,8 +9,6 @@ import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
-
 /**
  * packageName : org.example.backend.service
  * fileName : RedisSubService
@@ -26,19 +24,17 @@ import java.nio.charset.StandardCharsets;
  */
 @Service
 @Slf4j
-public class RedisSubService implements MessageListener {
+public class NotifySubService implements MessageListener {
 
     @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private RedisTemplate<String, Object> notifyRedisTemplate;
 
     @Autowired
     private SseService sseService;
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
-        log.debug("1");
-        NotifyDto notifyDto = (NotifyDto) redisTemplate.getValueSerializer().deserialize(message.getBody());
-        log.debug("2");
+        NotifyDto notifyDto = (NotifyDto) notifyRedisTemplate.getValueSerializer().deserialize(message.getBody());
         sseService.sendSseEvent(notifyDto);
     }
 }

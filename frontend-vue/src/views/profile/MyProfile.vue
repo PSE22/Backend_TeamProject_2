@@ -1,36 +1,44 @@
 <template>
-  <div class="w-75 p-3 container">
+  <div class="container">
     <div class="sidebar">
-      <h1 class="sidebar-title">ㅇㅇㅇ님</h1>
+      <h1 class="sidebar-title">{{ member.memberName }}님</h1>
+      <hr class="sidebar-divider" />
       <ul class="sidebar-list">
-        <li class="sidebar-menu">회원정보수정</li>
-        <li class="sidebar-menu">비밀번호변경</li>
-        <li class="sidebar-menu">활동내역</li>
+        <router-link to="/profile-edit" class="profile-link"><li class="sidebar-menu mb-5">회원정보수정</li></router-link>
+        <router-link to="/profile-edit/password" class="profile-link"><li class="sidebar-menu mb-5">비밀번호변경</li></router-link>
+        <router-link to="/profile-edit/nickname" class="profile-link"><li class="sidebar-menu mb-5">닉네임변경</li></router-link>
+        <router-link to="/profile-activity" class="profile-link"><li class="sidebar-menu">활동내역</li></router-link>
       </ul>
     </div>
     <div class="main-content">
       <div class="section">
-        <h2>Profile</h2>
+        <router-link to="/profile" class="profile-main"><h3>Profile</h3></router-link>
+        <hr />
         <div class="user-info">
           <div class="details">
             <div class="detail-item">
-              <span class="label">고현준</span>
-              <span class="sub-label">toveny1</span>
-              <button class="edit-button">실명수정</button>
+              <span class="label">이름</span>
+              <span class="label">{{ member.memberName }}</span>
             </div>
             <div class="detail-item">
               <span class="label">이메일</span>
-              <button class="edit-button">수정</button>
+              <span class="label">{{ member.memberEmail }}</span>
             </div>
             <div class="detail-item">
-              <span class="label">연락처</span>
-              <button class="edit-button">수정</button>
+              <span class="label">번호</span>
+              <span class="label">{{ member.memberExt }}</span>
             </div>
             <div class="detail-item">
               <span class="label">부서</span>
-              <span class="label">직급</span>
-              <button class="edit-button">수정</button>
+              <span class="label">{{ deptName }}</span>
             </div>
+            <div class="detail-item">
+              <span class="label">직급</span>
+              <span class="label">{{ posName }}</span>
+            </div>
+          </div>
+          <div class="edit">
+            <router-link to="/profile-edit" class="edit-link"><button class="edit-button">수정</button></router-link>
           </div>
         </div>
       </div>
@@ -39,114 +47,184 @@
 </template>
 
 <script>
+import MemberService from "@/services/member/MemberService";
+
 export default {
-}
+  data() {
+    return {
+      member: {},
+    };
+  },
+  computed: {
+    deptName() {
+      if (this.member.deptCode === "DE01") {
+        return "영업팀";
+      } else if (this.member.deptCode === "DE02") {
+        return "인사팀";
+      } else if (this.member.deptCode === "DE03") {
+        return "행정팀";
+      } else if (this.member.deptCode === "DE04") {
+        return "보안팀";
+      } else {
+        return this.member.deptCode;
+      }
+    },
+    posName() {
+      if (this.member.posCode === "PO01") {
+        return "사원";
+      } else if (this.member.posCode === "PO02") {
+        return "주임";
+      } else if (this.member.posCode === "PO03") {
+        return "대리";
+      } else if (this.member.posCode === "PO04") {
+        return "과장";
+      } else {
+        return this.member.posCode;
+      }
+    },
+  },
+  methods: {
+    async getProfile() {
+      try {
+        let response = await MemberService.get(
+          this.$store.state.member?.memberId
+        );
+        this.member = response.data;
+        console.log(response.data);
+      } catch (e) {
+        console.log(e);
+      }
+    },
+  },
+  mounted() {
+    this.getProfile();
+  },
+};
 </script>
 
 <style scoped>
 .container {
-    display: flex;
+  display: flex;
+  height: 100vh;
+  font-family: "Arial, sans-serif";
 }
+
+.profile-link {
+  color: white;
+  text-decoration: none;
+}
+
+.profile-main {
+  color: black;
+  text-decoration: none;
+}
+
 .sidebar {
-  width: 200px;
-  background-color: #f9f9f9;
-  border-right: 1px solid #ddd;
-  padding: 20px;
+  width: 220px;
+  background: #b3000f;
+  color: white;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 15px;
 }
 
 .sidebar-title {
-  font-size: 24px;
+  font-size: 26px;
+  font-weight: bold;
   margin-bottom: 20px;
+}
+
+.sidebar-divider {
+  border: 0;
+  height: 1px;
+  background: white;
+  margin: 20px 0;
 }
 
 .sidebar-list {
   list-style: none;
   padding: 0;
+  width: 100%;
 }
 
 .sidebar-menu {
-  margin-bottom: 10px;
-  font-size: 16px;
+  font-size: 18px;
+  padding: 10px;
   cursor: pointer;
+  transition: background 0.3s;
+}
+
+.sidebar-menu:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
 }
 
 .main-content {
   flex-grow: 1;
-  padding: 20px;
-  background-color: #fff;
+  padding: 40px;
+  background-color: #f4f4f9;
+  border-radius: 15px;
+  margin: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.profile-info {
-  text-align: right;
-}
-
-.username {
-  font-size: 18px;
+.section h3 {
+  font-size: 24px;
   font-weight: bold;
-}
-
-.email {
-  font-size: 14px;
-  color: #777;
-}
-
-.section {
   margin-bottom: 20px;
-}
-
-.section h2 {
-  font-size: 18px;
-  margin-bottom: 10px;
-  padding-bottom: 5px;
-  border-bottom: 2px solid #ddd;
-}
-
-.user-info {
-  display: flex;
 }
 
 .details {
-  flex-grow: 1;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
 }
 
 .detail-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.detail-item:last-child {
+  border-bottom: none;
 }
 
 .label {
-  font-size: 16px;
+  font-size: 18px;
+  font-weight: 500;
 }
 
-.sub-label {
-  color: #777;
-  font-size: 14px;
-  display: block;
-}
-
-.edit-button,
-.confirm-button {
-  background-color: #eee;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.toggle-item {
+.edit {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
+  justify-content: center;
+}
+
+.edit-link {
+  color: white;
+  text-decoration: none;
+}
+
+.edit-button {
+  background-color: #b3000f;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.3s;
+  display: block;
+  margin: 0;
+}
+
+.edit-button:hover {
+  background-color: #80000b;
 }
 </style>

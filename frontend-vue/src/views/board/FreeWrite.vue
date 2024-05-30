@@ -20,6 +20,7 @@
             class="form-control"
             placeholder="닉네임 입력"
             name="nickname"
+            disabled
           />
         </div>
       </div>
@@ -107,7 +108,14 @@
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      bocode: [],
+      nickname: []
+    }
+  },
+};
 </script>
 
 <style>

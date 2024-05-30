@@ -3,7 +3,9 @@ package org.example.backend.service.board;
 import lombok.RequiredArgsConstructor;
 import org.example.backend.model.dto.board.IClubDto;
 import org.example.backend.model.dto.board.VoteDto;
+import org.example.backend.model.entity.CmCode;
 import org.example.backend.model.entity.board.Board;
+import org.example.backend.repository.auth.CmCodeRepository;
 import org.example.backend.repository.board.BoardRepository;
 import org.example.backend.repository.board.ClubRepository;
 import org.springframework.data.domain.Page;
@@ -31,6 +33,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ClubService {
     private final ClubRepository clubRepository;    // DI
+    private final CmCodeRepository cmCodeRepository;
     private final BoardRepository boardRepository;
     private final VoteService voteService;
 
@@ -49,18 +52,17 @@ public class ClubService {
         return list;
     }
 
-    //    동호회 소메뉴
-    public List<IClubDto> findBySmcode() {
-        List<IClubDto> list = clubRepository.findBySmcode();
+    //    동호회 중분류 조회
+    public List<IClubDto> findByBocode() {
+        List<IClubDto> list = clubRepository.findByBocode();
         return list;
     }
 
-    //    TODO: 상세조회
-    public Optional<Board> findById(Long boardId) {
-//        DB 상세조회 실행
-        Optional<Board> optionalBoard
-                = boardRepository.findById(boardId);
-        return optionalBoard;
+    //    동호회 게시판 소분류 조회
+    public List<CmCode> findByCmCdNameAndSmcode() {
+        List<CmCode> list = cmCodeRepository.findByCmCdNameAndSmcode();
+        return list;
+
     }
 
     @Transactional

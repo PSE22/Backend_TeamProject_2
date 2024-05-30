@@ -20,9 +20,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class RedisPubService {
     @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private RedisTemplate<String, Object> notifyRedisTemplate;
 
-    public void publish(String channel, Object message) {
-        redisTemplate.convertAndSend(channel, message);
+    @Autowired
+    private RedisTemplate<String, Object> chatRedisTemplate;
+
+    public void notifyPublish(String channel, Object message) {
+        notifyRedisTemplate.convertAndSend(channel, message);
+    }
+
+    public void chatPublish(String channel, Object message) {
+        chatRedisTemplate.convertAndSend(channel, message);
     }
 }

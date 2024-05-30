@@ -1,6 +1,7 @@
 package org.example.backend.config;
 
-import org.example.backend.service.RedisSubService;
+import org.example.backend.service.ChatSubService;
+import org.example.backend.service.NotifySubService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +26,10 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 public class RedisSubConfig {
 
     @Autowired
-    private RedisSubService redisSubService;
+    private NotifySubService notifySubService;
+
+    @Autowired
+    private ChatSubService chatSubService;
 
     @Autowired
     private RedisConnectionFactory redisConnectionFactory;
@@ -34,7 +38,8 @@ public class RedisSubConfig {
     public RedisMessageListenerContainer redisContainer() {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(redisConnectionFactory);
-        container.addMessageListener(redisSubService, new ChannelTopic("notification"));
+        container.addMessageListener(notifySubService, new ChannelTopic("notification"));
+        container.addMessageListener(chatSubService, new ChannelTopic("chat"));
         return container;
     }
 }

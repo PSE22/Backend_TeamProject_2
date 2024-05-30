@@ -13,25 +13,10 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(data, index) in freeNotice" :key="index">
-            <td class="text-center col-1">{{ data.boardId }}</td>
-            <td class="col-5">
-              <span class="badge text-bg-dark me-2">공지</span
-              >{{ data.boardTitle }}
-            </td>
-            <td class="text-center col-2">{{ data.nickname }}</td>
-            <td class="text-center col-2">{{ data.addDate }}</td>
-          </tr>
-        </tbody>
-        <tbody>
           <tr v-for="(data, index) in board" :key="index">
             <td class="text-center">{{ data.boardId }}</td>
-            <td>
-              <router-link :to="`/free-view/${board.boardTitle}`">
-                {{ data.boardTitle }}
-              </router-link>
-            </td>
-            <td>{{ data.nickname }}</td>
+            <td class="text-center">{{ data.boardTitle }}</td>
+            <td class="text-center">{{ data.nickname }}</td>
             <td class="text-center">{{ data.addDate }}</td>
             <td class="text-center">{{ data.good }}</td>
           </tr>
@@ -99,8 +84,6 @@ export default {
     return {
       // 백엔드 연결
       board: [],
-      freeNotice: [],
-      submitted: false,
       searchBoardTitle: "",
       page: 1,
       count: 0,
@@ -112,8 +95,6 @@ export default {
   methods: {
     async retrieveFreeBoard() {
       try {
-        this.retrieveFreeNotice();
-
         let response = await FreeBoardService.getAll(
           this.searchBoardTitle,
           this.page - 1,
@@ -125,17 +106,6 @@ export default {
         console.log("전체조회", response.data);
       } catch (e) {
         console.log(e);
-      }
-    },
-    async retrieveFreeNotice() {
-      try {
-        // TODO: 공통 장바구니 전체 조회 서비스 함수 실행
-        // TODO: 비동기 코딩
-        let response = await FreeBoardService.getNoticeFree();
-        this.freeNotice = response.data;
-        console.log(response.data); // 웹브라우저 콘솔탬에 백앤드 데이터 표시
-      } catch (e) {
-        console.log(e); // 웹브라우저 콘솔탭에 에러표시
       }
     },
     // TODO: 공통 페이징 함수 : select 태그
@@ -153,7 +123,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .table th {
   white-space: nowrap; /* 줄바꿈 방지 */
   text-overflow: ellipsis; /* 텍스트 생략 */
