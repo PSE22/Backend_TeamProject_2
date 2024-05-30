@@ -3,62 +3,83 @@
     <div class="board-container">
       <div class="board-section hot-topics-section">
         <h2>핫토픽 게시판</h2>
-        <div v-for="(hotTopic, index) in hotTopics.slice(0, 5)" :key="index" class="board-item">
-          <div class="content">
-            <div class="good">{{ hotTopic.good }}</div>
-            <div class="title">{{ hotTopic.boardTitle }}</div>
+        <div v-if="hotTopics.length">
+          <div v-for="(hotTopic, index) in hotTopics.slice(0, 5)" :key="index" class="board-item">
+            <div class="content">
+              <div class="good">{{ hotTopic.good }}</div>
+              <div class="title">{{ hotTopic.boardTitle }}</div>
+            </div>
+            <div class="sub-info">
+              <span class="nickname">별명: {{ hotTopic.nickName }}</span>
+              <span class="reply_count">댓글 {{ hotTopic.totalReplyCount }}</span>
+              <div class="add_date">{{ hotTopic.addDate }}</div>
+            </div>
           </div>
-          <div class="sub-info">
-            <span class="nickname">별명: {{ hotTopic.nickName }}</span>
-            <span class="reply_count">댓글 {{ hotTopic.totalReplyCount }}</span>
-            <div class="add_date">{{ hotTopic.addDate }}</div>
-          </div>
+        </div>
+        <div v-else>
+          <p>데이터가 없습니다.</p>
         </div>
       </div>
     </div>
 
     <div class="board-container">
-      <div v-if="freeBoards.length" class="board-section">
+      <div class="board-section">
         <h2>자유게시판</h2>
-        <div v-for="(item, index) in freeBoards.slice(0, 7)" :key="index" class="board-item">
-          <div class="content">
-            <div class="good">{{ item.good }}</div>
-            <div class="title">{{ item.boardTitle }}</div>
-          </div>
-          <div class="sub-info">
-            <span class="nickname">별명: {{ item.nickname }}</span>
-            <span class="reply_count">댓글 {{ item.totalReplyCount }}</span>
-            <div class="add_date">{{ item.add_date }}</div>
+        <div v-if="freeBoards.length">
+          <div v-for="(item, index) in freeBoards.slice(0, 7)" :key="index" class="board-item">
+            <div class="content">
+              <div class="good">{{ item.good }}</div>
+              <div class="title">{{ item.boardTitle }}</div>
+            </div>
+            <div class="sub-info">
+              <span class="nickname">별명: {{ item.nickName }}</span>
+              <span class="reply_count">댓글 {{ item.totalReplyCount }}</span>
+              <div class="add_date">{{ item.addDate }}</div>
+            </div>
           </div>
         </div>
-      </div>
-      <div v-if="suggestionBoards.length" class="board-section">
-        <h2>건의게시판</h2>
-        <div v-for="(item, index) in suggestionBoards.slice(0, 7)" :key="index" class="board-item">
-          <div class="content">
-            <div class="good">{{ item.good }}</div>
-            <div class="title">{{ item.boardTitle }}</div>
-          </div>
-          <div class="sub-info">
-            <span class="nickname">별명: {{ item.nickname }}</span>
-            <span class="reply_count">댓글 {{ item.totalReplyCount }}</span>
-            <div class="add_date">{{ item.add_date }}</div>
-          </div>
+        <div v-else>
+          <p>데이터가 없습니다.</p>
         </div>
       </div>
 
-      <div v-if="praiseBoards.length" class="board-section">
+      <div class="board-section">
+        <h2>건의게시판</h2>
+        <div v-if="suggestionBoards.length">
+          <div v-for="(item, index) in suggestionBoards.slice(0, 7)" :key="index" class="board-item">
+            <div class="content">
+              <div class="good">{{ item.good }}</div>
+              <div class="title">{{ item.boardTitle }}</div>
+            </div>
+            <div class="sub-info">
+              <span class="nickname">별명: {{ item.nickName }}</span>
+              <span class="reply_count">댓글 {{ item.totalReplyCount }}</span>
+              <div class="add_date">{{ item.addDate }}</div>
+            </div>
+          </div>
+        </div>
+        <div v-else>
+          <p>데이터가 없습니다.</p>
+        </div>
+      </div>
+
+      <div class="board-section">
         <h2>칭찬게시판</h2>
-        <div v-for="(item, index) in praiseBoards.slice(0, 7)" :key="index" class="board-item">
-          <div class="content">
-            <div class="good">{{ item.good }}</div>
-            <div class="title">{{ item.boardTitle }}</div>
+        <div v-if="praiseBoards.length">
+          <div v-for="(item, index) in praiseBoards.slice(0, 7)" :key="index" class="board-item">
+            <div class="content">
+              <div class="good">{{ item.good }}</div>
+              <div class="title">{{ item.boardTitle }}</div>
+            </div>
+            <div class="sub-info">
+              <span class="nickname">별명: {{ item.nickName }}</span>
+              <span class="reply_count">댓글 {{ item.totalReplyCount }}</span>
+              <div class="add_date">{{ item.addDate }}</div>
+            </div>
           </div>
-          <div class="sub-info">
-            <span class="nickname">별명: {{ item.nickname }}</span>
-            <span class="reply_count">댓글 {{ item.totalReplyCount }}</span>
-            <div class="add_date">{{ item.add_date }}</div>
-          </div>
+        </div>
+        <div v-else>
+          <p>데이터가 없습니다.</p>
         </div>
       </div>
     </div>
@@ -120,5 +141,7 @@ export default {
   }
 }
 </script>
+
 <style scoped>
+
 </style>

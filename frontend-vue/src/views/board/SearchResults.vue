@@ -76,6 +76,7 @@
   
   <style scoped>
   .search-results-container {
+    margin-top: 80px;
     padding: 20px;
   }
   .table {
