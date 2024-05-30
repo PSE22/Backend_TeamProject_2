@@ -8,6 +8,12 @@ class FreeBoardService {
             headers: LoginHeader()
         });
     }
+    // 공지사항 전체조회
+    getNotice() {
+    return http.get(`/board/free-notice?`, {
+      headers: LoginHeader(),
+    });
+  }
     // 상세조회
     get(boardId) {
         return http.get(`/board/free/${boardId}`, {
