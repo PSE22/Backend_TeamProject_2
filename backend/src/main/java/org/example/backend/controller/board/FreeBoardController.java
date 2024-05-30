@@ -1,14 +1,7 @@
 package org.example.backend.controller.board;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.backend.model.dto.board.BoardFileDto;
-import org.example.backend.model.dto.board.FreeBoardCreateRequest;
-import org.example.backend.model.dto.board.FreeNoticeDto;
-import org.example.backend.model.dto.board.VoteDto;
 import org.example.backend.model.entity.board.Board;
-import org.example.backend.model.entity.board.BoardFile;
-import org.example.backend.model.entity.board.File;
-import org.example.backend.model.entity.board.Place;
 import org.example.backend.service.board.FreeBoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -89,19 +81,19 @@ public class FreeBoardController {
     }
 
     //    TODO: 저장 함수
-    @PostMapping("/free-write")
-    public ResponseEntity<Object> create(
-            @RequestBody FreeBoardCreateRequest request
-            ) {
-        try {
-            freeBoardService.save(request.getBoard(), request.getVoteDtos(), request.getPlace(), request.getFile(), request.getBoardFileDtos());
-            return ResponseEntity.status(HttpStatus.CREATED).body(request.getBoard().getBoardTitle() + " 게시글이 성공적으로 생성되었습니다.");
-        } catch (Exception e) {
-//            500 전송
-            log.error("게시글 생성 중 오류 발생:", e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+//    @PostMapping("/free-write")
+//    public ResponseEntity<Object> create(
+//            @RequestBody FreeBoardCreateRequest request
+//            ) {
+//        try {
+//            freeBoardService.save(request.getBoard(), request.getVoteDtos(), request.getPlace(), request.getFile(), request.getBoardFileDtos());
+//            return ResponseEntity.status(HttpStatus.CREATED).body(request.getBoard().getBoardTitle() + " 게시글이 성공적으로 생성되었습니다.");
+//        } catch (Exception e) {
+////            500 전송
+//            log.error("게시글 생성 중 오류 발생:", e);
+//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
     //    TODO: 수정함수
     @PutMapping("/free/{boardId}")

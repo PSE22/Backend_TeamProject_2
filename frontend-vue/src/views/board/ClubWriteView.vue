@@ -14,15 +14,31 @@
             />
           </div>
           <div class="col-4">
-            <select class="form-select" aria-label="Default select example">
-              <option value="bocode" v-for="(data, index) in bocode" :key="index">
+            <select
+              class="form-select"
+              aria-label="Default select example"
+              v-model="selectBocode"
+            >
+              <option
+                v-for="(data, index) in bocode"
+                :key="index"
+                :value="data.cmCd"
+              >
                 {{ data.cmCdName }}
               </option>
             </select>
           </div>
           <div class="col-4">
-            <select class="form-select" aria-label="Default select example">
-              <option value="smcode" v-for="(data, index) in smcode" :key="index">
+            <select
+              class="form-select"
+              aria-label="Default select example"
+              v-model="selectSmcode"
+            >
+              <option
+                v-for="(data, index) in smcode"
+                :key="index"
+                :value="data.cmCd"
+              >
                 {{ data.cmCdName }}
               </option>
             </select>
@@ -37,6 +53,7 @@
               class="form-control"
               placeholder="제목을 입력해주세요"
               name="boardTitle"
+              v-model="club.boardTitle"
             />
           </div>
           <div class="col-md-2 d-flex align-items-center justify-content-end">
@@ -44,7 +61,7 @@
               <input
                 class="form-check-input"
                 type="checkbox"
-                id="noticeCheck"
+                v-model.lazy="club.noticeYn"
               />
               <label class="form-check-label" for="noticeCheck">공지사항</label>
             </div>
@@ -55,9 +72,102 @@
         <div class="row mt-3">
           <div class="col-md-2 mb-3">
             <div class="form-group">
-              <button type="button" class="btn btn-secondary btn-block">
-                투표 추가
+              <!-- Button trigger modal -->
+              <button
+                type="button"
+                class="btn btn-dark"
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModal"
+              >
+                <i class="bi bi-bar-chart-line"></i> 투표추가
               </button>
+
+              <!-- Modal -->
+              <div
+                class="modal fade"
+                id="exampleModal"
+                tabindex="-1"
+                aria-labelledby="exampleModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="exampleModalLabel">
+                        투표 등록
+                      </h1>
+                      <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                    <div class="modal-body">
+                      <h5 class="text-start">투표명</h5>
+                      <input
+                        type="text"
+                        class="form-control mb-3"
+                        placeholder="제목을 입력하세요"
+                        name="boardTitle"
+                        v-model="club.voteDtos"
+                      />
+                      <hr />
+                      <h5 class="text-start">항목 추가</h5>
+                      <input
+                        type="text"
+                        class="form-control mb-3"
+                        placeholder="1. 항목을 입력하세요"
+                        name="boardTitle"
+                        v-model="club.voteDtos"
+                      />
+                      <input
+                        type="text"
+                        class="form-control mb-3"
+                        placeholder="2. 항목을 입력하세요"
+                        name="boardTitle"
+                        v-model="club.voteDtos"
+                      />
+                      <input
+                        type="text"
+                        class="form-control mb-3"
+                        placeholder="3. 항목을 입력하세요"
+                        name="boardTitle"
+                        v-model="club.voteDtos"
+                      />
+                      <input
+                        type="text"
+                        class="form-control mb-3"
+                        placeholder="4. 항목을 입력하세요"
+                        name="boardTitle"
+                        v-model="club.voteDtos"
+                      />
+                      <input
+                        type="text"
+                        class="form-control mb-3"
+                        placeholder="5. 항목을 입력하세요"
+                        name="boardTitle"
+                        v-model="club.voteDtos"
+                      />
+                      <hr />
+                      <h5 class="text-start">종료일 설정</h5>
+
+                    </div>
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                      >
+                        취소
+                      </button>
+                      <button type="button" class="btn btn-primary">
+                        등록
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div class="col-md-2 mb-3">
@@ -91,6 +201,7 @@
               placeholder="내용을 입력해주세요"
               rows="5"
               name="boardContent"
+              v-model="club.boardContent"
             ></textarea>
           </div>
         </div>
@@ -109,7 +220,9 @@
 
         <!-- 등록 버튼 -->
         <div class="fixed-button">
-          <button type="button" class="btn btn-primary">등록</button>
+          <button type="button" class="btn btn-primary" @click="saveClub">
+            등록
+          </button>
         </div>
       </div>
     </div>
@@ -118,11 +231,16 @@
 
 <script>
 import ClubService from "@/services/board/ClubService";
+import BoardWriteService from "@/services/board/BoardWriteService";
 export default {
   data() {
     return {
       bocode: [],
       smcode: [],
+      club: {},
+      submitted: false,
+      selectBocode: "", // 추가
+      selectSmcode: "", // 추가
     };
   },
   methods: {
@@ -144,6 +262,34 @@ export default {
         console.log(response.data); // 웹브라우저 콘솔탭
       } catch (e) {
         console.log(e); // 웹브라우저 콘솔탭
+      }
+    },
+    async saveClub() {
+      try {
+        // 임시 객체 변수
+        let data = {
+          board: {
+            memberId: this.$store.state.member.memberId,
+            boardTitle: this.club.boardTitle,
+            boardContent: this.club.boardContent,
+            bocode: this.selectBocode,
+            noticeYn: this.club.noticeYn,
+            smcode: this.selectSmcode,
+          },
+          voteDtos: [], // 예시: 투표 정보가 없을 경우 빈 배열
+          place: {}, // 예시: 장소 정보가 없을 경우 null
+          files: [], // 예시: 파일이 없을 경우 빈 배열
+          boardFileDtos: [], // 예시: 파일 정보가 없을 경우 빈 배열
+        };
+
+        console.log("글쓰기", data);
+        // 백앤드로 객체 추가 요청
+        let response = await BoardWriteService.create(data);
+        // 콘솔에 결과 출력
+        console.log(response);
+        this.submitted = true;
+      } catch (e) {
+        console.log(e);
       }
     },
   },

@@ -1,6 +1,5 @@
 package org.example.backend.model.common;
 
-import jakarta.persistence.Id;
 import lombok.*;
 
 import java.io.Serializable;

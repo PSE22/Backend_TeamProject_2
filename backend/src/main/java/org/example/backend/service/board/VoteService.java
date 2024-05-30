@@ -47,15 +47,12 @@ public class VoteService {
             voteRepository.save(vote);
         }
     }
+
     @Scheduled(cron = "0 0 0 * * ?")
     public void voteScheduler() {
-        String date = LocalDateTime.now()
+        String delDate = LocalDateTime.now()
                 .format(DateTimeFormatter
                         .ofPattern("yyyy-MM-dd"));
-        List<Vote> votes = voteRepository.findByDelDate(date);
-        for (Vote vote : votes) {
-            vote.setStatus("N");
-            voteRepository.save(vote);
-        }
+        voteRepository.updateStatus(delDate);
     }
 }

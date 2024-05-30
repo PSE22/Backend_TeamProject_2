@@ -1,6 +1,5 @@
 package org.example.backend.repository.board;
 
-import org.apache.kafka.common.protocol.types.Field;
 import org.example.backend.model.entity.board.Vote;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -33,5 +32,8 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
             ")", nativeQuery = true)
     void updateVoteCnt(@Param("voteId") Long voteId, @Param("memberId") String memberId, @Param("boardId") Long boardId);
 
-    List<Vote> findByDelDate(String date);
+    @Query(value = "UPDATE TB_VOTE " +
+            "SET STATUS = 'N' " +
+            "WHERE DEL_DATE = :delDate ", nativeQuery = true)
+    List<Vote> updateStatus(@Param("delDate") String delDate);
 }

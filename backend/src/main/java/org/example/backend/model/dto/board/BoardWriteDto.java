@@ -2,6 +2,8 @@ package org.example.backend.model.dto.board;
 
 import lombok.*;
 import org.example.backend.model.entity.board.Board;
+import org.example.backend.model.entity.board.File;
+import org.example.backend.model.entity.board.Place;
 
 import java.util.List;
 
@@ -26,5 +28,8 @@ import java.util.List;
 public class BoardWriteDto {
     private Board board;
     private List<VoteDto> voteDtos;
+    private Place place;
+    private List<File> files;
+    private List<BoardFileDto> boardFileDtos;
 
 }

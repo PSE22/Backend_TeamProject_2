@@ -2,7 +2,6 @@ package org.example.backend.service.board;
 
 import lombok.RequiredArgsConstructor;
 import org.example.backend.model.dto.board.IBoardDetailDto;
-import org.example.backend.model.entity.CmCode;
 import org.example.backend.model.entity.board.Board;
 import org.example.backend.repository.board.BoardRepository;
 import org.springframework.stereotype.Service;

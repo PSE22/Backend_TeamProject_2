@@ -1,7 +1,6 @@
 package org.example.backend.repository.board;
 
 import org.example.backend.model.dto.board.IBoardDetailDto;
-import org.example.backend.model.entity.CmCode;
 import org.example.backend.model.entity.board.Board;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
