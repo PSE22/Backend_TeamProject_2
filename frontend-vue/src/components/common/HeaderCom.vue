@@ -23,9 +23,9 @@
         >
           🔔 <span class="notification-count">{{ notificationCount }}</span>
         </div>
-        <a><router-link to="/login">로그인</router-link></a>
-        <a><router-link to="/register">회원가입</router-link></a>
-        <a href="/" @click.prevent="handleLogout">로그아웃</a>
+        <a><router-link to="/login"                v-if="!isLoggedIn" >로그인</router-link></a>
+        <a><router-link to="/register"             v-if="!isLoggedIn" >회원가입</router-link></a>
+        <a href="/" @click.prevent="handleLogout"  v-if="isLoggedIn" >로그아웃</a>
       </div>
     </div>
     <nav class="header-nav">
