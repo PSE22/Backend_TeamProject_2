@@ -9,6 +9,9 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 /**
  * packageName : org.example.backend.model.entity
  * fileName : Vote
@@ -38,7 +41,7 @@ import org.hibernate.annotations.Where;
 // soft delete
 @Where(clause = "STATUS = 'Y'")
 @SQLDelete(sql = "UPDATE TB_VOTE SET STATUS = 'N', DEL_DATE = TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI:SS') WHERE VOTE_ID = ?")
-public class Vote extends BaseTimeEntity3 {
+public class Vote {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE
             , generator = "VOTE_ID_SEQ_GENERATOR"
@@ -48,4 +51,14 @@ public class Vote extends BaseTimeEntity3 {
     private String voteName;    // 투표명
     private String voteListName;    // 투표항목명
     private Integer voteCnt = 0;    // 투표수
+    private String addDate;
+    private String delDate;
+    private String status = "Y";
+
+    @PrePersist
+    void OnPrePersist() {
+        this.addDate = LocalDateTime.now()
+                .format(DateTimeFormatter
+                        .ofPattern("yyyy-MM-dd HH:mm:ss"));
+    }
 }

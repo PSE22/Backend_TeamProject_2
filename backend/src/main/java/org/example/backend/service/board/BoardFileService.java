@@ -16,12 +16,11 @@ public class BoardFileService {
     @Autowired
     ModelMapper modelMapper;
 
-    public void saveBoardFile(Long boardId, String uuid, List<BoardFileDto> boardFileDtos) {
+    public void saveBoardFile(Long boardId, List<BoardFileDto> boardFileDtos) {
         // 리스트에 저장된 fileDto를 반복해서 저장
         for (BoardFileDto boardFileDto : boardFileDtos) {
-            // 받아온 uuid Dto에 세팅
+            // 받아온 boardId Dto에 세팅
             boardFileDto.setBoardId(boardId);
-            boardFileDto.setUuid(uuid);
             // Dto를 BoardFile 엔티티로 변환
             BoardFile boardFile = modelMapper.map(boardFileDto, BoardFile.class);
 
