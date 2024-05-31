@@ -16,4 +16,4 @@ createApp(App)
 .use(BootstrapVue3)
 .use(store)
 .use(router)
-.mount('#app')
+.mount('#app');
