@@ -3,6 +3,7 @@ package org.example.backend.controller.auth;
 import org.example.backend.service.auth.SseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,11 +30,14 @@ public class SseController {
     @Autowired
     SseService sseService;
 
+    // 미디어 타입 설정해야 SSE 동작
     @GetMapping(value = "/api/connect/{memberId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter connect(@PathVariable String memberId) {
+        // 타임아웃 설정
         SseEmitter emitter = new SseEmitter(3600000L);
         sseService.subscribe(emitter, memberId);
         try {
+            // 최초 연결시 더미데이터 발송
             emitter.send(SseEmitter.event()
                     .name("connect")
                     .data("connected!"));

@@ -255,6 +255,7 @@ export default {
 @import "@/assets/css/home.css";
 
 .chat-container {
+  z-index: 1;
   position: fixed;
   bottom: 0;
   right: 0;

@@ -26,10 +26,12 @@ public class RedisPubService {
     private RedisTemplate<String, Object> chatRedisTemplate;
 
     public void notifyPublish(String channel, Object message) {
+        // 메세지 직렬화 후 레디스로 퍼블리싱
         notifyRedisTemplate.convertAndSend(channel, message);
     }
 
     public void chatPublish(String channel, Object message) {
+        // 메세지 직렬화 후 레디스로 퍼블리싱
         chatRedisTemplate.convertAndSend(channel, message);
     }
 }
