@@ -77,10 +77,10 @@
       </div>
     </div>
     <!-- 채팅창 -->
-    <div class="chat-container" v-if="showChat">
+    <div class="chat-container" v-if="isLoggedIn && showChat">
       <div class="chat-header">
         <h2>Chat</h2>
-        <button @click="toggleChat">Close</button>
+        <button @click="toggleChat">닫기</button>
       </div>
       <div class="chat-messages">
         <div v-for="message in messages" :key="message.id" class="chat-message">
@@ -94,11 +94,11 @@
           @keyup.enter="sendMessage"
           placeholder="Type your message"
         />
-        <button @click="sendMessage">Send</button>
+        <button @click="sendMessage">전송</button>
       </div>
     </div>
-    <button class="chat-toggle-button" @click="toggleChat" v-if="!showChat">
-      Open Chat
+    <button class="chat-toggle-button" @click="toggleChat" v-if="isLoggedIn && !showChat">
+      채팅 열기
     </button>
   </header>
 </template>
