@@ -10,8 +10,8 @@
           <input
             type="text"
             class="form-control"
-            placeholder="자유게시판"
             disabled
+            v-model="bocode"
           />
         </div>
         <div class="form-group col-3">
@@ -20,6 +20,7 @@
             class="form-control"
             placeholder="닉네임 입력"
             name="nickname"
+            disabled
           />
         </div>
       </div>
@@ -107,7 +108,14 @@
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      // 백 연결
+      board: [],
+    }
+  },
+};
 </script>
 
 <style>

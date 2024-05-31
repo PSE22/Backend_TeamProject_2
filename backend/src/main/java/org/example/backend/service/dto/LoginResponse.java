@@ -1,7 +1,6 @@
 package org.example.backend.service.dto;
 
 import lombok.*;
-import org.apache.kafka.common.protocol.types.Field;
 
 /**
  * packageName : org.example.backend.service.dto

@@ -1,9 +1,11 @@
 package org.example.backend.controller.profile;
 
-import org.example.backend.model.entity.auth.Member;
 import org.example.backend.service.profile.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 
 /**

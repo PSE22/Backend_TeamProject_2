@@ -1,13 +1,13 @@
 package org.example.backend.service.board;
 
+import lombok.RequiredArgsConstructor;
 import org.example.backend.model.dto.board.BoardFileDto;
-import org.example.backend.model.dto.board.FreeNoticeDto;
+import org.example.backend.model.dto.board.IClubDto;
+import org.example.backend.model.dto.board.IFreeBoardDto;
 import org.example.backend.model.dto.board.VoteDto;
 import org.example.backend.model.entity.board.Board;
-import org.example.backend.model.entity.board.File;
 import org.example.backend.model.entity.board.Place;
 import org.example.backend.repository.board.FreeBoardRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,34 +16,34 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class FreeBoardService {
 
-    @Autowired
-    FreeBoardRepository freeBoardRepository;
-    @Autowired
-    VoteService voteService;
-    @Autowired
-    PlaceService placeService;
-    @Autowired
-    FileService fileService;
-    @Autowired
-    BoardFileService boardFileService;
+    private final FreeBoardRepository freeBoardRepository;
+    private final VoteService voteService;
+    private final PlaceService placeService;
+    private final FileService fileService;
+    private final BoardFileService boardFileService;
 
     //    TODO: 전체조회(read)
-    public List<Board> findAll() {
-        List<Board> list = freeBoardRepository.findAll();
+    public Page<IFreeBoardDto> findAllByBoardTitleContaining(String boardTitle, Pageable pageable) {
+        return freeBoardRepository.findAllByFrBoardTitleContaining(boardTitle, pageable);
+    }
+
+    //    동호회 공지 조회
+    public List<IFreeBoardDto> findByCodeAndNotice() {
+        List<IFreeBoardDto> list = freeBoardRepository.findByFreeNotice();
         return list;
     }
 
     //    페이징 처리
-    public Page<Board> findAllByFreeBoardTitleContaining(String boardTitle,
-                                                                Pageable pageable) {
-        Page<Board> page
+    public Page<IFreeBoardDto> findAllByFreeBoardTitleContaining(String boardTitle,
+                                                                 Pageable pageable) {
+        Page<IFreeBoardDto> page
                 = freeBoardRepository
-                .findAllByFreeBoardTitleContaining(boardTitle, pageable);
+                .findAllByFrBoardTitleContaining(boardTitle, pageable);
         return page;
     }
 
@@ -57,7 +57,7 @@ public class FreeBoardService {
 
     @Transactional(rollbackFor = Exception.class)
     //    TODO: 등록(insert),수정(update)
-    public void save(Board board, List<VoteDto> voteDtos, Place place, File file, List<BoardFileDto> boardFileDtos) {
+    public void save(Board board, List<VoteDto> voteDtos, Place place, List<BoardFileDto> boardFileDtos) {
         // 분류코드를 설정
         board.setBocode("BO03");
 
@@ -70,7 +70,6 @@ public class FreeBoardService {
 
         placeService.savePlace(boardId, place);
 
-        fileService.saveFile(file);
         // boardFileDtos가 null인 경우 빈 리스트로 초기화
         if (boardFileDtos == null) {
             boardFileDtos = new ArrayList<>();

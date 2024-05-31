@@ -1,7 +1,5 @@
 package org.example.backend.security.config;
 
-import jakarta.servlet.DispatcherType;
-
 import org.example.backend.security.jwt.AuthToken;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -2,12 +2,12 @@ package org.example.backend.controller.admin;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.BoardManageDto;
+import org.example.backend.model.dto.BoardEditDto;
+import org.example.backend.model.entity.CmCode;
 import org.example.backend.service.admin.BoardManageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,15 +26,27 @@ import java.util.List;
  */
 @RestController
 @Slf4j
-@RequestMapping("/api/board")
+@RequestMapping("/api/admin")
 public class BoardManageController {
 
     @Autowired
     BoardManageService boardManageService;
 
-    @GetMapping("/management")
+    @GetMapping("/board-mgmt")
     public ResponseEntity<List<BoardManageDto>> getCmCodeList() {
         List<BoardManageDto> cmCodeList = boardManageService.getCmCodeList();
         return ResponseEntity.ok(cmCodeList);
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<CmCode> addBoard(@RequestBody BoardEditDto boardEditDto) {
+        CmCode newBoard = boardManageService.addBoard(boardEditDto);
+        return ResponseEntity.ok(newBoard);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<CmCode> updateBoard(@RequestBody BoardEditDto boardEditDto) {
+        CmCode updatedBoard = boardManageService.updateBoard(boardEditDto);
+        return ResponseEntity.ok(updatedBoard);
     }
 }
