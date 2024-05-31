@@ -79,7 +79,6 @@
     <!-- 채팅창 -->
     <div class="chat-container" v-if="isLoggedIn && showChat">
       <div class="chat-header">
-        <h2>Chat</h2>
         <button @click="toggleChat">닫기</button>
       </div>
       <div class="chat-messages">
@@ -92,7 +91,6 @@
           type="text"
           v-model="newMessage"
           @keyup.enter="sendMessage"
-          placeholder="Type your message"
         />
         <button @click="sendMessage">전송</button>
       </div>
