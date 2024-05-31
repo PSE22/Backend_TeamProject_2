@@ -14,6 +14,7 @@
       <input v-model="newBoardName" placeholder="게시판명" />
       <input v-model="newBoardComment" placeholder="게시판설명" />
       <button @click="addBoard">추가</button>
+      <button @click="cancelEdit">취소</button>
     </div>
 
     <div v-if="showEditForm" class="form-container">
@@ -33,6 +34,7 @@
           <th>상위 게시판 코드</th>
           <th>게시판명</th>
           <th>게시판설명</th>
+          <th>상태</th>
           <th>기능</th>
         </tr>
       </thead>
@@ -43,6 +45,7 @@
           <td>{{ board.upCmCd }}</td>
           <td>{{ board.cmCdName }}</td>
           <td>{{ board.cmCdComment }}</td>
+          <td>{{ board.status === 'Y' ? '활성화' : '비활성화' }}</td>
           <td>
             <button class="edit-button" @click="editBoard(board)">수정</button>
             <button class="delete-button">삭제</button>
@@ -101,8 +104,9 @@ export default {
       }
     },
     editBoard(board) {
+      this.cancelEdit();
       this.editBoardData = { ...board };
-      this.showEditForm = true;
+      this.showEditForm = !this.showEditForm;
     },
     async updateBoard() {
       try {
@@ -120,6 +124,7 @@ export default {
     },
     cancelEdit() {
       this.showEditForm = false;
+      this.showForm = false;
       this.editBoardData = {
         cmCd: '',
         upCmCd: '',
