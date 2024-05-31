@@ -26,6 +26,7 @@
         <a><router-link to="/login"                v-if="!isLoggedIn" >로그인</router-link></a>
         <a><router-link to="/register"             v-if="!isLoggedIn" >회원가입</router-link></a>
         <a href="/" @click.prevent="handleLogout"  v-if="isLoggedIn" >로그아웃</a>
+        <a v-if="isLoggedIn && memberCode === 'AT01'"><router-link to="/admin/register-mgmt">관리자 페이지</router-link></a>
       </div>
     </div>
     <nav class="header-nav">
@@ -125,6 +126,9 @@ export default {
     isLoggedIn() {
       return this.$store.state.loggedIn;
     },
+    memberCode() {
+      return this.$store.state.member ? this.$store.state.member.memberCode : null;
+    }
   },
   watch: {
     isLoggedIn(LoggedIn) {

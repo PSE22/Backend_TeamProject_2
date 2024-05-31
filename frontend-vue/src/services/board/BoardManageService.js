@@ -32,6 +32,13 @@ class BoardManageService{
                 headers: LoginHeader(),
             });
         }
+
+            // 게시판 삭제
+    deleteBoard(cmCd) {
+        return http.delete(`/admin/delete/${cmCd}`, {
+            headers: LoginHeader(),
+        });
+    }
 }
 
 export default new BoardManageService();

@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static org.apache.kafka.common.requests.DeleteAclsResponse.log;
+
 /**
  * packageName : org.example.backend.service.board
  * fileName : CmCodeService
@@ -34,6 +36,7 @@ public List<BoardManageDto> getCmCodeList() {
     return boardManageRepository.retrieveCmCode();
 }
 
+//  게시판 추가
     @Transactional
     public CmCode addBoard(BoardEditDto boardEditDto) {
         CmCode cmCode = new CmCode();
@@ -54,4 +57,12 @@ public List<BoardManageDto> getCmCodeList() {
         return boardManageRepository.save(cmCode);
     }
 
+    @Transactional
+    public void deleteBoard(String cmCd) {
+        // 하위 게시판 삭제 로그
+        boardManageRepository.deleteByUpCmCd(cmCd);
+
+        // 상위 게시판 삭제 로그
+        boardManageRepository.deleteById(cmCd);
+    }
 }

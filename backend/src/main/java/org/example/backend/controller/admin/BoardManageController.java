@@ -49,4 +49,11 @@ public class BoardManageController {
         CmCode updatedBoard = boardManageService.updateBoard(boardEditDto);
         return ResponseEntity.ok(updatedBoard);
     }
+
+    @DeleteMapping("/delete/{cmCd}")
+    public ResponseEntity<Void> deleteBoard(@PathVariable String cmCd) {
+        log.info("Deleting board with cmCd: {}", cmCd);
+        boardManageService.deleteBoard(cmCd);
+        return ResponseEntity.noContent().build();
+    }
 }
