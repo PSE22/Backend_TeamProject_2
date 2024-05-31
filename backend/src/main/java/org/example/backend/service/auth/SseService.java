@@ -7,12 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.*;
+
 import java.io.IOException;
 import java.util.Map;
-
 
 /**
  * packageName : org.example.backend.service.auth
@@ -74,7 +73,7 @@ public class SseService {
         log.info("새로운 구독자가 등록되었습니다.: {}" + memberId, emitter);
         log.info("등록된 에미터 수: {}", newEmitters.size());
 
-        // 에러, 완료, 타임아웃 콜백 설정
+        // 에러, 완료, 타임아웃시 콜백 및 에미터 삭제 설정
         emitter.onError((error) -> {
             log.error("onError callback", error);
             emitter.completeWithError(error);
@@ -97,7 +96,7 @@ public class SseService {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     sendPing(memberId);
-                    Thread.sleep(60000); // 1분에 한 번씩 보냄
+                    Thread.sleep(60000); // 1분에 한 번씩 발송
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     log.error("SseTask interrupted", e);
@@ -108,6 +107,7 @@ public class SseService {
         return emitter;
     }
 
+    // 핑 발송
     private void sendPing(String memberId) {
         CopyOnWriteArrayList<SseEmitter> emitters = sseEmitters.get(memberId);
         if (emitters != null) {
@@ -124,7 +124,7 @@ public class SseService {
     }
 
     public static void removeFromEmitterList(SseEmitter emitter) {
-        // 완료된 SseEmitter를 감지하여 리스트에서 삭제
+        // 완료된 에미터를 감지하여 리스트에서 삭제
         sseEmitters.forEach((memberId, emitters) -> {
             if (emitters.contains(emitter)) {
                 emitters.remove(emitter);

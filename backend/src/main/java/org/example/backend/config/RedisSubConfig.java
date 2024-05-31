@@ -14,7 +14,7 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
  * fileName : RedisSubConfig
  * author : kimtaewan
  * date : 2024-05-26
- * description :
+ * description : 레디스 채널 설정
  * 요약 :
  * <p>
  * ===========================================================
@@ -38,6 +38,7 @@ public class RedisSubConfig {
     public RedisMessageListenerContainer redisContainer() {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(redisConnectionFactory);
+        // 채널 추가
         container.addMessageListener(notifySubService, new ChannelTopic("notification"));
         container.addMessageListener(chatSubService, new ChannelTopic("chat"));
         return container;

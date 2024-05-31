@@ -34,8 +34,10 @@ public class ChatSubService implements MessageListener {
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
+        // 레디스에서 수신한 메세지 역직렬화
         ChatMessageDto chatMessage = (ChatMessageDto) chatRedisTemplate.getValueSerializer().deserialize(message.getBody());
-        log.debug("Publishing to /topic/message: {}", chatMessage); // 로그 추가
+        log.debug("메세지 퍼블리싱 : {}", chatMessage);
+        // 메세지를 웹소켓으로 퍼블리싱
         messagingTemplate.convertAndSend("/topic/message", chatMessage);
     }
 }

@@ -17,7 +17,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  * fileName : RedisConfig
  * author : kimtaewan
  * date : 2024-05-26
- * description :
+ * description : 레디스 설정
  * 요약 :
  * <p>
  * ===========================================================
@@ -46,6 +46,7 @@ public class RedisConfig {
         redisTemplate.setConnectionFactory(redisConnectionFactory());
 
         redisTemplate.setKeySerializer(new StringRedisSerializer());
+        // NotifyDto 직렬화
         redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(NotifyDto.class));
         return redisTemplate;
     }
@@ -56,6 +57,7 @@ public class RedisConfig {
         redisTemplate.setConnectionFactory(redisConnectionFactory());
 
         redisTemplate.setKeySerializer(new StringRedisSerializer());
+        // ChatMessageDto 직렬화
         redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(ChatMessageDto.class));
         return redisTemplate;
     }
