@@ -20,13 +20,13 @@ class FreeBoardService {
             headers: LoginHeader()
         });
     }
-    // 게시글등록함수
+    // 게시글 등록함수
     create(data) {
         return http.post("/board/free", data, {
             headers: LoginHeader()
         });
     }
-    // 게시글수정함수
+    // 게시글 수정함수
     update(boardId, data) {
         return http.put(`/board/free/${boardId}`, data, {
             headers: LoginHeader()

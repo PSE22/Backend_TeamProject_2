@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.backend.model.entity.board.File;
 import org.example.backend.repository.board.FileRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -12,9 +13,15 @@ import java.util.List;
 public class FileService {
     private final FileRepository fileRepository;
 
-    public List<File> saveFiles(List<File> files) {
-        List<File> savedFiles = fileRepository.saveAll(files);
+//    1개의 파일 저장
+    public File saveFile(File file) {
+        File file2 = fileRepository.save(file);
+        return file2;
+    }
 
-        return savedFiles;
+//    여러개 파일 저장
+    @Transactional
+    public void saveFiles(List<File> files) {
+        fileRepository.saveAll(files);
     }
 }

@@ -77,6 +77,11 @@ const routes = [
     path: "/board/free",
     component: () => import("../views/board/FreeBoard.vue"),
   },
+  // 자유게시판 상세글 조회
+  {
+    path: "/board/free/:boardId",
+    component: () => import("../views/board/FreeDetailView.vue"),
+  },
   // 자유게시판 등록(글쓰기)
   {
     path: "/board/free-write",
