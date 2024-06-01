@@ -27,7 +27,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
     // 레디스 의존성 주입
-    implementation 'org.springframework.boot:spri입g-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
     // JavaMailSender 의존성 주입
     implementation 'org.springframework.boot:spring-boot-starter-mail'
