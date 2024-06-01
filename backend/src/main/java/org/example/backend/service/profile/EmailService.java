@@ -3,10 +3,13 @@ package org.example.backend.service.profile;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.backend.model.entity.auth.Member;
 import org.example.backend.repository.auth.MemberRepository;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 /**
  * packageName : org.example.backend.service.profile
@@ -23,7 +26,7 @@ import org.springframework.stereotype.Service;
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor // final 생성자 자동 완성
+@RequiredArgsConstructor
 public class EmailService {
 
     private final JavaMailSender mailSender;
@@ -35,21 +38,24 @@ public class EmailService {
     public void sendSimpleEmail(String to, String memberId) {
         String randomNumber = myRandomService.generatePassword(memberId);
         String text = "임시 비밀번호 : ";
-        String subject = "임시 비밀번호 발급해드립니다.";
+        String subject = "임시 비밀번호 발급안내.";
         String modifiedText = text + randomNumber;
 
         MimeMessage message = mailSender.createMimeMessage();
+        Optional<Member> optionalMember = memberRepository.findById(memberId);
 
-        try {
-            MimeMessageHelper helper = new MimeMessageHelper(message, false);
-            helper.setTo(to);
-            helper.setSubject(subject);
-            helper.setText(modifiedText, true);
+        if (optionalMember.isPresent() && optionalMember.get().getMemberEmail().equals(to)) {
+            try {
+                MimeMessageHelper helper = new MimeMessageHelper(message, false);
+                helper.setTo(to);
+                helper.setSubject(subject);
+                helper.setText(modifiedText, true);
 
-            mailSender.send(message);
-        } catch (Exception e) {
-            log.debug("이메일 전송에 실패하였습니다.", e);
-            throw new RuntimeException("이메일 전송에 실패하였습니다.", e);
+                mailSender.send(message);
+            } catch (Exception e) {
+                log.debug("이메일 전송에 실패하였습니다.", e);
+                throw new RuntimeException("이메일 전송에 실패하였습니다.", e);
+            }
         }
     }
 }

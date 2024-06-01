@@ -26,10 +26,10 @@ dependencies {
     // 웹소켓 의존성 주입
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
-    // 레디스 의존성 주입 - 김태완
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    // 레디스 의존성 주입
+    implementation 'org.springframework.boot:spri입g-boot-starter-data-redis'
 
-    // JavaMail API 설정
+    // JavaMailSender 의존성 주입
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     implementation 'org.hibernate.validator:hibernate-validator:6.2.0.Final'
