@@ -3,8 +3,11 @@ package org.example.backend.repository.admin;
 import org.example.backend.model.dto.BoardManageDto;
 import org.example.backend.model.entity.CmCode;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,10 +29,18 @@ public interface BoardManageRepository extends JpaRepository<CmCode , String> {
     @Query(value = "SELECT CM_CD AS cmCd, " +
             "UP_CM_CD AS upCmCd, " +
             "CM_CD_NAME AS cmCdName, " +
-            "CM_CD_COMMENT AS cmCdComment \n" +
-            "FROM TB_CM_CODE\n" +
-            "WHERE CM_CD LIKE 'BO%' \n" +
-            "   OR CM_CD LIKE 'SM%' \n" +
+            "CM_CD_COMMENT AS cmCdComment, " +
+            "STATUS AS status " +
+            "FROM TB_CM_CODE " +
+            "WHERE CM_CD LIKE 'BO%' " +
+            "   OR CM_CD LIKE 'SM%' " +
             "ORDER BY NVL(CM_CD ,UP_CM_CD ),CM_CD, UP_CM_CD", nativeQuery = true)
     List<BoardManageDto> retrieveCmCode();
+
+    void deleteByUpCmCd(String upCmCd);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM CmCode c WHERE c.upCmCd = :upCmCd")
+    void deleteSubBoards(@Param("upCmCd") String upCmCd);
 }

@@ -34,6 +34,7 @@ public class NotifySubService implements MessageListener {
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
+        // 레디스에서 수신한 메세지 역직렬화
         NotifyDto notifyDto = (NotifyDto) notifyRedisTemplate.getValueSerializer().deserialize(message.getBody());
         sseService.sendSseEvent(notifyDto);
     }

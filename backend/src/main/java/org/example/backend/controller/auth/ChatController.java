@@ -38,9 +38,12 @@ public class ChatController {
 
     @MessageMapping("/message")
     public void sendMessage(ChatMessageDto message) {
-        log.debug("Sending message: {}", message);
+        log.debug("메세지 발송: {}", message);
+        // 아이디로 회원정보 조회
         Optional<Member> member = memberService.findById(message.getMemberId());
+        // 회원정보 존재할 경우
         if (member.isPresent()) {
+            // 닉네임 세팅
             message.setNickname(member.get().getNickname());
             chatService.message(message);
         } else {

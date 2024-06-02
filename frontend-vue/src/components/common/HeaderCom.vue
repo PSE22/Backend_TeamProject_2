@@ -26,6 +26,7 @@
         <a><router-link to="/login"                v-if="!isLoggedIn" >로그인</router-link></a>
         <a><router-link to="/register"             v-if="!isLoggedIn" >회원가입</router-link></a>
         <a href="/" @click.prevent="handleLogout"  v-if="isLoggedIn" >로그아웃</a>
+        <a v-if="isLoggedIn && memberCode === 'AT01'"><router-link to="/admin/register-mgmt">관리자 페이지</router-link></a>
       </div>
     </div>
     <nav class="header-nav">
@@ -77,10 +78,9 @@
       </div>
     </div>
     <!-- 채팅창 -->
-    <div class="chat-container" v-if="showChat">
+    <div class="chat-container" v-if="isLoggedIn && showChat">
       <div class="chat-header">
-        <h2>Chat</h2>
-        <button @click="toggleChat">Close</button>
+        <button @click="toggleChat">닫기</button>
       </div>
       <div class="chat-messages">
         <div v-for="message in messages" :key="message.id" class="chat-message">
@@ -92,13 +92,12 @@
           type="text"
           v-model="newMessage"
           @keyup.enter="sendMessage"
-          placeholder="Type your message"
         />
-        <button @click="sendMessage">Send</button>
+        <button @click="sendMessage">전송</button>
       </div>
     </div>
-    <button class="chat-toggle-button" @click="toggleChat" v-if="!showChat">
-      Open Chat
+    <button class="chat-toggle-button" @click="toggleChat" v-if="isLoggedIn && !showChat">
+      채팅 열기
     </button>
   </header>
 </template>
@@ -127,6 +126,9 @@ export default {
     isLoggedIn() {
       return this.$store.state.loggedIn;
     },
+    memberCode() {
+      return this.$store.state.member ? this.$store.state.member.memberCode : null;
+    }
   },
   watch: {
     isLoggedIn(LoggedIn) {
@@ -255,6 +257,7 @@ export default {
 @import "@/assets/css/home.css";
 
 .chat-container {
+  z-index: 1;
   position: fixed;
   bottom: 0;
   right: 0;

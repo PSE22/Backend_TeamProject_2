@@ -18,5 +18,6 @@ public interface BoardManageDto {
     String getUpCmCd();
     String getCmCdName();
     String getCmCdComment();
+    String getStatus();
 
 }

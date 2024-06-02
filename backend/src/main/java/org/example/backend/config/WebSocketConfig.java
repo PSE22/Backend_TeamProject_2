@@ -13,7 +13,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
  * fileName : WebSocketConfig
  * author : kimtaewan
  * date : 2024-05-29
- * description :
+ * description : 웹소켓 설정
  * 요약 :
  * <p>
  * ===========================================================
@@ -21,17 +21,20 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
  * -----------------------------------------------------------
  * 2024-05-29         kimtaewan          최초 생성
  */
-@ComponentScan
+@ComponentScan  // 자동 bean 등록 어노테이션
 @Configuration
-@EnableWebSocketMessageBroker
+@EnableWebSocketMessageBroker   // STOMP 사용 어노테이션
+// STOMP 사용시 implements
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    // 수발신 엔드포인트
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic");
         config.setApplicationDestinationPrefixes("/app");
     }
 
+    // 연결 엔드포인트
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/chat").setAllowedOriginPatterns("*").withSockJS();
