@@ -11,10 +11,7 @@
           ><li class="sidebar-menu mb-5">반려회원관리</li></router-link
         >
         <router-link to="/admin/edit-mgmt" class="profile-link"
-          ><li class="sidebar-menu mb-5">회원정보변경승인</li></router-link
-        >
-        <router-link to="/admin/delete-mgmt" class="profile-link"
-          ><li class="sidebar-menu mb-5">회원삭제</li></router-link
+          ><li class="sidebar-menu mb-5">회원정보변경</li></router-link
         >
         <router-link to="/admin/report-mgmt" class="profile-link"
           ><li class="sidebar-menu">신고글관리</li></router-link
@@ -48,7 +45,6 @@
               <td class="col-1 text-center">
                 <button class="approve-button" @click="registerApprove(data)">승인</button>
                 <button class="reject-button" @click="registerReject(data)">반려</button>
-                <button class="delete-button" @click="registerDelete(data)">삭제</button>
               </td>
             </tr>
           </tbody>
@@ -113,12 +109,6 @@ export default {
         console.log(e);
       }
     },
-    async registerDelete(data) {
-      let response = await MemberService.hardDeleteProfile(data.memberId);
-      console.log(response.data);
-      alert("회원 삭제 처리되었습니다.");
-      this.getAllProfile();
-    }
   },
   mounted() {
     this.getProfile();
@@ -220,13 +210,5 @@ button {
 
 .reject-button:hover {
   background-color: #e68900;
-}
-
-.delete-button {
-  background-color: #f44336;
-}
-
-.delete-button:hover {
-  background-color: #d32f2f;
 }
 </style>

@@ -41,7 +41,7 @@ const routes = [
     path: "/profile-edit/nickname",
     component: () => import("../views/profile/MyProfileEditNick.vue"),
   },
-  // 닉네임 수정
+  // 활동내역
   {
     path: "/profile-activity",
     component: () => import("../views/profile/MyActivity.vue"),
@@ -104,6 +104,14 @@ const routes = [
   {
     path: '/admin/register-mgmt',
     component: () => import("../views/admin/AdminRegisterMgmt.vue"),
+  },
+  {
+    path: '/admin/register-deny-mgmt',
+    component: () => import("../views/admin/AdminRegisterDenyMgmt.vue"),
+  },
+  {
+    path: '/admin/edit-mgmt',
+    component: () => import("../views/admin/AdminEditMgmt.vue"),
   },
 ];
 

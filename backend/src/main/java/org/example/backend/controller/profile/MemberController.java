@@ -2,7 +2,6 @@ package org.example.backend.controller.profile;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.protocol.types.Field;
 import org.example.backend.model.entity.auth.Member;
 import org.example.backend.service.auth.MemberService;
 import org.springframework.http.HttpStatus;
@@ -50,11 +49,28 @@ public class MemberController {
         }
     }
 
-    //  회원 전체 조회
+    //  신규 회원 전체 조회
     @GetMapping("/profile-all/{memberCode}")
     public ResponseEntity<Object> findAllByMemberCode(@PathVariable String memberCode) {
         try {
             List<Member> memberList = memberService.findAllByMemberCode(memberCode);
+            if (memberList.isEmpty() == true) {
+                // 데이터 없음
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } else {
+                // 조회 성공
+                return new ResponseEntity<>(memberList, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //  기존 회원 부서별 전체 조회
+    @GetMapping("/profile-all/old/{memberCode}/{deptCode}")
+    public ResponseEntity<Object> findAllByMemberCodeAndDeptCode(@PathVariable String memberCode, @PathVariable String deptCode) {
+        try {
+            List<Member> memberList = memberService.findAllByMemberCodeAndDeptCode(memberCode, deptCode);
             if (memberList.isEmpty() == true) {
                 // 데이터 없음
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -95,6 +111,7 @@ public class MemberController {
         }
     }
 
+    //  soft delete
     @DeleteMapping("/profile/deletion/{memberId}")
     public ResponseEntity<Object> delete(
             @PathVariable String memberId
@@ -114,7 +131,7 @@ public class MemberController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
+    //  hard delete
     @DeleteMapping("/profile/hard-deletion/{memberId}")
     public void delMember(@PathVariable String memberId) {
         memberService.delMember(memberId);
