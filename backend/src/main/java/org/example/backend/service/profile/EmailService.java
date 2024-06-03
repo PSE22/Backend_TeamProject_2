@@ -36,16 +36,16 @@ public class EmailService {
     final MemberRepository memberRepository;
 
     public void sendSimpleEmail(String to, String memberId) {
-        String randomNumber = myRandomService.generatePassword(memberId);
-        String text = "임시 비밀번호 : ";
-        String subject = "임시 비밀번호 발급안내.";
-        String modifiedText = text + randomNumber;
-
         MimeMessage message = mailSender.createMimeMessage();
         Optional<Member> optionalMember = memberRepository.findById(memberId);
 
         if (optionalMember.isPresent() && optionalMember.get().getMemberEmail().equals(to)) {
             try {
+                String randomNumber = myRandomService.generatePassword(memberId);
+                String text = "임시 비밀번호 : ";
+                String subject = "임시 비밀번호 발급 안내";
+                String modifiedText = text + randomNumber;
+
                 MimeMessageHelper helper = new MimeMessageHelper(message, false);
                 helper.setTo(to);
                 helper.setSubject(subject);

@@ -21,6 +21,7 @@
                         placeholder="ID 입력"
                         name="memberId"
                         v-model="memberId"
+                        @blur="findMember"
                       />
                     </div>
                     <div class="form-group">
@@ -56,20 +57,38 @@
 </template>
 <script>
 import LoginService from "@/services/login/LoginService";
+import MemberService from "@/services/member/MemberService";
+
 export default {
   data() {
     return {
+        member: {},
         memberId: "",
         to: "",
         message: ""
     };
   },
   methods: {
+    async findMember() {
+      try {
+        let response = await MemberService.get(this.memberId);
+        this.member = response.data;
+        console.log(response.data);
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
     async findPassword() {
       try {
-        let response = await LoginService.find(this.to, this.memberId);
-        console.log(response.data);
-        this.message = "임시 비밀번호가 발급되었습니다."
+        await LoginService.find(this.to, this.memberId);
+        if (this.to === this.member.memberEmail) {
+          this.message = "임시 비밀번호가 발급되었습니다."
+          console.log(this.message);
+        } else if (this.to !== this.member.memberEmail) {
+          this.message = "회원정보가 일치하지 않습니다."
+          console.log(this.message);
+        } 
       } catch (e) {
         console.log(e);
       }
