@@ -21,8 +21,11 @@
           class="notification-icon"
           @click="toggleNotifications"
         >
-          🔔 <span class="notification-count">{{ notificationCount }}</span>
+          <i class="bi bi-bell"></i> <span class="notification-count">{{ notificationCount }}</span>
         </div>
+        <router-link to="/profile" v-if="isLoggedIn" class="profile-icon">
+          <i class="bi bi-person-circle"></i>
+        </router-link>
         <a><router-link to="/login"                v-if="!isLoggedIn" >로그인</router-link></a>
         <a><router-link to="/register"             v-if="!isLoggedIn" >회원가입</router-link></a>
         <a href="/" @click.prevent="handleLogout"  v-if="isLoggedIn" >로그아웃</a>
@@ -311,5 +314,10 @@ export default {
   color: #fff;
   border: none;
   cursor: pointer;
+}
+
+.profile-icon {
+  margin-left: 25px;
+  font-size: 1.5em; /* 원하는 크기로 설정 */
 }
 </style>
