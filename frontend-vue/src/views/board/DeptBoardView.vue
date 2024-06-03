@@ -51,7 +51,7 @@
         <!-- {/* paging 시작 */} -->
         <div class="row justify-content-between">
             <div class="col-4 w-25 mb-3">
-                <select class="form-select form-select-sm" v-model="pageSize" @change="pageSizeChange">
+                <select class="form-select form-select-sm" v-model="pageSize" @change="retrieveDept()">
                     <option v-for="(data, index) in pageSizes" :key="index" :value="data">
                         {{ data }}
                     </option>
@@ -132,7 +132,6 @@ export default {
         },
         // 페이징 : select 태그에 바인딩
         pageSizeChange(dept) {
-            
             this.page = 1;          // 현재패이지번호 : 1
             this.smcode = dept;
             this.retrieveDeptNotice();

@@ -4,9 +4,9 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.board.IBoardDetailDto;
-import org.example.backend.model.entity.board.Board;
 import org.example.backend.model.dto.board.IBoardDto;
 import org.example.backend.model.dto.board.IReplyDto;
+import org.example.backend.model.dto.board.IUserDto;
 import org.example.backend.model.entity.board.Place;
 import org.example.backend.model.entity.board.Vote;
 import org.example.backend.service.board.BoardDetailService;
@@ -34,10 +34,24 @@ import java.util.Optional;
 @RestController
 @RequestMapping("api/board")
 @RequiredArgsConstructor
-@RestControllerAdvice   // 전역적으로 예외처리
 public class BoardDetailController {
 
     private final BoardDetailService boardDetailService;
+
+    // 로그인된 회원 정보 조회
+    @GetMapping("/board-detail/member")
+    public ResponseEntity<Object> findMember(@RequestParam String memberId) {
+        try {
+            Optional<IUserDto> optional = boardDetailService.findMember(memberId);
+            if (optional.isEmpty() == true) {
+                return new ResponseEntity<>("데이터 없음", HttpStatus.NO_CONTENT);
+            } else {
+                return new ResponseEntity<>(optional.get(), HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            return handleException(e);
+        }
+    }
 
     // 게시글, 작성자 정보 조회
     @GetMapping("/board-detail")
@@ -71,9 +85,9 @@ public class BoardDetailController {
 
     // 글번호로 투표 조회
     @GetMapping("/board-detail/vote")
-    public ResponseEntity<Object> findByVote(@RequestParam Long boardId) {
+    public ResponseEntity<Object> findVote(@RequestParam Long boardId) {
         try {
-            List<Vote> list = boardDetailService.findByVote(boardId);
+            List<Vote> list = boardDetailService.findVote(boardId);
             if (list.isEmpty() == true) {
                 return new ResponseEntity<>("데이터 없음", HttpStatus.NO_CONTENT);
             } else {
@@ -116,13 +130,28 @@ public class BoardDetailController {
 
     // 글번호로 댓글 조회
     @GetMapping("/board-detail/reply")
-    public ResponseEntity<Object> findReply(@RequestParam Long boardId) {
+    public ResponseEntity<Object> findReplyCount(@RequestParam Long boardId) {
         try {
             List<IReplyDto> list = boardDetailService.findReply(boardId);
             if (list.isEmpty() == true) {
                 return new ResponseEntity<>("데이터 없음", HttpStatus.NO_CONTENT);
             } else {
                 return new ResponseEntity<>(list, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            return handleException(e);
+        }
+    }
+
+    // 댓글 수 조회
+    @GetMapping("/board-detail/reply/count")
+    public ResponseEntity<Object> countReply(@RequestParam Long boardId){
+        try {
+            Integer count = boardDetailService.countReply(boardId);
+            if (count == null) {
+                return new ResponseEntity<>("데이터 없음", HttpStatus.NO_CONTENT);
+            } else {
+                return new ResponseEntity<>(count, HttpStatus.OK);
             }
         } catch (Exception e) {
             return handleException(e);

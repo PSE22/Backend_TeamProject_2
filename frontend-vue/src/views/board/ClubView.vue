@@ -69,7 +69,7 @@
         글쓰기
       </button>
     </div>
-  </div>
+3  </div>
   <div class="row">
     <b-pagination
       class="col-12 mb-3 justify-content-center"
