@@ -2,6 +2,7 @@ package org.example.backend.controller.profile;
 
 import org.example.backend.service.profile.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,9 +29,12 @@ public class EmailController {
     private EmailService emailService;
 
     @PutMapping("/sendEmail/{to}/{memberId}")
-    public String sendEmail(@PathVariable String to, @PathVariable String memberId) {
-        emailService.sendSimpleEmail(to, memberId);
-
-        return "Email sent successfully";
+    public ResponseEntity<String> sendEmail(@PathVariable String to, @PathVariable String memberId) {
+        try {
+            emailService.sendSimpleEmail(to, memberId);
+            return ResponseEntity.ok().body("임시 비밀번호가 발급되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("임시 비밀번호 발급에 실패했습니다.");
+        }
     }
 }
