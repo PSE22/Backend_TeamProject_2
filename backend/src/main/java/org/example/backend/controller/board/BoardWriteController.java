@@ -6,10 +6,7 @@ import org.example.backend.model.dto.board.BoardWriteDto;
 import org.example.backend.service.board.BoardWriteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * packageName : org.example.backend.controller.board
@@ -28,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("api/board")
 @RequiredArgsConstructor
+@RestControllerAdvice   // 전역적으로 예외처리
 public class BoardWriteController {
     private final BoardWriteService boardWriteService;
 
