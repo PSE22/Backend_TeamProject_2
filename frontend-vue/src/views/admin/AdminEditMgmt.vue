@@ -19,6 +19,10 @@
       </ul>
     </div>
     <div class="main-content">
+      <button class="dept-button" @click="getAllProfileDE01">영업팀</button>
+      <button class="dept-button" @click="getAllProfileDE02">인사팀</button>
+      <button class="dept-button" @click="getAllProfileDE03">행정팀</button>
+      <button class="dept-button" @click="getAllProfileDE04">보안팀</button>
       <div class="row">
         <table class="table">
           <thead class="table-light text-center">
@@ -48,7 +52,7 @@
                     <!-- Button trigger modal -->
                     <button
                       type="button"
-                      class="modify-button"
+                      class="btn btn-primary"
                       data-bs-toggle="modal"
                       :data-bs-target="'#editModal-' + index"
                     >
@@ -178,7 +182,47 @@ export default {
 
     async getAllProfile() {
       try {
-        let response = await MemberService.getMember("AT04");
+        let response = await MemberService.getMember("AT02");
+        this.member = response.data;
+        console.log(response.data);
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    async getAllProfileDE01() {
+      try {
+        let response = await MemberService.getMemberOfDept("AT02", "DE01");
+        this.member = response.data;
+        console.log(response.data);
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    async getAllProfileDE02() {
+      try {
+        let response = await MemberService.getMemberOfDept("AT02", "DE02");
+        this.member = response.data;
+        console.log(response.data);
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    async getAllProfileDE03() {
+      try {
+        let response = await MemberService.getMemberOfDept("AT02", "DE03");
+        this.member = response.data;
+        console.log(response.data);
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    async getAllProfileDE04() {
+      try {
+        let response = await MemberService.getMemberOfDept("AT02", "DE04");
         this.member = response.data;
         console.log(response.data);
       } catch (e) {
@@ -197,7 +241,7 @@ export default {
       }
     },
     async registerDelete(data) {
-      let response = await MemberService.hardDeleteProfile(data.memberId);
+      let response = await MemberService.deleteProfile(data.memberId);
       console.log(response.data);
       alert("회원 삭제 처리되었습니다.");
       this.getAllProfile();
@@ -287,6 +331,10 @@ button {
   cursor: pointer;
   font-size: 14px;
   transition: background-color 0.3s ease;
+}
+
+.dept-button {
+  background-color: black;
 }
 
 .modify-button {
