@@ -46,6 +46,11 @@ const routes = [
     path: "/profile-activity",
     component: () => import("../views/profile/MyActivity.vue"),
   },
+  // 핫토픽 게시판
+  {
+    path: "/board/hot-topic",
+    component: () => import("../views/board/HotTopicBoardView.vue"),
+  },
   // 부서게시판
   {
     path: "/board/dept",
