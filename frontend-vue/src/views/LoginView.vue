@@ -79,13 +79,18 @@ export default {
         console.log("로그인 성공",response.data);
         localStorage.setItem("member", JSON.stringify(response.data));
         this.$store.commit("loginSuccess", response.data);
-        if (response.data.memberCode == "AT03") {
+        if (response.data.memberCode == "AT04") {
+          LoginService.logout();
+          this.$store.commit("logout");
+          alert("회원가입이 반려되었습니다. 관리자에게 문의하세요.");
+          this.$router.push("/login");
+        } else if (response.data.memberCode == "AT03") {
           LoginService.logout();
           this.$store.commit("logout");
           alert("승인 대기 중입니다.");
           this.$router.push("/login");
         } else {
-        this.$router.push("/");
+          this.$router.push("/");
         }
       } catch (e) {
         this.$store.commit("loginFailure");

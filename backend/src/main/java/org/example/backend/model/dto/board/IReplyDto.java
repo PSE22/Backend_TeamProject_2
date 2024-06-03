@@ -19,6 +19,8 @@ public interface IReplyDto {
     Long getBoardId();      // 글번호
     Long getReplyId();      // 댓글 ID
     String getMemberId();   // 회원 ID
+    String getMemberName();   // 이름
+    String getNickname();   // 닉네임
     Long getReReplyId();    // 대댓글 ID
     String getReply();      // 댓글내용
     String getAddDate();    // 작성일

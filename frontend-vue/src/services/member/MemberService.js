@@ -7,13 +7,23 @@ class MemberService {
     }
 
     // 회원 전체 조회
-    getMember() {
-        return http.get(`/member/profile`);
+    getMember(memberCode) {
+        return http.get(`/member/profile-all/${memberCode}`);
     }
 
     // 회원정보 수정
     updateProfile(data) {
         return http.put(`/member/profile-edit`, data);
+    }
+
+    // 회원정보 삭제
+    deleteProfile(memberId) {
+        return http.delete(`/member/profile/deletion/${memberId}`);
+    }
+
+    // 회원정보 삭제(하드)
+    hardDeleteProfile(memberId) {
+        return http.delete(`/member/profile/hard-deletion/${memberId}`);
     }
 
     // 비밀번호 변경

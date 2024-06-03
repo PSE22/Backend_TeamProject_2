@@ -61,8 +61,22 @@ public class MemberService {
     }
 
     //  5) 회원 전체 조회
-    public List<Member> findAll() {
-        List<Member> memberList = memberRepository.findAll();
+    public List<Member> findAllByMemberCode(String memberCode) {
+        List<Member> memberList = memberRepository.findAllByMemberCode(memberCode);
         return memberList;
+    }
+
+    //  6) 회원 삭제
+    public boolean removeById(String memberId) {
+        if (memberRepository.existsById(memberId) == true) {
+            memberRepository.deleteById(memberId);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void delMember(String memberId) {
+        memberRepository.deleteMember(memberId);
     }
 }

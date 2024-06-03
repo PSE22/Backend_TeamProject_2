@@ -2,6 +2,7 @@ package org.example.backend.controller.profile;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.protocol.types.Field;
 import org.example.backend.model.entity.auth.Member;
 import org.example.backend.service.auth.MemberService;
 import org.springframework.http.HttpStatus;
@@ -50,10 +51,10 @@ public class MemberController {
     }
 
     //  회원 전체 조회
-    @GetMapping("/profile")
-    public ResponseEntity<Object> findAll() {
+    @GetMapping("/profile-all/{memberCode}")
+    public ResponseEntity<Object> findAllByMemberCode(@PathVariable String memberCode) {
         try {
-            List<Member> memberList = memberService.findAll();
+            List<Member> memberList = memberService.findAllByMemberCode(memberCode);
             if (memberList.isEmpty() == true) {
                 // 데이터 없음
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -80,6 +81,7 @@ public class MemberController {
         }
     }
 
+    //  비밀번호 수정
     @PutMapping("/profile-edit/password")
     public ResponseEntity<Object> updatePassword(
             @RequestBody Member member
@@ -91,5 +93,30 @@ public class MemberController {
 //            DB 에러 (서버 에러) -> 500 신호(INTERNAL_SERVER_ERROR)
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @DeleteMapping("/profile/deletion/{memberId}")
+    public ResponseEntity<Object> delete(
+            @PathVariable String memberId
+    ) {
+        try {
+//            DB 서비스 삭제 함수 실행
+            boolean success = memberService.removeById(memberId);
+
+            if (success == true) {
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+//                삭제 실행 : 0건 삭제
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+        } catch (Exception e) {
+//            서버(DB) 에러
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/profile/hard-deletion/{memberId}")
+    public void delMember(@PathVariable String memberId) {
+        memberService.delMember(memberId);
     }
 }
