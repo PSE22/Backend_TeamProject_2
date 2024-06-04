@@ -110,7 +110,7 @@ public class FreeBoardController {
             @RequestBody FreeBoardCreateRequest request
             ) {
         try {
-            freeBoardService.save(request.getBoard(), request.getVoteDtos(), request.getPlace(), request.getFile(), request.getBoardFileDtos());
+            freeBoardService.save(request.getBoard(), request.getVoteDtos(), request.getPlace(), request.getFileDtos(), request.getBoardFileDtos());
             return ResponseEntity.status(HttpStatus.CREATED).body(request.getBoard().getBoardTitle() + " 게시글이 성공적으로 생성되었습니다.");
         } catch (Exception e) {
 //            500 전송

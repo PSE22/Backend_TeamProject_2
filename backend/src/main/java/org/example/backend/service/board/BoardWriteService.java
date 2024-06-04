@@ -2,6 +2,7 @@ package org.example.backend.service.board;
 
 import lombok.RequiredArgsConstructor;
 import org.example.backend.model.dto.board.BoardFileDto;
+import org.example.backend.model.dto.board.FileDto;
 import org.example.backend.model.dto.board.VoteDto;
 import org.example.backend.model.entity.board.Board;
 import org.example.backend.model.entity.board.File;
@@ -38,7 +39,7 @@ public class BoardWriteService {
 
     //    투표 기능
     @Transactional
-    public void save(Board board, List<VoteDto> voteDtos, Place place, List<File> files, List<BoardFileDto> boardFileDtos) {
+    public void save(Board board, List<VoteDto> voteDtos, Place place, List<FileDto> fileDtos, List<BoardFileDto> boardFileDtos) {
         // JPA 저장 함수 실행 : return 값 : 저장된 객체
         Board board2 = boardRepository.save(board);
         // 저장된 board의 boardId를 객체로 변환
@@ -47,7 +48,7 @@ public class BoardWriteService {
 //        null 체크
         Optional.ofNullable(voteDtos).ifPresent(dtos -> voteService.saveVote(boardId, dtos));
         Optional.ofNullable(place).ifPresent(p -> placeService.savePlace(boardId, p));
-        Optional.ofNullable(files).ifPresent(fileService::saveFiles);
+        Optional.ofNullable(fileDtos).ifPresent(fileService::fileDtos);
         Optional.ofNullable(boardFileDtos).ifPresent(dtos -> boardFileService.saveBoardFile(boardId, dtos));
     }
 }
