@@ -34,11 +34,12 @@ export default {
       const script = document.createElement("script");
       // 로드 완료 후 retrieveMap() 메서드 실행 추가
       script.onload = () => {
-        this.retrieveMap();
+        this.retrieveMap("부산 부산진구 중앙대로 749 4층");
         // 지도 로드 완료 후 searchPlaces() 메서드 실행
         this.searchPlaces();
       };
-      script.src = "//dapi.kakao.com/v2/maps/sdk.js?appkey=55b411073309a73c48d56caa594311c8"; // 발급받은 API 키로 변경
+      script.src =
+        "//dapi.kakao.com/v2/maps/sdk.js?appkey=55b411073309a73c48d56caa594311c8"; // 발급받은 API 키로 변경
       document.head.appendChild(script);
     }
   },
@@ -52,6 +53,7 @@ export default {
         center: new kakao.maps.LatLng(center.lat, center.lng),
         level,
       }); //지도 생성 및 객체 리턴
+      map.relayout();
 
       // 주소-좌표 변환 객체를 생성합니다
       var geocoder = new kakao.maps.services.Geocoder();
@@ -80,68 +82,68 @@ export default {
         }
       });
     },
-//     initMap() {
-//       const container = document.getElementById("map");
-//       const options = {
-//         center: new kakao.maps.LatLng(37.566826, 126.9786567),
-//         level: 3,
-//       };
-//       this.map = new kakao.maps.Map(container, options);
-//       this.infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
-//     },
+    //     initMap() {
+    //       const container = document.getElementById("map");
+    //       const options = {
+    //         center: new kakao.maps.LatLng(37.566826, 126.9786567),
+    //         level: 3,
+    //       };
+    //       this.map = new kakao.maps.Map(container, options);
+    //       this.infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
+    //     },
 
-//     // searchPlaces() 메서드 수정
-//     searchPlaces() {
-//       const keyword = this.$refs.keywordInput.value; // 검색어 입력 요소 참조
+    //     // searchPlaces() 메서드 수정
+    //     searchPlaces() {
+    //       const keyword = this.$refs.keywordInput.value; // 검색어 입력 요소 참조
 
-//       if (!keyword.trim()) {
-//         alert("검색어를 입력해주세요.");
-//         return;
-//       }
+    //       if (!keyword.trim()) {
+    //         alert("검색어를 입력해주세요.");
+    //         return;
+    //       }
 
-//       const ps = new kakao.maps.services.Places();
-//       ps.keywordSearch(keyword, (data, status, pagination) => {
-//         if (status === kakao.maps.services.Status.OK) {
-//           this.displayPlaces(data, pagination);
-//         } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
-//           alert("검색 결과가 없습니다.");
-//         } else {
-//           alert("검색 중 오류가 발생했습니다.");
-//         }
-//       });
-//     },
+    //       const ps = new kakao.maps.services.Places();
+    //       ps.keywordSearch(keyword, (data, status, pagination) => {
+    //         if (status === kakao.maps.services.Status.OK) {
+    //           this.displayPlaces(data, pagination);
+    //         } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
+    //           alert("검색 결과가 없습니다.");
+    //         } else {
+    //           alert("검색 중 오류가 발생했습니다.");
+    //         }
+    //       });
+    //     },
 
-//     displayPlaces(places, pagination) {
-//       const fragment = document.createDocumentFragment();
-//       const bounds = new kakao.maps.LatLngBounds();
+    //     displayPlaces(places, pagination) {
+    //       const fragment = document.createDocumentFragment();
+    //       const bounds = new kakao.maps.LatLngBounds();
 
-//       this.removeMarkers(); // 기존 마커 제거
+    //       this.removeMarkers(); // 기존 마커 제거
 
-//       for (let i = 0; i < places.length; i++) {
-//         const placePosition = new kakao.maps.LatLng(places[i].y, places[i].x);
-//         const marker = this.addMarker(placePosition);
-//         bounds.extend(placePosition);
-//       }
+    //       for (let i = 0; i < places.length; i++) {
+    //         const placePosition = new kakao.maps.LatLng(places[i].y, places[i].x);
+    //         const marker = this.addMarker(placePosition);
+    //         bounds.extend(placePosition);
+    //       }
 
-//       this.map.setBounds(bounds);
-//     },
+    //       this.map.setBounds(bounds);
+    //     },
 
-//     addMarker(position) {
-//       const marker = new kakao.maps.Marker({
-//         position: position,
-//         map: this.map,
-//       });
+    //     addMarker(position) {
+    //       const marker = new kakao.maps.Marker({
+    //         position: position,
+    //         map: this.map,
+    //       });
 
-//       this.markers.push(marker);
-//       return marker;
-//     },
+    //       this.markers.push(marker);
+    //       return marker;
+    //     },
 
-//     removeMarkers() {
-//       for (let i = 0; i < this.markers.length; i++) {
-//         this.markers[i].setMap(null);
-//       }
-//       this.markers = [];
-//     },
+    //     removeMarkers() {
+    //       for (let i = 0; i < this.markers.length; i++) {
+    //         this.markers[i].setMap(null);
+    //       }
+    //       this.markers = [];
+    //     },
   },
 };
 </script>

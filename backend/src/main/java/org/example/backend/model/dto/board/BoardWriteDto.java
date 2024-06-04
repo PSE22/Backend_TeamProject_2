@@ -29,7 +29,7 @@ public class BoardWriteDto {
     private Board board;
     private List<VoteDto> voteDtos;
     private Place place;
-    private List<File> files;
+    private List<FileDto> fileDtos;
     private List<BoardFileDto> boardFileDtos;
 
 }

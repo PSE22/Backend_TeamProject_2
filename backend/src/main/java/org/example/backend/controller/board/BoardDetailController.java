@@ -102,6 +102,7 @@ public class BoardDetailController {
     @GetMapping("/board-detail/place")
     public ResponseEntity<Object> findPlace(@RequestParam Long boardId){
         try {
+            log.debug("Controller 문제?? boardId :: ", boardId);
             Optional<Place> optional = boardDetailService.findPlace(boardId);
             if (optional.isEmpty() == true) {
                 return new ResponseEntity<>("데이터 없음", HttpStatus.NO_CONTENT);
