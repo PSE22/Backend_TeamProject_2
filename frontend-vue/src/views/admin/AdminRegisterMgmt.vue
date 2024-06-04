@@ -40,11 +40,15 @@
               <td class="col-1 text-center">{{ data.memberEmail }}</td>
               <td class="col-1 text-center">{{ data.memberExt }}</td>
               <td class="col-1 text-center">{{ data.nickname }}</td>
-              <td class="col-1 text-center">{{ data.deptCode }}</td>
-              <td class="col-1 text-center">{{ data.posCode }}</td>
+              <td class="col-1 text-center">{{ deptName(data.deptCode) }}</td>
+              <td class="col-1 text-center">{{ posName(data.posCode) }}</td>
               <td class="col-1 text-center">
-                <button class="approve-button" @click="registerApprove(data)">승인</button>
-                <button class="reject-button" @click="registerReject(data)">반려</button>
+                <button class="approve-button" @click="registerApprove(data)">
+                  승인
+                </button>
+                <button class="reject-button" @click="registerReject(data)">
+                  반려
+                </button>
               </td>
             </tr>
           </tbody>
@@ -61,7 +65,7 @@ export default {
   data() {
     return {
       loginMember: {},
-      member: []
+      member: [],
     };
   },
   methods: {
@@ -92,7 +96,7 @@ export default {
         data.memberCode = "AT02";
         let response = await MemberService.updateProfile(data);
         console.log(response.data);
-        alert("회원가입이 승인되었습니다.")
+        alert("회원가입이 승인되었습니다.");
         this.getAllProfile();
       } catch (e) {
         console.log(e);
@@ -107,6 +111,33 @@ export default {
         this.getAllProfile();
       } catch (e) {
         console.log(e);
+      }
+    },
+    
+    deptName(deptCode) {
+      if (deptCode === "DE01") {
+        return "영업팀";
+      } else if (deptCode === "DE02") {
+        return "인사팀";
+      } else if (deptCode === "DE03") {
+        return "행정팀";
+      } else if (deptCode === "DE04") {
+        return "보안팀";
+      } else {
+        return deptCode;
+      }
+    },
+    posName(posCode) {
+      if (posCode === "PO01") {
+        return "사원";
+      } else if (posCode === "PO02") {
+        return "주임";
+      } else if (posCode === "PO03") {
+        return "대리";
+      } else if (posCode === "PO04") {
+        return "과장";
+      } else {
+        return posCode;
       }
     },
   },
@@ -197,7 +228,7 @@ button {
 }
 
 .approve-button {
-  background-color: #4CAF50;
+  background-color: #4caf50;
 }
 
 .approve-button:hover {
