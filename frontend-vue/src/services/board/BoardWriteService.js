@@ -3,9 +3,9 @@ import LoginHeader from "../login/LoginHeader";
 
 class BoardWrite {
   // 게시물 저장
-  create(data) {
-    console.log("저장되나", data)
-    return http.post("/board-write", data, {
+  create(board, vote, place, files) {
+    console.log("저장되나", board, vote, place, files)
+    return http.post("/board-write", board, vote, place, files, {
         headers: LoginHeader(),
     });
   }
