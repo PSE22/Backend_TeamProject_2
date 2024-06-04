@@ -8,8 +8,10 @@ import org.example.backend.model.dto.board.IBoardDto;
 import org.example.backend.model.dto.board.IReplyDto;
 import org.example.backend.model.dto.board.IUserDto;
 import org.example.backend.model.entity.board.Place;
+import org.example.backend.model.entity.board.Reply;
 import org.example.backend.model.entity.board.Vote;
 import org.example.backend.service.board.BoardDetailService;
+import org.example.backend.service.board.ReplyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +39,7 @@ import java.util.Optional;
 public class BoardDetailController {
 
     private final BoardDetailService boardDetailService;
+    private final ReplyService replyService;
 
     // 로그인된 회원 정보 조회
     @GetMapping("/board-detail/member")
@@ -133,7 +136,22 @@ public class BoardDetailController {
     @GetMapping("/board-detail/reply")
     public ResponseEntity<Object> findReplyCount(@RequestParam Long boardId) {
         try {
-            List<IReplyDto> list = boardDetailService.findReply(boardId);
+            List<IReplyDto> list = replyService.findReply(boardId);
+            if (list.isEmpty() == true) {
+                return new ResponseEntity<>("데이터 없음", HttpStatus.NO_CONTENT);
+            } else {
+                return new ResponseEntity<>(list, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            return handleException(e);
+        }
+    }
+
+    // 대댓글 조회
+    @GetMapping("/board-detail/re-reply")
+    public ResponseEntity<Object> findReplyCount(@RequestParam Long boardId, @RequestParam Long replyId) {
+        try {
+            List<IReplyDto> list = replyService.findReReply(boardId, replyId);
             if (list.isEmpty() == true) {
                 return new ResponseEntity<>("데이터 없음", HttpStatus.NO_CONTENT);
             } else {
@@ -148,13 +166,24 @@ public class BoardDetailController {
     @GetMapping("/board-detail/reply/count")
     public ResponseEntity<Object> countReply(@RequestParam Long boardId){
         try {
-            Integer count = boardDetailService.countReply(boardId);
+            Integer count = replyService.countReply(boardId);
             if (count == null) {
                 return new ResponseEntity<>("데이터 없음", HttpStatus.NO_CONTENT);
             } else {
                 return new ResponseEntity<>(count, HttpStatus.OK);
             }
         } catch (Exception e) {
+            return handleException(e);
+        }
+    }
+
+    // 작성한 댓글 저장
+    @PostMapping("board-detail/reply")
+    public ResponseEntity<Object> createReply(@RequestBody Reply reply) {
+        try {
+            Reply reply2 = replyService.saveReply(reply);
+            return new ResponseEntity<>(reply2, HttpStatus.OK);
+        } catch (Exception e){
             return handleException(e);
         }
     }
