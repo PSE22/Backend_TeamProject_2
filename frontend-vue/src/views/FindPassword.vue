@@ -81,13 +81,15 @@ export default {
 
     async findPassword() {
       try {
-        await LoginService.find(this.to, this.memberId);
+        let response = await LoginService.find(this.to, this.memberId);
         if (this.to === this.member.memberEmail) {
           this.message = "임시 비밀번호가 발급되었습니다."
           console.log(this.message);
+          console.log(response.data);
         } else if (this.to !== this.member.memberEmail) {
           this.message = "회원정보가 일치하지 않습니다."
           console.log(this.message);
+          console.log(response.data);
         } 
       } catch (e) {
         console.log(e);

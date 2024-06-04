@@ -6,9 +6,14 @@ class MemberService {
         return http.get(`/member/profile/${memberId}`);
     }
 
-    // 회원 전체 조회
+    // 신규 회원 전체 조회
     getMember(memberCode) {
         return http.get(`/member/profile-all/${memberCode}`);
+    }
+
+    // 기존 회원 부서별 전체 조회
+    getMemberOfDept(memberCode, deptCode) {
+        return http.get(`/member/profile-all/old/${memberCode}/${deptCode}`);
     }
 
     // 회원정보 수정

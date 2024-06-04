@@ -40,6 +40,15 @@ public interface MemberRepository extends JpaRepository<Member, String> {
     , nativeQuery = true)
     List<Member> findAllByMemberCode(@Param("memberCode") String memberCode);
 
+    @Query(value = "SELECT *\n" +
+            "FROM TB_MEMBER\n" +
+            "WHERE MEMBER_CODE = :memberCode\n" +
+            "AND DEPT_CODE = :deptCode\n" +
+            "AND STATUS = 'Y'\n" +
+            "ORDER BY ADD_DATE"
+            , nativeQuery = true)
+    List<Member> findAllByMemberCodeAndDeptCode(@Param("memberCode") String memberCode, @Param("deptCode") String deptCode);
+
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM TB_MEMBER\n" +
