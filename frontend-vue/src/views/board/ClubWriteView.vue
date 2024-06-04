@@ -53,7 +53,7 @@
               class="form-control"
               placeholder="제목을 입력해주세요"
               name="boardTitle"
-              v-model="club.boardTitle"
+              v-model.lazy="club.boardTitle"
             />
           </div>
           <div class="col-md-2 d-flex align-items-center justify-content-end">
@@ -89,7 +89,7 @@
                 aria-labelledby="exampleModalLabel"
                 aria-hidden="true"
               >
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-dialog-centered">
                   <div class="modal-content">
                     <div class="modal-header">
                       <h1 class="modal-title fs-5" id="exampleModalLabel">
@@ -109,7 +109,7 @@
                         class="form-control mb-3"
                         placeholder="제목을 입력하세요"
                         name="boardTitle"
-                        v-model="club.voteDtos"
+                        v-model.lazy="club.voteName"
                       />
                       <hr />
                       <h5 class="text-start">항목 추가</h5>
@@ -118,30 +118,35 @@
                         class="form-control mb-3"
                         placeholder="1. 항목을 입력하세요"
                         name="boardTitle"
+                        v-model.lazy="vote.voteList.vote1"
                       />
                       <input
                         type="text"
                         class="form-control mb-3"
                         placeholder="2. 항목을 입력하세요"
                         name="boardTitle"
+                        v-model.lazy="vote.voteList.vote2"
                       />
                       <input
                         type="text"
                         class="form-control mb-3"
                         placeholder="3. 항목을 입력하세요"
                         name="boardTitle"
+                        v-model.lazy="vote.voteList.vote3"
                       />
                       <input
                         type="text"
                         class="form-control mb-3"
                         placeholder="4. 항목을 입력하세요"
                         name="boardTitle"
+                        v-model.lazy="vote.voteList.vote4"
                       />
                       <input
                         type="text"
                         class="form-control mb-3"
                         placeholder="5. 항목을 입력하세요"
                         name="boardTitle"
+                        v-model.lazy="vote.voteList.vote5"
                       />
                       <hr />
                       <h5 class="text-start">
@@ -156,7 +161,11 @@
                       >
                         취소
                       </button>
-                      <button type="button" class="btn btn-primary">
+                      <button
+                        type="button"
+                        class="btn btn-primary"
+                        @click="voteList"
+                      >
                         등록
                       </button>
                     </div>
@@ -173,9 +182,11 @@
                 class="btn btn-outline-dark"
                 data-bs-toggle="modal"
                 data-bs-target="#place-modal"
+                @click="relayout"
               >
                 <i class="bi bi-geo-alt"></i> 장소추가
               </button>
+
               <!-- Modal -->
               <div
                 class="modal fade"
@@ -184,7 +195,7 @@
                 aria-labelledby="exampleModalLabel"
                 aria-hidden="true"
               >
-                <div class="modal-dialog modal-lg">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
                   <div class="modal-content">
                     <div class="modal-header">
                       <h1 class="modal-title fs-5" id="exampleModalLabel">
@@ -198,7 +209,11 @@
                       ></button>
                     </div>
                     <div class="modal-body">
-                      <KakaoMap/>
+                      <div
+                        id="map"
+                        style="width: 100%; height: 500px"
+                        ref="map"
+                      ></div>
                     </div>
                     <div class="modal-footer">
                       <button
@@ -206,10 +221,10 @@
                         class="btn btn-secondary"
                         data-bs-dismiss="modal"
                       >
-                        Close
+                        취소
                       </button>
                       <button type="button" class="btn btn-primary">
-                        Save changes
+                        확인
                       </button>
                     </div>
                   </div>
@@ -217,6 +232,7 @@
               </div>
             </div>
           </div>
+          <!-- <KakaoMap/> -->
         </div>
         <div class="col-md-3 mb-3 mb-md-0">
           <div class="form-group">
@@ -229,7 +245,7 @@
       <div class="row">
         <div class="col-md-12">
           <div class="alert alert-info" role="alert">
-            투표가 등록되었습니다. (또는 투표명)
+            "투표명" 투표가 등록되었습니다.
           </div>
         </div>
       </div>
@@ -246,7 +262,6 @@
           ></textarea>
         </div>
       </div>
-
       <!-- 파일 첨부 -->
       <div class="row mt-3">
         <div class="col-md-12">
@@ -272,23 +287,96 @@
 <script>
 import ClubService from "@/services/board/ClubService";
 import BoardWriteService from "@/services/board/BoardWriteService";
-import KakaoMap from "@/components/map/KakaoMap.vue";
+// import KakaoMap from "@/components/map/KakaoMap.vue";
 export default {
   components: {
-    KakaoMap,
+    // KakaoMap,
   },
   data() {
     return {
       bocode: [],
       smcode: [],
       club: {},
+      vote: {
+        voteName: "",
+        voteList: {
+          vote1 : "",
+          vote2 : "",
+          vote3 : "",
+          vote4 : "",
+          vote5 : "",
+        },
+        delDate: this.selectedDaily,
+      },
       submitted: false,
       selectBocode: "", // 추가
       selectSmcode: "", // 추가
       selectedDaily: new Date().toISOString(),
+
+      // 카카오맵 api
+      map: null,
+      infowindow: null,
+      markers: [],
+      options: {
+        //지도를 생성할 때 필요한 기본 옵션
+        center: {
+          lat: 33.450701,
+          lng: 126.570667,
+        }, //지도의 중심좌표.
+        level: 3, //지도의 레벨(확대, 축소 정도)
+      },
     };
   },
   methods: {
+    relayout() {
+      this.delayFunction(() => {
+        this.map.relayout();
+        this.retrieveMap("부산 부산진구 중앙대로 749 4층");
+      }, 500); // 1초 후 실행
+      // this.map.relayout();
+    },
+    delayFunction(callback, delay) {
+      setTimeout(callback, delay);
+    },
+    retrieveMap(address) {
+      let kakao = window.kakao;
+      var container = this.$refs.map;
+      const { center, level } = this.options;
+
+      let map = new kakao.maps.Map(container, {
+        center: new kakao.maps.LatLng(center.lat, center.lng),
+        level,
+      }); //지도 생성 및 객체 리턴
+      this.map = map;
+      // map.relayout();
+
+      // 주소-좌표 변환 객체를 생성합니다
+      var geocoder = new kakao.maps.services.Geocoder();
+
+      // 주소로 좌표를 검색합니다
+      geocoder.addressSearch(address, function (result, status) {
+        // 정상적으로 검색이 완료됐으면
+        if (status === kakao.maps.services.Status.OK) {
+          var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+          // 결과값으로 받은 위치를 마커로 표시합니다
+          var marker = new kakao.maps.Marker({
+            map: map,
+            position: coords,
+          });
+
+          // 인포윈도우로 장소에 대한 설명을 표시합니다
+          var infowindow = new kakao.maps.InfoWindow({
+            content:
+              '<div style="width:150px;text-align:center;padding:6px 0;">모임장소</div>',
+          });
+          infowindow.open(map, marker);
+
+          // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+          map.setCenter(coords);
+        }
+      });
+    },
     async retrieveBocode() {
       try {
         // TODO: 비동기 코딩
@@ -310,38 +398,51 @@ export default {
       }
     },
     async saveClub() {
-      let vote = {
-        voteName: "",
-        voteListName: "",
-        delDate: "",
+      // let vote = {
+      //   voteName: "",
+      //   voteList: "",
+      //   delDate: this.selectedDaily,
+      // };
+      // let voteList = [];
+      // for (const data of this.club) {
+      //   vote.voteName = data.voteName;
+      //   vote.voteList = data.voteList;
+      //   vote.delDate = data.delDate;
+      //   voteList.push(vote);
+      // }
+      let file = {
+        uuid: this.$route.params.uuid,
+        fileUrl: "",
       };
-      let voteList = [];
+      let fileList = [];
       for (const data of this.club) {
-        vote.voteName = data.voteName;
-        vote.voteListName = data.voteListName;
-        vote.delDate = data.delDate;
-        voteList.push(vote);
+        file.uuid = data.fileUrl;
+        file.fileUrl = data.fileUrl;
+        fileList.push(file);
       }
+
       try {
         // 임시 객체 변수
-        let data = {
-          board: {
-            memberId: this.$store.state.member.memberId,
-            boardTitle: this.club.boardTitle,
-            boardContent: this.club.boardContent,
-            bocode: this.selectBocode,
-            noticeYn: this.club.noticeYn,
-            smcode: this.selectSmcode,
-          },
-          voteDtos: [], // 예시: 투표 정보가 없을 경우 빈 배열
-          place: {}, // 예시: 장소 정보가 없을 경우 null
-          files: [], // 예시: 파일이 없을 경우 빈 배열
-          boardFileDtos: [], // 예시: 파일 정보가 없을 경우 빈 배열
+        let board = {
+          memberId: this.$store.state.member.memberId,
+          boardTitle: this.club.boardTitle,
+          boardContent: this.club.boardContent,
+          bocode: this.selectBocode,
+          noticeYn: this.club.noticeYn,
+          smcode: this.selectSmcode,
         };
+        let vote = this.vote;
 
-        console.log("글쓰기", data);
+        let place = {
+          placeName: this.club.placeName,
+          lat: this.club.lat,
+          lng: this.club.lng,
+          address: this.club.address,
+        }; // 예시: 장소 정보가 없을 경우 null
+        let files = fileList; // 예시: 파일이 없을 경우 빈 배열
+        // let boardFileDtos = []; // 예시: 파일 정보가 없을 경우 빈 배열
         // 백앤드로 객체 추가 요청
-        let response = await BoardWriteService.create(data);
+        let response = await BoardWriteService.create(board, vote, place, files);
         // 콘솔에 결과 출력
         console.log(response);
         this.submitted = true;
@@ -354,6 +455,20 @@ export default {
   mounted() {
     this.retrieveBocode();
     this.retrieveSmcode();
+    if (window.kakao && window.kakao.maps) {
+      this.retrieveMap("부산 부산진구 중앙대로 749 4층");
+    } else {
+      const script = document.createElement("script");
+      // 로드 완료 후 retrieveMap() 메서드 실행 추가
+      script.onload = () => {
+        this.retrieveMap("부산 부산진구 중앙대로 749 4층");
+        // 지도 로드 완료 후 searchPlaces() 메서드 실행
+        this.searchPlaces();
+      };
+      script.src =
+        "//dapi.kakao.com/v2/maps/sdk.js?appkey=55b411073309a73c48d56caa594311c8"; // 발급받은 API 키로 변경
+      document.head.appendChild(script);
+    }
   },
 };
 </script>
