@@ -15,6 +15,7 @@
       <input v-model="newBoardComment" placeholder="게시판설명" />
       <button @click="addBoard">추가</button>
       <button @click="cancelEdit">취소</button>
+      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
     </div>
 
     <div v-if="showEditForm" class="form-container">
@@ -24,6 +25,7 @@
       <input v-model="editBoardData.cmCdComment" placeholder="게시판설명" />
       <button @click="updateBoard">저장</button>
       <button @click="cancelEdit">취소</button>
+      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
     </div>
     
     <table class="board-table">
@@ -48,12 +50,11 @@
           <td>{{ board.status === 'Y' ? '활성화' : '비활성화' }}</td>
           <td>
             <button class="edit-button" @click="editBoard(board)">수정</button>
-            <button class="delete-button">삭제</button>
+            <button class="delete-button" @click="deleteBoard(board.cmCd)">삭제</button>
           </td>
         </tr>
       </tbody>
     </table>
-
   </div>
 </template>
 
@@ -75,7 +76,8 @@ export default {
         upCmCd: '',
         cmCdName: '',
         cmCdComment: ''
-      }
+      },
+      errorMessage: '' // 에러 메시지
     };
   },
   methods: {
@@ -91,6 +93,7 @@ export default {
       this.showForm = !this.showForm;
     },
     async addBoard() {
+      this.errorMessage = ''; // 에러 메시지 초기화
       try {
         await BoardManageService.postBoard(this.newBoardCd, this.newBoardName, this.newBoardComment, this.newBoardUpCmCd);
         this.showForm = false; // 폼을 숨김
@@ -101,6 +104,11 @@ export default {
         this.fetchBoards(); // 새로운 게시판을 추가한 후 게시판 목록을 다시 불러옴
       } catch (error) {
         console.error('Error adding board:', error);
+        if (error.response && error.response.data) {
+          this.errorMessage = error.response.data; // 에러 메시지 설정
+        } else {
+          this.errorMessage = '게시판 추가 중 오류가 발생했습니다.';
+        }
       }
     },
     editBoard(board) {
@@ -120,6 +128,22 @@ export default {
         this.fetchBoards();
       } catch (error) {
         console.error('Error updating board:', error);
+        if (error.response && error.response.data) {
+          this.errorMessage = error.response.data; // 에러 메시지 설정
+        } else {
+          this.errorMessage = '게시판 수정 중 오류가 발생했습니다.';
+        }
+      }
+    },
+    async deleteBoard(cmCd) {
+      try {
+        if (confirm("정말 삭제하시겠습니까? 하위 게시판이 있을 경우 하위 게시판 모두 비활성화 됩니다.")) {
+          await BoardManageService.deleteBoard(cmCd);
+          this.fetchBoards();
+        }
+      } catch (error) {
+        console.error('Error deleting board:', error);
+        alert('게시판 삭제 중 오류가 발생했습니다.');
       }
     },
     cancelEdit() {
@@ -219,5 +243,10 @@ export default {
   flex-direction: column;
   gap: 10px;
   margin-bottom: 20px;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
 }
 </style>
