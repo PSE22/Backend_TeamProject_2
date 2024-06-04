@@ -1,6 +1,7 @@
 package org.example.backend.service.board;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.board.IBoardDetailDto;
 import org.example.backend.model.dto.board.IBoardDto;
 import org.example.backend.model.dto.board.IReplyDto;
@@ -26,6 +27,7 @@ import java.util.Optional;
  * -----------------------------------------------------------
  * 2024-05-29         SAMSUNG          최초 생성
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BoardDetailService {
@@ -58,7 +60,10 @@ public class BoardDetailService {
 
     // 글번호로 장소 조회 (게시글 하나당 장소 하나)
     public Optional<Place> findPlace(Long boardId) {
+        log.debug("Service 문제?? boardId :: ", boardId);
         Optional<Place> optional = boardDetailRepository.findPlace(boardId);
+        log.debug("Service 문제?? optional :: ", optional);
+
         return optional;
     }
 
