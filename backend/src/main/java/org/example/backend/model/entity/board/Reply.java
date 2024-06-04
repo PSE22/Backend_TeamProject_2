@@ -25,8 +25,7 @@ import org.hibernate.annotations.Where;
 public class Reply extends BaseTimeEntity2 {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE
-            , generator = "TB_REPLY_SEQ_GENERATOR"
-    )
+            , generator = "TB_REPLY_SEQ_GENERATOR")
     private Long replyId;       // 댓글 pk
     private Long boardId;       // 글번호 fk
     private String memberId;    // 댓글작성자 fk

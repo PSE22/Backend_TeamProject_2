@@ -38,19 +38,6 @@ class BoardDetailService {
       headers: LoginHeader(),
     });
   }
-  // 글번호로 댓글 조회
-  getReply(boardId) {
-    return http.get(`/board/board-detail/reply?boardId=${boardId}`, {
-      headers: LoginHeader(),
-    });
-  }
-  // 댓글 수 조회
-  getReplyCount(boardId) {
-    return http.get(`/board/board-detail/reply/count?boardId=${boardId}`, {
-      headers: LoginHeader(),
-    });
-  }
-  
 }
 
 export default new BoardDetailService();

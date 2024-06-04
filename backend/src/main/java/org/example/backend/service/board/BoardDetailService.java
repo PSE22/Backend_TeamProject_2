@@ -72,16 +72,4 @@ public class BoardDetailService {
         List<IBoardDetailDto> list = boardDetailRepository.findBoardImg(boardId);
         return list;
     }
-
-    // 글번호로 댓글 조회
-    public List<IReplyDto> findReply(Long boardId) {
-        List<IReplyDto> list = boardDetailRepository.findReply(boardId);
-        return list;
-    }
-
-    // 댓글 수 조회
-    public Integer countReply(Long boardId) {
-        Integer count = boardDetailRepository.countReply(boardId);
-        return count;
-    }
 }
