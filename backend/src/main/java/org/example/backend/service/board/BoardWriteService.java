@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * packageName : org.example.backend.service.board
@@ -43,9 +44,11 @@ public class BoardWriteService {
         Board board2 = boardRepository.save(board);
         // 저장된 board의 boardId를 객체로 변환
         Long boardId = board2.getBoardId();
-        voteService.saveVote(boardId, voteDtos);
-        placeService.savePlace(boardId, place);
-        fileService.saveFiles(fileDtos);
-        boardFileService.saveBoardFile(boardId, boardFileDtos);
+
+//        null 체크
+        Optional.ofNullable(voteDtos).ifPresent(dtos -> voteService.saveVote(boardId, dtos));
+        Optional.ofNullable(place).ifPresent(p -> placeService.savePlace(boardId, p));
+        Optional.ofNullable(fileDtos).ifPresent(fileService::fileDtos);
+        Optional.ofNullable(boardFileDtos).ifPresent(dtos -> boardFileService.saveBoardFile(boardId, dtos));
     }
 }
