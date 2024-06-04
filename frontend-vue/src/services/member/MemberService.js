@@ -11,9 +11,14 @@ class MemberService {
         return http.get(`/member/profile-all/${memberCode}`);
     }
 
+    // 기존 회원 전체 조회(검색)
+    getMemberAllDept(memberName, page, size) {
+        return http.get(`/member/profile-all/old-search/${memberName}/${page}/${size}`);
+    }
+
     // 기존 회원 부서별 전체 조회
-    getMemberOfDept(memberCode, deptCode) {
-        return http.get(`/member/profile-all/old/${memberCode}/${deptCode}`);
+    getMemberOfDept(memberCode, deptCode, page, size) {
+        return http.get(`/member/profile-all/old-dept/${memberCode}/${deptCode}/${page}/${size}`);
     }
 
     // 회원정보 수정

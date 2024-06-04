@@ -40,15 +40,15 @@
               <td class="col-1 text-center">{{ data.memberEmail }}</td>
               <td class="col-1 text-center">{{ data.memberExt }}</td>
               <td class="col-1 text-center">{{ data.nickname }}</td>
-              <td class="col-1 text-center">{{ data.deptCode }}</td>
-              <td class="col-1 text-center">{{ data.posCode }}</td>
+              <td class="col-1 text-center">{{ deptName(data.deptCode) }}</td>
+              <td class="col-1 text-center">{{ posName(data.posCode) }}</td>
               <td class="col-1 text-center">
                 <div class="row" id="review-button">
                   <form>
                     <!-- Button trigger modal -->
                     <button
                       type="button"
-                      class="modify-button"
+                      class="btn btn-primary"
                       data-bs-toggle="modal"
                       :data-bs-target="'#editModal-' + index"
                     >
@@ -202,6 +202,33 @@ export default {
       alert("회원 삭제 처리되었습니다.");
       this.getAllProfile();
     },
+
+    deptName(deptCode) {
+      if (deptCode === "DE01") {
+        return "영업팀";
+      } else if (deptCode === "DE02") {
+        return "인사팀";
+      } else if (deptCode === "DE03") {
+        return "행정팀";
+      } else if (deptCode === "DE04") {
+        return "보안팀";
+      } else {
+        return deptCode;
+      }
+    },
+    posName(posCode) {
+      if (posCode === "PO01") {
+        return "사원";
+      } else if (posCode === "PO02") {
+        return "주임";
+      } else if (posCode === "PO03") {
+        return "대리";
+      } else if (posCode === "PO04") {
+        return "과장";
+      } else {
+        return posCode;
+      }
+    },
   },
   mounted() {
     this.getProfile();
@@ -287,14 +314,6 @@ button {
   cursor: pointer;
   font-size: 14px;
   transition: background-color 0.3s ease;
-}
-
-.modify-button {
-  background-color: #4caf50;
-}
-
-.modify-button:hover {
-  background-color: #45a049;
 }
 
 .delete-button {

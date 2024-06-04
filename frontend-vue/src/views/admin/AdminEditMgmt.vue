@@ -19,10 +19,26 @@
       </ul>
     </div>
     <div class="main-content">
-      <button class="dept-button" @click="getAllProfileDE01">영업팀</button>
-      <button class="dept-button" @click="getAllProfileDE02">인사팀</button>
-      <button class="dept-button" @click="getAllProfileDE03">행정팀</button>
-      <button class="dept-button" @click="getAllProfileDE04">보안팀</button>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="검색"
+        v-model="searchMemberName"
+        @keyup.enter="getAllProfileSearch"
+      />
+      <button class="search-button" @click="getAllProfileSearch">검색</button>
+      <button class="dept-button" @click="pageSizeChange('DE01')">
+        영업팀
+      </button>
+      <button class="dept-button" @click="pageSizeChange('DE02')">
+        인사팀
+      </button>
+      <button class="dept-button" @click="pageSizeChange('DE03')">
+        행정팀
+      </button>
+      <button class="dept-button" @click="pageSizeChange('DE04')">
+        보안팀
+      </button>
       <div class="row">
         <table class="table">
           <thead class="table-light text-center">
@@ -44,8 +60,8 @@
               <td class="col-1 text-center">{{ data.memberEmail }}</td>
               <td class="col-1 text-center">{{ data.memberExt }}</td>
               <td class="col-1 text-center">{{ data.nickname }}</td>
-              <td class="col-1 text-center">{{ data.deptCode }}</td>
-              <td class="col-1 text-center">{{ data.posCode }}</td>
+              <td class="col-1 text-center">{{ deptName(data.deptCode) }}</td>
+              <td class="col-1 text-center">{{ posName(data.posCode) }}</td>
               <td class="col-1 text-center">
                 <div class="row" id="review-button">
                   <form>
@@ -153,6 +169,13 @@
           </tbody>
         </table>
       </div>
+      <b-pagination
+        class="col-12 mb-3 justify-content-center"
+        v-model="page"
+        :total-rows="count"
+        :per-page="pageSize"
+        @click="getAllProfileOfDept"
+      ></b-pagination>
     </div>
   </div>
 </template>
@@ -165,6 +188,15 @@ export default {
     return {
       loginMember: {},
       member: [],
+      allMember: [],
+
+      searchMemberName: "",
+
+      deptCode: "DE01",
+
+      page: 1,
+      count: 0,
+      pageSize: 10,
     };
   },
   methods: {
@@ -180,50 +212,33 @@ export default {
       }
     },
 
-    async getAllProfile() {
+    async getAllProfileSearch() {
       try {
-        let response = await MemberService.getMember("AT02");
-        this.member = response.data;
+        let response = await MemberService.getMemberAllDept(
+          this.searchMemberName,
+          this.page -1,
+          this.pageSize
+        );
+        const { member, totalItems } = response.data;
+        this.member = member;
+        this.count = totalItems;
         console.log(response.data);
       } catch (e) {
         console.log(e);
       }
     },
 
-    async getAllProfileDE01() {
+    async getAllProfileOfDept() {
       try {
-        let response = await MemberService.getMemberOfDept("AT02", "DE01");
-        this.member = response.data;
-        console.log(response.data);
-      } catch (e) {
-        console.log(e);
-      }
-    },
-
-    async getAllProfileDE02() {
-      try {
-        let response = await MemberService.getMemberOfDept("AT02", "DE02");
-        this.member = response.data;
-        console.log(response.data);
-      } catch (e) {
-        console.log(e);
-      }
-    },
-
-    async getAllProfileDE03() {
-      try {
-        let response = await MemberService.getMemberOfDept("AT02", "DE03");
-        this.member = response.data;
-        console.log(response.data);
-      } catch (e) {
-        console.log(e);
-      }
-    },
-
-    async getAllProfileDE04() {
-      try {
-        let response = await MemberService.getMemberOfDept("AT02", "DE04");
-        this.member = response.data;
+        let response = await MemberService.getMemberOfDept(
+          "AT02",
+          this.deptCode,
+          this.page - 1,
+          this.pageSize
+        );
+        const { member, totalItems } = response.data;
+        this.member = member;
+        this.count = totalItems;
         console.log(response.data);
       } catch (e) {
         console.log(e);
@@ -246,10 +261,43 @@ export default {
       alert("회원 삭제 처리되었습니다.");
       this.getAllProfile();
     },
+
+    pageSizeChange(dept) {
+      this.page = 1;
+      this.deptCode = dept;
+      this.getAllProfileOfDept();
+    },
+
+    deptName(deptCode) {
+      if (deptCode === "DE01") {
+        return "영업팀";
+      } else if (deptCode === "DE02") {
+        return "인사팀";
+      } else if (deptCode === "DE03") {
+        return "행정팀";
+      } else if (deptCode === "DE04") {
+        return "보안팀";
+      } else {
+        return deptCode;
+      }
+    },
+    posName(posCode) {
+      if (posCode === "PO01") {
+        return "사원";
+      } else if (posCode === "PO02") {
+        return "주임";
+      } else if (posCode === "PO03") {
+        return "대리";
+      } else if (posCode === "PO04") {
+        return "과장";
+      } else {
+        return posCode;
+      }
+    },
   },
   mounted() {
     this.getProfile();
-    this.getAllProfile();
+    this.getAllProfileOfDept();
   },
 };
 </script>
@@ -322,6 +370,34 @@ export default {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
+.search-input {
+  flex-grow: 1;
+  padding: 10px 15px;
+  border: 2px solid #b3000f;
+  border-radius: 5px 0 0 5px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+  border-color: #8b0000;
+}
+
+.search-button {
+  background-color: #b3000f;
+  padding: 10px 20px;
+  border: 2px solid #b3000f;
+  border-left: none;
+  border-radius: 0 5px 5px 0;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.search-button:hover {
+  background-color: #8b0000;
+}
+
 button {
   color: white;
   border: none;
@@ -335,14 +411,6 @@ button {
 
 .dept-button {
   background-color: black;
-}
-
-.modify-button {
-  background-color: #4caf50;
-}
-
-.modify-button:hover {
-  background-color: #45a049;
 }
 
 .delete-button {
