@@ -45,7 +45,7 @@ public class Vote {
     private Long voteId;    // 투표 ID(PK)
     private Long boardId;   // 글번호
     private String voteName;    // 투표명
-    private String voteListName;    // 투표항목명
+    private String voteList;    // 투표항목명
     private Integer voteCnt = 0;    // 투표수
     private String addDate;
     private String delDate;

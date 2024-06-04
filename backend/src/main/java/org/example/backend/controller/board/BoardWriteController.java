@@ -35,7 +35,7 @@ public class BoardWriteController {
             ) {
         try {
             boardWriteService.save(boardWriteDto.getBoard(),boardWriteDto.getVoteDtos()
-                    ,boardWriteDto.getPlace(),boardWriteDto.getFiles(),boardWriteDto.getBoardFileDtos()
+                    ,boardWriteDto.getPlace(),boardWriteDto.getFileDtos(),boardWriteDto.getBoardFileDtos()
             );
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
