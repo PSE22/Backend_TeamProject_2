@@ -26,7 +26,7 @@ public class FreeBoardController {
 
     private final FreeBoardService freeBoardService;
 
-    //    TODO: 전체 조회 함수 + 검색 + 페이징
+    //    TODO: 최신글 전체 조회 함수 + 검색 + 페이징
     @GetMapping("/free")
     public ResponseEntity<Object> findAll(
             @RequestParam(defaultValue = "") String boardTitle,
@@ -38,6 +38,40 @@ public class FreeBoardController {
 
 //            전체 조회 서비스 함수 실행
             Page<IFreeBoardDto> pageList = freeBoardService.findAllByBoardTitleContaining(boardTitle, pageable);
+
+//            vue 로 json 데이터를 전송 : jsp (model == Map(키,값))
+            Map<String, Object> response = new HashMap<>();
+            response.put("board", pageList.getContent());            // 게시판배열
+            response.put("currentPage", pageList.getNumber());       // 현재페이지 번호(x)
+            response.put("totalItems", pageList.getTotalElements()); // 전체데이터개수
+            response.put("totalPages", pageList.getTotalPages());    // 전체페이지수(x)
+
+            if (pageList.isEmpty() == true) {
+//                1) pageList 값이 없으면 : DB 테이블 없음 => NO_CONTENT(203)
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+
+        } catch (Exception e) {
+//            TODO: INTERNAL_SERVER_ERROR(500) : 벡엔드 서버 에러
+//               아래 코드는 프론트로(웹브라우저) 신호를(500) 보냄
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //    TODO: 인기글 전체 조회 함수 + 검색 + 페이징
+    @GetMapping("/free/popular")
+    public ResponseEntity<Object> findAllPopular(
+            @RequestParam(defaultValue = "") String boardTitle,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+
+//            전체 조회 서비스 함수 실행
+            Page<IFreeBoardDto> pageList = freeBoardService.findAllByFrBoardTitleContainingAndGoodGreaterThanEqual(boardTitle, pageable);
 
 //            vue 로 json 데이터를 전송 : jsp (model == Map(키,값))
             Map<String, Object> response = new HashMap<>();

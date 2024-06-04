@@ -48,7 +48,7 @@ public class BoardWriteService {
 //        null 체크
         Optional.ofNullable(voteDtos).ifPresent(dtos -> voteService.saveVote(boardId, dtos));
         Optional.ofNullable(place).ifPresent(p -> placeService.savePlace(boardId, p));
-        Optional.ofNullable(fileDtos).ifPresent(fileService::fileDtos);
+        Optional.ofNullable(fileDtos).ifPresent(filedtos -> fileService.saveFiles(filedtos));
         Optional.ofNullable(boardFileDtos).ifPresent(dtos -> boardFileService.saveBoardFile(boardId, dtos));
     }
 }
