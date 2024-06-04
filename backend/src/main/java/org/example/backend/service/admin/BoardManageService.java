@@ -39,6 +39,15 @@ public List<BoardManageDto> getCmCodeList() {
 //  게시판 추가
     @Transactional
     public CmCode addBoard(BoardEditDto boardEditDto) {
+        if (boardManageRepository.existsById(boardEditDto.getCmCd())) {
+            throw new IllegalArgumentException("이미 존재하는 게시판 코드입니다.");
+        }
+        if (boardEditDto.getCmCdName() == null || boardEditDto.getCmCdName().isEmpty()) {
+            throw new IllegalArgumentException("게시판명은 필수 항목입니다.");
+        }
+        if (boardEditDto.getCmCdComment() == null || boardEditDto.getCmCdComment().isEmpty()) {
+            throw new IllegalArgumentException("게시판 설명은 필수 항목입니다.");
+        }
         CmCode cmCode = new CmCode();
         cmCode.setCmCd(boardEditDto.getCmCd());
         cmCode.setUpCmCd(boardEditDto.getUpCmCd());
@@ -50,6 +59,12 @@ public List<BoardManageDto> getCmCodeList() {
     // 게시판 수정
     @Transactional
     public CmCode updateBoard(BoardEditDto boardEditDto) {
+        if (boardEditDto.getCmCdName() == null || boardEditDto.getCmCdName().isEmpty()) {
+            throw new IllegalArgumentException("게시판명은 필수 항목입니다.");
+        }
+        if (boardEditDto.getCmCdComment() == null || boardEditDto.getCmCdComment().isEmpty()) {
+            throw new IllegalArgumentException("게시판 설명은 필수 항목입니다.");
+        }
         CmCode cmCode = boardManageRepository.findById(boardEditDto.getCmCd()).orElseThrow(() -> new RuntimeException("Board not found"));
         cmCode.setUpCmCd(boardEditDto.getUpCmCd());
         cmCode.setCmCdName(boardEditDto.getCmCdName());
