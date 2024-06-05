@@ -41,11 +41,21 @@
                         <button>삭제</button>
                         <button>신고</button>
                     </div>
-                    <button>대댓글쓰기</button>
+                    <button @click="setTempRe(data.replyId)">대댓글쓰기</button>
+                    <!-- 대댓글 작성 폼 -->
+                    <div v-if="tempRe === data.replyId" class="row reply-write">
+                        <div>{{ memberInfo.memberName }} (익명게시판은 별명으로 변경하세요)</div>
+                        <textarea v-model="replyTextarea" placeholder="대댓글을 남겨보세요"></textarea>
+                        <div class="row">
+                            <i class="col bi bi-camera" type="button">파일선택</i>
+                            <p class="col">파일명</p>
+                            <button class="col" @click="createReReply(data.replyId)">대댓글등록버튼</button>
+                        </div>
+                    </div>
                 </li>
                 <!-- 대댓글 -->
-                <div v-if="data.replyId === this.tempRe">
-                    <li v-for="(reReply, index) in reReply" :key="index" class="list-group-item"
+                <div>
+                    <li v-for="(reReply, index) in data.reReplies" :key="index" class="list-group-item"
                         style="background-color: red">
                         <div>{{ reReply.memberName }}</div>
                         <div>{{ reReply.reply }}</div>
@@ -67,7 +77,7 @@
             <div class="row">
                 <i class="col bi bi-camera" type="button">파일선택</i>
                 <p class="col">파일명</p>
-                <button class="col" @click=createReply()>댓글등록버튼</button>
+                <button class="col" @click="createReply">댓글등록버튼</button>
             </div>
         </div>
         <!-- 목록으로 돌아가기 버튼 -->
@@ -76,6 +86,7 @@
         </div>
     </div>
 </template>
+
 <script>
 import BoardDetailService from '@/services/board/BoardDetailService';
 import ReplyService from '@/services/board/ReplyService';
@@ -88,10 +99,7 @@ export default {
             smcode: this.$route.params.smcode,      // 현재 소메뉴 코드 가져오기
 
             replyTextarea: "",
-            tempRe: 12,                 // 댓글의 reReplyId 넣기
-
-            reReplyOpen: false,
-            testbutton: false,
+            tempRe: "",                 // 현재 대댓글을 작성 중인 댓글의 replyId
 
             auth: "",                   // 로그인 사용자 권한 체크
             memberInfo: "",             // 회원정보
@@ -100,8 +108,7 @@ export default {
             vote: "",                   // 투표
             place: "",                  // 장소
             boardImage: "",             // 글 첨부 이미지
-            reply: "",                  // 댓글
-            reReply: "",                // 대댓글
+            reply: [],                  // 댓글 목록
             replyCount: "",             // 댓글수
         }
     },
@@ -164,19 +171,19 @@ export default {
             try {
                 let response = await ReplyService.getReply(this.boardId);
                 this.reply = response.data;
-                console.log("reply 데이터 : ", response.data);
+
+                // 각 댓글에 대한 대댓글 가져오기
+                for (let i = 0; i < this.reply.length; i++) {
+                    // comment는 현재 순회 중인 댓글 객체를 의미
+                    let comment = this.reply[i];
+                    // 대댓글 가져오기
+                    let reReplyResponse = await ReplyService.getReReply(this.boardId, comment.replyId);
+                    // 각 댓글 객체에 대댓글을 추가
+                    this.reply[i].reReplies = reReplyResponse.data;
+                }
+                console.log("reply 데이터 : ", this.reply);
             } catch (e) {
                 console.log("retrieveReply 에러", e);
-            }
-        },
-        // 대댓글 가져오기
-        async retrieveReReply() {
-            try {
-                let response = await ReplyService.getReReply(this.boardId, this.tempRe);
-                this.reReply = response.data;
-                console.log("reReply 데이터 : ", response.data);
-            } catch (e) {
-                console.log("retrieveReReply 에러", e);
             }
         },
         // 댓글 수 가져오기
@@ -205,11 +212,33 @@ export default {
             } catch (e) {
                 console.log(e);
             }
+        },
+        // 대댓글 쓰기 버튼 클릭 시 호출
+        setTempRe(replyId) {
+            this.tempRe = replyId;
+        },
+        // 새 대댓글 등록
+        async createReReply(replyId) {
+            try {
+                let temp = {
+                    boardId: this.boardId,
+                    reReply: replyId,
+                    memberId: this.member.memberId,
+                    reply: this.replyTextarea,
+                }
+                let response = await ReplyService.createReply(temp);
+                console.log("대댓글 전송 : ", response.data);
+                this.retrieveReply();
+                this.retrieveReplyCount();
+                this.replyTextarea = "";
+                this.tempRe = "";
+            } catch (e) {
+                console.log(e);
+            }
         }
     },
     mounted() {
         console.log("부서코드 : ", this.smcode, "/ 글번호 : ", this.boardId, "/ 로그인ID : ", this.member.memberId);
-        console.log("우짤", this.$store.state.member);
         this.retrieveMember();
         this.retrieveBoard();
         this.retrieveCode();
@@ -217,11 +246,11 @@ export default {
         this.retrievePlace();
         this.retrieveImg();
         this.retrieveReply();
-        this.retrieveReReply();
         this.retrieveReplyCount();
     },
 }
 </script>
+
 <style>
 /* 글 상세 컨테이너 */
 .board-detail-container {
