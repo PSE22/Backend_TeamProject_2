@@ -14,6 +14,7 @@ import java.util.Optional;
 
 @Repository
 public interface FreeBoardRepository extends JpaRepository<Board, Long> {
+    //    최신글 전체조회
     @Query(value = "SELECT B.BOARD_ID AS boardId, " +
             "B.BOARD_TITLE AS boardTitle, " +
             "M.NICKNAME AS nickname, " +
@@ -36,6 +37,33 @@ public interface FreeBoardRepository extends JpaRepository<Board, Long> {
             nativeQuery = true)
     Page<IFreeBoardDto> findAllByFrBoardTitleContaining(@Param("boardTitle") String boardTitle,
                                                         Pageable pageable
+    );
+
+    //    추천수 10이상 + 최신순 전체조회
+    @Query(value = "SELECT B.BOARD_ID AS boardId, " +
+            "B.BOARD_TITLE AS boardTitle, " +
+            "M.NICKNAME AS nickname, " +
+            "B.ADD_DATE AS addDate, " +
+            "B.GOOD AS good " +
+            "FROM TB_BOARD B " +
+            "LEFT JOIN TB_MEMBER M ON B.MEMBER_ID = M.MEMBER_ID " +
+            "WHERE B.BOCODE = 'BO03' " +
+            "AND B.STATUS = 'Y' " +
+            "AND B.NOTICE_YN = 'N' " +
+            "AND B.BOARD_TITLE LIKE '%' || :boardTitle || '%' " +
+            "AND B.GOOD >= 10 " +
+            "ORDER BY B.ADD_DATE DESC",
+            countQuery = "SELECT count(*) " +
+                    "FROM TB_BOARD B " +
+                    "LEFT JOIN TB_MEMBER M ON B.MEMBER_ID = M.MEMBER_ID " +
+                    "WHERE B.BOCODE = 'BO03' " +
+                    "AND B.STATUS = 'Y' " +
+                    "AND B.NOTICE_YN = 'N' " +
+                    "AND B.BOARD_TITLE LIKE '%' || :boardTitle || '%' " +
+                    "AND B.GOOD >= 10",
+            nativeQuery = true)
+    Page<IFreeBoardDto> findAllByFrBoardTitleContainingAndGoodGreaterThanEqual(@Param("boardTitle") String boardTitle,
+                                                                               Pageable pageable
     );
 
     //    자유게시판 공지 전체조회

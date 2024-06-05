@@ -6,7 +6,6 @@ import org.example.backend.model.dto.board.FileDto;
 import org.example.backend.model.dto.board.IFreeBoardDto;
 import org.example.backend.model.dto.board.VoteDto;
 import org.example.backend.model.entity.board.Board;
-import org.example.backend.model.entity.board.File;
 import org.example.backend.model.entity.board.Place;
 import org.example.backend.repository.board.FreeBoardRepository;
 import org.springframework.data.domain.Page;
@@ -14,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,12 +26,17 @@ public class FreeBoardService {
     private final FileService fileService;
     private final BoardFileService boardFileService;
 
-    //    TODO: 전체조회(read)
+    //    TODO: 최신글 전체조회(read)
     public Page<IFreeBoardDto> findAllByBoardTitleContaining(String boardTitle, Pageable pageable) {
         return freeBoardRepository.findAllByFrBoardTitleContaining(boardTitle, pageable);
     }
 
-    //    동호회 공지 조회
+    //    TODO: 인기글 전체조회(read)
+    public Page<IFreeBoardDto> findAllByFrBoardTitleContainingAndGoodGreaterThanEqual(String boardTitle, Pageable pageable) {
+        return freeBoardRepository.findAllByFrBoardTitleContainingAndGoodGreaterThanEqual(boardTitle, pageable);
+    }
+
+    //    자유게시판 공지 조회
     public List<IFreeBoardDto> findByCodeAndNotice() {
         List<IFreeBoardDto> list = freeBoardRepository.findByFreeNotice();
         return list;
@@ -74,6 +77,12 @@ public class FreeBoardService {
         fileService.saveFiles(fileDtos);
 
         boardFileService.saveBoardFile(boardId, boardFileDtos);
+
+        //        null 체크
+        Optional.ofNullable(voteDtos).ifPresent(voteDtos2 -> voteService.saveVote(boardId, voteDtos2));
+        Optional.ofNullable(place).ifPresent(place2 -> placeService.savePlace(boardId, place2));
+        Optional.ofNullable(fileDtos).ifPresent(filedtos2 -> fileService.saveFiles(filedtos2));
+        Optional.ofNullable(boardFileDtos).ifPresent(boardFileDtos2 -> boardFileService.saveBoardFile(boardId, boardFileDtos2));
         }
 
     public void update(Board board) {
