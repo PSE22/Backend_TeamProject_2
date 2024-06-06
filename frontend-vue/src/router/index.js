@@ -62,6 +62,11 @@ const routes = [
     path: "/board/dept/:smcode/:boardId",
     component: () => import("../views/board/DeptBoardDetailView.vue"),
   },
+  // 부서게시판 상세글 수정 / 삭제
+  {
+    path: "/board/dept-edit/:smcode/:boardId",
+    component: () => import("../views/board/DeptBoardEdit.vue"),
+  },
   // 동호회게시판
   {
     path: "/board/club",
