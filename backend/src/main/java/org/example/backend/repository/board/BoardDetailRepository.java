@@ -6,6 +6,7 @@ import org.example.backend.model.dto.board.IReplyDto;
 import org.example.backend.model.dto.board.IUserDto;
 import org.example.backend.model.entity.board.Board;
 import org.example.backend.model.entity.board.Place;
+import org.example.backend.model.entity.board.Recommend;
 import org.example.backend.model.entity.board.Vote;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -91,43 +92,18 @@ public interface BoardDetailRepository extends JpaRepository<Board, Long> {
             , nativeQuery = true)
     List<IBoardDetailDto> findBoardImg(@Param("boardId") Long boardId);
 
-    // 글번호로 댓글 조회
-    @Query(value = "SELECT R.BOARD_ID AS boardId,\n" +
-            "        R.REPLY_ID AS replyId,\n" +
-            "        R.MEMBER_ID AS memberId,\n" +
-            "        M.MEMBER_NAME AS memberName,\n" +
-            "        M.NICKNAME AS nickname,\n" +
-            "        R.RE_REPLY AS reReplyId,\n" +
-            "        R.REPLY AS reply,\n" +
-            "        R.ADD_DATE AS addDate,\n" +
-            "        F.FILE_URL AS fileUrl\n" +
-            "FROM TB_REPLY R, TB_FILE F, TB_REPLY_FILE RF, TB_MEMBER M\n" +
-            "WHERE R.REPLY_ID = RF.REPLY_ID(+)\n" +
-            "AND F.UUID(+) = RF.UUID\n" +
-            "AND R.MEMBER_ID = M.MEMBER_ID\n" +
-            "AND R.BOARD_ID = :boardId\n" +
-            "AND R.RE_REPLY IS NULL\n" +
-            "AND R.STATUS = 'Y'"
+    // 추천 데이터 존재하는지 확인
+    @Query(value = "SELECT count(*)\n" +
+            "FROM TB_RECOMMEND \n" +
+            "WHERE BOARD_ID = :boardId\n" +
+            "AND MEMBER_ID = :memberId"
             , nativeQuery = true)
-    List<IReplyDto> findReply(@Param("boardId") Long boardId);
+    Integer existsRecommend(@Param("boardId") Long boardId, @Param("memberId") String memberId);
 
-    // 댓글 수 조회
-    @Query(value = "SELECT R.BOARD_ID AS boardId,\n" +
-            "        R.REPLY_ID AS replyId,\n" +
-            "        R.MEMBER_ID AS memberId,\n" +
-            "        M.MEMBER_NAME AS memberName,\n" +
-            "        M.NICKNAME AS nickname,\n" +
-            "        R.RE_REPLY AS reReplyId,\n" +
-            "        R.REPLY AS reply,\n" +
-            "        R.ADD_DATE AS addDate,\n" +
-            "        F.FILE_URL AS fileUrl\n" +
-            "FROM TB_REPLY R, TB_FILE F, TB_REPLY_FILE RF, TB_MEMBER M\n" +
-            "WHERE R.REPLY_ID = RF.REPLY_ID(+)\n" +
-            "AND F.UUID(+) = RF.UUID\n" +
-            "AND R.MEMBER_ID = M.MEMBER_ID\n" +
-            "AND R.BOARD_ID = :boardId\n" +
-            "AND R.RE_REPLY IS NULL\n" +
-            "AND R.STATUS = 'Y'"
+    // 추천 수 카운트
+    @Query(value = "SELECT count(*)\n" +
+            "FROM TB_RECOMMEND \n" +
+            "WHERE BOARD_ID = :boardId"
             , nativeQuery = true)
-    Integer countReply(@Param("boardId") Long boardId);
+    Integer countRecommend(@Param("boardId") Long boardId);
 }

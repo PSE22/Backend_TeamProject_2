@@ -2,15 +2,20 @@
   <div class="w-100 p-3">
     <h1 class="text-center mb-5 mt-5">자유 게시판</h1>
   </div>
+  <!-- 게시판 소메뉴 버튼 (부서) -->
+  <div class="d-flex justify-content-center mb-5">
+    <button class="custom-btn col-2" @click="orderByLatest">최신순</button>
+    <button class="custom-btn col-2" @click="orderByPopular">베스트</button>
+  </div>
   <table class="table table-hover">
     <thead class="table-light text-center">
       <tr>
-            <th scope="col">글번호</th>
-            <th scope="col">제목</th>
-            <th scope="col">닉네임</th>
-            <th scope="col">등록일</th>
-            <th scope="col">추천수</th>
-          </tr>
+        <th scope="col">글번호</th>
+        <th scope="col">제목</th>
+        <th scope="col">닉네임</th>
+        <th scope="col">등록일</th>
+        <th scope="col">추천수</th>
+      </tr>
     </thead>
     <tbody>
       <tr
@@ -90,7 +95,6 @@
   </div>
 </template>
 
-
 <script>
 import FreeBoardService from "@/services/board/FreeBoardService";
 export default {
@@ -135,6 +139,38 @@ export default {
         console.log(e); // 웹브라우저 콘솔탭에 에러표시
       }
     },
+    async orderByLatest() {
+      try {
+        this.retrieveFreeNotice(); // 공지사항 먼저 조회
+        let response = await FreeBoardService.getAll(
+          this.searchBoardTitle,
+          this.page - 1,
+          this.pageSize
+        );
+        const { board, totalItems } = response.data;
+        this.board = board;
+        this.count = totalItems;
+        console.log("최신순 조회", response.data);
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    async orderByPopular() {
+      try {
+        this.retrieveFreeNotice(); // 공지사항 먼저 조회
+        let response = await FreeBoardService.getAllPopular(
+          this.searchBoardTitle,
+          this.page - 1,
+          this.pageSize
+        );
+        const { board, totalItems } = response.data;
+        this.board = board;
+        this.count = totalItems;
+        console.log("인기순 조회", response.data);
+      } catch (e) {
+        console.log(e);
+      }
+    },
     // TODO: 공통 페이징 함수 : select 태그
     pageSizeChange() {
       this.page = 1; // 현재패이지번호 : 1
@@ -145,7 +181,7 @@ export default {
       this.$router.push(`/board/free/${boardId}`);
     },
     moveToFreeWrite() {
-    this.$router.push('/board/free-write');
+      this.$router.push("/board/free-write");
     },
   },
   mounted() {
@@ -185,5 +221,9 @@ export default {
 .custom-btn.active::after, /* 활성/호버 시 밑줄 색상 변경 */
 .custom-btn:hover::after {
   background-color: #000; /* 검정색 밑줄 */
+}
+
+.text-right {
+  text-align: right;
 }
 </style>

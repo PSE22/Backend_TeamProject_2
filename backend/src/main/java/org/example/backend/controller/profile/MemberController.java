@@ -4,11 +4,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.entity.auth.Member;
 import org.example.backend.service.auth.MemberService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -66,17 +71,50 @@ public class MemberController {
         }
     }
 
-    //  기존 회원 부서별 전체 조회
-    @GetMapping("/profile-all/old/{memberCode}/{deptCode}")
-    public ResponseEntity<Object> findAllByMemberCodeAndDeptCode(@PathVariable String memberCode, @PathVariable String deptCode) {
+    //  기존 회원 전체 조회(검색)
+    @GetMapping("/profile-all/old-search/{memberCode}/{page}/{size}")
+    public ResponseEntity<Object> findAllByMemberName(@PathVariable String memberCode, @PathVariable int page, @PathVariable int size) {
         try {
-            List<Member> memberList = memberService.findAllByMemberCodeAndDeptCode(memberCode, deptCode);
-            if (memberList.isEmpty() == true) {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Member> memberPage = memberService.findAllByMemberName(memberCode, pageable);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("member", memberPage.getContent()); // member 배열
+            response.put("currentPage", memberPage.getNumber()); // 현재페이지번호
+            response.put("totalItems", memberPage.getTotalElements()); // 총건수(개수)
+            response.put("totalPages", memberPage.getTotalPages()); // 총페이지수
+
+            if (memberPage.isEmpty() == true) {
                 // 데이터 없음
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             } else {
                 // 조회 성공
-                return new ResponseEntity<>(memberList, HttpStatus.OK);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //  기존 회원 부서별 전체 조회
+    @GetMapping("/profile-all/old-dept/{memberCode}/{deptCode}/{page}/{size}")
+    public ResponseEntity<Object> findAllByMemberCodeAndDeptCode(@PathVariable String memberCode, @PathVariable String deptCode, @PathVariable int page, @PathVariable int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Member> memberPage = memberService.findAllByMemberCodeAndDeptCode(memberCode, deptCode, pageable);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("member", memberPage.getContent()); // member 배열
+            response.put("currentPage", memberPage.getNumber()); // 현재페이지번호
+            response.put("totalItems", memberPage.getTotalElements()); // 총건수(개수)
+            response.put("totalPages", memberPage.getTotalPages()); // 총페이지수
+
+            if (memberPage.isEmpty() == true) {
+                // 데이터 없음
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } else {
+                // 조회 성공
+                return new ResponseEntity<>(response, HttpStatus.OK);
             }
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

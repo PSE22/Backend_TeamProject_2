@@ -1,13 +1,11 @@
 package org.example.backend.service.board;
 
 import lombok.RequiredArgsConstructor;
-import org.example.backend.model.dto.board.BoardFileDto;
-import org.example.backend.model.dto.board.FileDto;
-import org.example.backend.model.dto.board.IFreeBoardDto;
-import org.example.backend.model.dto.board.VoteDto;
+import org.example.backend.model.dto.board.*;
 import org.example.backend.model.entity.board.Board;
 import org.example.backend.model.entity.board.Place;
-import org.example.backend.repository.board.FreeBoardRepository;
+import org.example.backend.repository.board.PraiseBoardRepository;
+import org.example.backend.repository.board.SuggestBoardRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,57 +14,65 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * packageName : org.example.backend.service.board
+ * fileName : PraiseBoardService
+ * author : GGG
+ * date : 2024-06-05
+ * description :
+ * 요약 :
+ * <p>
+ * ===========================================================
+ * DATE            AUTHOR             NOTE
+ * -----------------------------------------------------------
+ * 2024-06-05         GGG          최초 생성
+ */
 @Service
 @RequiredArgsConstructor
-public class FreeBoardService {
+public class PraiseBoardService {
 
-    private final FreeBoardRepository freeBoardRepository;
+    private final PraiseBoardRepository praiseBoardRepository;
     private final VoteService voteService;
     private final PlaceService placeService;
     private final FileService fileService;
     private final BoardFileService boardFileService;
 
     //    TODO: 최신글 전체조회(read)
-    public Page<IFreeBoardDto> findAllByBoardTitleContaining(String boardTitle, Pageable pageable) {
-        return freeBoardRepository.findAllByFrBoardTitleContaining(boardTitle, pageable);
-    }
-
-    //    TODO: 인기글 전체조회(read)
-    public Page<IFreeBoardDto> findAllByFrBoardTitleContainingAndGoodGreaterThanEqual(String boardTitle, Pageable pageable) {
-        return freeBoardRepository.findAllByFrBoardTitleContainingAndGoodGreaterThanEqual(boardTitle, pageable);
+    public Page<IPraiseBoardDto> findAllByBoardTitleContaining(String boardTitle, Pageable pageable) {
+        return praiseBoardRepository.findAllByPrBoardTitleContaining(boardTitle, pageable);
     }
 
     //    자유게시판 공지 조회
-    public List<IFreeBoardDto> findByCodeAndNotice() {
-        List<IFreeBoardDto> list = freeBoardRepository.findByFreeNotice();
+    public List<IPraiseBoardDto> findByCodeAndNotice() {
+        List<IPraiseBoardDto> list = praiseBoardRepository.findByPraiseNotice();
         return list;
     }
 
     //    페이징 처리
-    public Page<IFreeBoardDto> findAllByFreeBoardTitleContaining(String boardTitle,
-                                                                 Pageable pageable) {
-        Page<IFreeBoardDto> page
-                = freeBoardRepository
-                .findAllByFrBoardTitleContaining(boardTitle, pageable);
+    public Page<IPraiseBoardDto> findAllByPraiseBoardTitleContaining(String boardTitle,
+                                                                    Pageable pageable) {
+        Page<IPraiseBoardDto> page
+                = praiseBoardRepository
+                .findAllByPrBoardTitleContaining(boardTitle, pageable);
         return page;
     }
 
     //    상세조회
     public Optional<Board> findById(Long boardId) {
         //    JPA 상세조회 함수 실행
-        Optional<Board> optionalFreeBoard
-                = freeBoardRepository.findById(boardId);
-        return optionalFreeBoard;
+        Optional<Board> optionalPraiseBoard
+                = praiseBoardRepository.findById(boardId);
+        return optionalPraiseBoard;
     }
 
     @Transactional(rollbackFor = Exception.class)
     //    TODO: 등록(insert),수정(update)
     public void save(Board board, List<VoteDto> voteDtos, Place place, List<FileDto> fileDtos, List<BoardFileDto> boardFileDtos) {
         // 분류코드를 설정
-        board.setBocode("BO03");
+        board.setBocode("BO05");
 
         // JPA 저장 함수 실행 : return 값 : 저장된 객체
-        Board board2 = freeBoardRepository.save(board);
+        Board board2 = praiseBoardRepository.save(board);
 
         // 저장된 board의 boardId를 객체로 변환
         Long boardId = board2.getBoardId();
@@ -83,24 +89,24 @@ public class FreeBoardService {
         Optional.ofNullable(place).ifPresent(place2 -> placeService.savePlace(boardId, place2));
         Optional.ofNullable(fileDtos).ifPresent(filedtos2 -> fileService.saveFiles(filedtos2));
         Optional.ofNullable(boardFileDtos).ifPresent(boardFileDtos2 -> boardFileService.saveBoardFile(boardId, boardFileDtos2));
-        }
+    }
 
     public void update(Board board) {
-        freeBoardRepository.save(board);
+        praiseBoardRepository.save(board);
     }
 
     // TODO: 삭제(delete)
     public boolean removeById(Long boardId) {
         // 해당 boardId에 해당하는 게시글 조회
-        Optional<Board> optionalBoard = freeBoardRepository.findById(boardId);
+        Optional<Board> optionalBoard = praiseBoardRepository.findById(boardId);
 
         // 게시글이 존재하는 경우
         if (optionalBoard.isPresent()) {
-            // 조회된 게시글의 분류코드가 BO03인지 확인
+            // 조회된 게시글의 분류코드가 BO04인지 확인
             Board board = optionalBoard.get();
-            if ("BO03".equals(board.getBocode())) {
-                // BO03 분류코드에 해당하는 게시글이면 삭제
-                freeBoardRepository.deleteById(boardId);
+            if ("BO05".equals(board.getBocode())) {
+                // BO04 분류코드에 해당하는 게시글이면 삭제
+                praiseBoardRepository.deleteById(boardId);
                 return true;
             } else {
                 // BO03 분류코드가 아닌 경우 삭제하지 않고 false 반환
@@ -111,5 +117,4 @@ public class FreeBoardService {
             return false;
         }
     }
-
 }

@@ -2,13 +2,15 @@ package org.example.backend.service.board;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.backend.model.common.BoardIdMemberIdPk;
 import org.example.backend.model.dto.board.IBoardDetailDto;
 import org.example.backend.model.dto.board.IBoardDto;
-import org.example.backend.model.dto.board.IReplyDto;
 import org.example.backend.model.dto.board.IUserDto;
 import org.example.backend.model.entity.board.Place;
+import org.example.backend.model.entity.board.Recommend;
 import org.example.backend.model.entity.board.Vote;
 import org.example.backend.repository.board.BoardDetailRepository;
+import org.example.backend.repository.board.RecommendRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,6 +35,7 @@ import java.util.Optional;
 public class BoardDetailService {
 
     private final BoardDetailRepository boardDetailRepository;
+    private final RecommendRepository recommendRepository;
 
     // 로그인된 회원 정보 조회
     public Optional<IUserDto> findMember(String memberId) {
@@ -73,15 +76,32 @@ public class BoardDetailService {
         return list;
     }
 
-    // 글번호로 댓글 조회
-    public List<IReplyDto> findReply(Long boardId) {
-        List<IReplyDto> list = boardDetailRepository.findReply(boardId);
-        return list;
+    // 추천 데이터 존재하는지 확인
+    public Integer existsRecommend(Long boardId, String memberId) {
+        Integer recommend = boardDetailRepository.existsRecommend(boardId, memberId);
+        return recommend;
     }
 
-    // 댓글 수 조회
-    public Integer countReply(Long boardId) {
-        Integer count = boardDetailRepository.countReply(boardId);
+    // 추천 저장
+    public Recommend saveRecommend(Recommend recommend) {
+        Recommend recommend2 = recommendRepository.save(recommend);
+        return recommend2;
+    }
+
+    // 추천 삭제
+    public boolean deleteRecommend(BoardIdMemberIdPk boardIdMemberIdPk) {
+        if (recommendRepository.existsById(boardIdMemberIdPk)) {
+            // 추천 데이터가 존재하면 삭제
+            recommendRepository.deleteById(boardIdMemberIdPk);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // 추천 수 카운트
+    public Integer countRecommend(Long boardId) {
+        Integer count = boardDetailRepository.countRecommend(boardId);
         return count;
     }
 }

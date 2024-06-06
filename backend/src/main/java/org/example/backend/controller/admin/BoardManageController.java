@@ -39,15 +39,23 @@ public class BoardManageController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<CmCode> addBoard(@RequestBody BoardEditDto boardEditDto) {
-        CmCode newBoard = boardManageService.addBoard(boardEditDto);
-        return ResponseEntity.ok(newBoard);
+    public ResponseEntity<?> addBoard(@RequestBody BoardEditDto boardEditDto) {
+        try {
+            CmCode newBoard = boardManageService.addBoard(boardEditDto);
+            return ResponseEntity.ok(newBoard);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("/update")
-    public ResponseEntity<CmCode> updateBoard(@RequestBody BoardEditDto boardEditDto) {
-        CmCode updatedBoard = boardManageService.updateBoard(boardEditDto);
-        return ResponseEntity.ok(updatedBoard);
+    public ResponseEntity<?> updateBoard(@RequestBody BoardEditDto boardEditDto) {
+        try {
+            CmCode updatedBoard = boardManageService.updateBoard(boardEditDto);
+            return ResponseEntity.ok(updatedBoard);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/delete/{cmCd}")

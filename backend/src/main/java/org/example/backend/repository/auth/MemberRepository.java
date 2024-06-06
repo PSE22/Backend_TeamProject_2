@@ -1,6 +1,8 @@
 package org.example.backend.repository.auth;
 
 import org.example.backend.model.entity.auth.Member;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -42,12 +44,19 @@ public interface MemberRepository extends JpaRepository<Member, String> {
 
     @Query(value = "SELECT *\n" +
             "FROM TB_MEMBER\n" +
+            "WHERE MEMBER_NAME LIKE '%' || :memberName || '%'\n" +
+            "AND STATUS = 'Y'"
+    , nativeQuery = true)
+    Page<Member> findAllByMemberName(@Param("memberName") String memberName, Pageable pageable);
+
+    @Query(value = "SELECT *\n" +
+            "FROM TB_MEMBER\n" +
             "WHERE MEMBER_CODE = :memberCode\n" +
             "AND DEPT_CODE = :deptCode\n" +
             "AND STATUS = 'Y'\n" +
             "ORDER BY ADD_DATE"
             , nativeQuery = true)
-    List<Member> findAllByMemberCodeAndDeptCode(@Param("memberCode") String memberCode, @Param("deptCode") String deptCode);
+    Page<Member> findAllByMemberCodeAndDeptCode(@Param("memberCode") String memberCode, @Param("deptCode") String deptCode, Pageable pageable);
 
     @Modifying
     @Transactional

@@ -32,7 +32,7 @@ public class Board extends BaseTimeEntity2 {
     private String memberId;        // 글작성자 fk
     private String boardTitle;      // 글제목
     private String boardContent;    // 글내용
-    private Integer good = 0;           // 추천수
+    private Integer good = 0;       // 추천수
     private String bocode;          // 게시판코드
     private String smcode;          // 소메뉴코드
 

@@ -3,6 +3,8 @@ package org.example.backend.service.auth;
 import org.example.backend.model.entity.auth.Member;
 import org.example.backend.repository.auth.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -66,13 +68,19 @@ public class MemberService {
         return memberList;
     }
 
-    //  6) 기존 회원 부서별 전체 조회
-    public List<Member> findAllByMemberCodeAndDeptCode(String memberCode, String deptCode) {
-        List<Member> memberList = memberRepository.findAllByMemberCodeAndDeptCode(memberCode, deptCode);
+    //  6) 기존 회원 전체 조회(검색)
+    public Page<Member> findAllByMemberName(String memberName, Pageable pageable) {
+        Page<Member> memberList = memberRepository.findAllByMemberName(memberName, pageable);
         return memberList;
     }
 
-    //  7) 회원 삭제 (soft delete)
+    //  7) 기존 회원 부서별 전체 조회
+    public Page<Member> findAllByMemberCodeAndDeptCode(String memberCode, String deptCode, Pageable pageable) {
+        Page<Member> memberList = memberRepository.findAllByMemberCodeAndDeptCode(memberCode, deptCode, pageable);
+        return memberList;
+    }
+
+    //  8) 회원 삭제 (soft delete)
     public boolean removeById(String memberId) {
         if (memberRepository.existsById(memberId) == true) {
             memberRepository.deleteById(memberId);
@@ -82,7 +90,7 @@ public class MemberService {
         }
     }
 
-    //  8) 회원 삭제 (hard delete)
+    //  9) 회원 삭제 (hard delete)
     public void delMember(String memberId) {
         memberRepository.deleteMember(memberId);
     }
