@@ -92,6 +92,36 @@ const routes = [
     path: "/board/free-write",
     component: () => import("../views/board/FreeWrite.vue"),
   },
+    // 건의게시판
+    {
+      path: "/board/suggest",
+      component: () => import("../views/board/SuggestBoard.vue"),
+    },
+    // 건의게시판 상세글 조회
+    {
+      path: "/board/suggest/:boardId",
+      component: () => import("../views/board/SuggestDetailView.vue"),
+    },
+    // 건의게시판 등록(글쓰기)
+    {
+      path: "/board/suggest-write",
+      component: () => import("../views/board/SuggestWrite.vue"),
+    },
+    // 건의게시판
+    {
+      path: "/board/praise",
+      component: () => import("../views/board/PraiseBoard.vue"),
+    },
+    // 건의게시판 상세글 조회
+    {
+      path: "/board/praise/:boardId",
+      component: () => import("../views/board/PraiseDetailView.vue"),
+    },
+    // 건의게시판 등록(글쓰기)
+    {
+      path: "/board/praise-write",
+      component: () => import("../views/board/PraiseWrite.vue"),
+    },
   {
     path: '/board/main-search',
     name: 'SearchResults',
