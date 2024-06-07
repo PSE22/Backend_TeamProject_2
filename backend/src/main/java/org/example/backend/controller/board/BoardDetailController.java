@@ -70,22 +70,6 @@ public class BoardDetailController {
         }
     }
 
-    // 게시글, 작성자 정보 상세 조회 / 수정 / 삭제
-    @GetMapping("/board-detail/edit")
-    public ResponseEntity<Object> findByBoardAndMember(@RequestParam Long boardId) {
-        log.debug("Received boardId: {}", boardId);
-        try {
-            Optional<IBoardDto> optional = boardDetailService.findBoardAndMember(boardId);
-            if (!optional.isPresent()) {
-                return new ResponseEntity<>("데이터 없음", HttpStatus.NO_CONTENT);
-            } else {
-                return new ResponseEntity<>(optional.get(), HttpStatus.OK);
-            }
-        } catch (Exception e) {
-            return handleException(e);
-        }
-    }
-
     // 코드번호로 코드명 조회
     @GetMapping("/board-detail/cmCd")
     public ResponseEntity<Object> findCmCdName(@RequestParam String cmCd) {
@@ -122,7 +106,7 @@ public class BoardDetailController {
         try {
             log.debug("Controller 문제?? boardId :: ", boardId);
             Optional<Place> optional = boardDetailService.findPlace(boardId);
-            if (optional.isEmpty() == true) {
+            if (optional.isEmpty()) {
                 return new ResponseEntity<>("데이터 없음", HttpStatus.NO_CONTENT);
             } else {
                 return new ResponseEntity<>(optional.get(), HttpStatus.OK);
@@ -263,6 +247,22 @@ public class BoardDetailController {
         } else {
             log.error("서버 오류가 발생했습니다", e);
             return new ResponseEntity<>("서버 오류가 발생했습니다", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // 게시글, 작성자 정보 상세 조회 / 수정 / 삭제
+    @GetMapping("/board-detail/edit")
+    public ResponseEntity<Object> findByBoardAndMember(@RequestParam Long boardId) {
+        log.debug("Received boardId: {}", boardId);
+        try {
+            Optional<IBoardDto> optional = boardDetailService.findBoardAndMember(boardId);
+            if (!optional.isPresent()) {
+                return new ResponseEntity<>("데이터 없음", HttpStatus.NO_CONTENT);
+            } else {
+                return new ResponseEntity<>(optional.get(), HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            return handleException(e);
         }
     }
 

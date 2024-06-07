@@ -360,7 +360,7 @@ export default {
     },
     // 수정 페이지 이동
     moveToDeptEdit() {
-      this.$router.push("/board/dept-edit/:smcode/:boardId");
+      this.$router.push(`/board/dept-edit/${this.smcode}/${this.boardId}`);
     },
   },
   mounted() {
