@@ -1,23 +1,6 @@
 <template>
   <div class="container">
-    <div class="sidebar">
-      <h1 class="sidebar-title">{{ loginMember.memberName }}님</h1>
-      <hr class="sidebar-divider" />
-      <ul class="sidebar-list">
-        <router-link to="/admin/register-mgmt" class="profile-link"
-          ><li class="sidebar-menu mb-5">회원가입승인</li></router-link
-        >
-        <router-link to="/admin/register-deny-mgmt" class="profile-link"
-          ><li class="sidebar-menu mb-5">반려회원관리</li></router-link
-        >
-        <router-link to="/admin/edit-mgmt" class="profile-link"
-          ><li class="sidebar-menu mb-5">회원정보변경</li></router-link
-        >
-        <router-link to="/admin/report-mgmt" class="profile-link"
-          ><li class="sidebar-menu">신고글관리</li></router-link
-        >
-      </ul>
-    </div>
+    <AdminSidebar />
     <div class="main-content">
       <input
         type="text"
@@ -63,107 +46,104 @@
               <td class="col-1 text-center">{{ deptName(data.deptCode) }}</td>
               <td class="col-1 text-center">{{ posName(data.posCode) }}</td>
               <td class="col-1 text-center">
-                <div class="row" id="review-button">
-                  <form>
-                    <!-- Button trigger modal -->
-                    <button
-                      type="button"
-                      class="btn btn-primary"
-                      data-bs-toggle="modal"
-                      :data-bs-target="'#editModal-' + index"
-                    >
-                      수정
-                    </button>
+                <div class="button-group">
+                  <button
+                    type="button"
+                    class="edit-button btn btn-primary"
+                    data-bs-toggle="modal"
+                    :data-bs-target="'#editModal-' + index"
+                  >
+                    <span class="horizontal-text">수정</span>
+                  </button>
+                  <button class="delete-button" @click="registerDelete(data)">
+                    <span class="horizontal-text">삭제</span>
+                  </button>
+                </div>
 
-                    <!-- Modal -->
-                    <div
-                      class="modal fade"
-                      :id="'editModal-' + index"
-                      tabindex="-1"
-                    >
-                      <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="modalLabel">
-                              회원정보 수정
-                            </h1>
-                            <button
-                              type="button"
-                              class="btn-close"
-                              data-bs-dismiss="modal"
-                            ></button>
-                          </div>
-                          <div class="modal-body">
-                            <h3 class="fs-5 mb-2">ID</h3>
-                            <input
-                              class="form-control mb-3"
-                              v-model="data.memberId"
-                            />
-                            <h3 class="fs-5 mb-2">이름</h3>
-                            <input
-                              class="form-control mb-3"
-                              v-model="data.memberName"
-                            />
-                            <h3 class="fs-5 mb-2">이메일</h3>
-                            <input
-                              class="form-control mb-3"
-                              v-model="data.memberEmail"
-                            />
-                            <h3 class="fs-5 mb-2">번호</h3>
-                            <input
-                              class="form-control mb-3"
-                              v-model="data.memberExt"
-                            />
-                            <h3 class="fs-5 mb-2">닉네임</h3>
-                            <input
-                              class="form-control mb-3"
-                              v-model="data.nickname"
-                            />
-                            <h3 class="fs-5 mb-2">부서</h3>
-                            <select
-                              class="form-select mb-3"
-                              v-model="data.deptCode"
-                            >
-                              <option value="DE01">영업팀</option>
-                              <option value="DE02">인사팀</option>
-                              <option value="DE03">행정팀</option>
-                              <option value="DE04">보안팀</option>
-                            </select>
-                            <h3 class="fs-5 mb-2">직급</h3>
-                            <select
-                              class="form-select mb-3"
-                              v-model="data.posCode"
-                            >
-                              <option value="PO01">사원</option>
-                              <option value="PO02">주임</option>
-                              <option value="PO03">대리</option>
-                              <option value="PO04">과장</option>
-                            </select>
-                          </div>
-                          <div class="modal-footer">
-                            <button
-                              type="button"
-                              class="btn btn-secondary"
-                              data-bs-dismiss="modal"
-                            >
-                              닫기
-                            </button>
-                            <button
-                              type="submit"
-                              class="btn btn-primary"
-                              @click="registerModify(data)"
-                            >
-                              등록
-                            </button>
-                          </div>
-                        </div>
+                <!-- Modal -->
+                <div
+                  class="modal fade"
+                  :id="'editModal-' + index"
+                  tabindex="-1"
+                >
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="modalLabel">
+                          회원정보 수정
+                        </h1>
+                        <button
+                          type="button"
+                          class="btn-close"
+                          data-bs-dismiss="modal"
+                        ></button>
+                      </div>
+                      <div class="modal-body">
+                        <h3 class="fs-5 mb-2">ID</h3>
+                        <input
+                          class="form-control mb-3"
+                          v-model="data.memberId"
+                        />
+                        <h3 class="fs-5 mb-2">이름</h3>
+                        <input
+                          class="form-control mb-3"
+                          v-model="data.memberName"
+                        />
+                        <h3 class="fs-5 mb-2">이메일</h3>
+                        <input
+                          class="form-control mb-3"
+                          v-model="data.memberEmail"
+                        />
+                        <h3 class="fs-5 mb-2">번호</h3>
+                        <input
+                          class="form-control mb-3"
+                          v-model="data.memberExt"
+                        />
+                        <h3 class="fs-5 mb-2">닉네임</h3>
+                        <input
+                          class="form-control mb-3"
+                          v-model="data.nickname"
+                        />
+                        <h3 class="fs-5 mb-2">부서</h3>
+                        <select
+                          class="form-select mb-3"
+                          v-model="data.deptCode"
+                        >
+                          <option value="DE01">영업팀</option>
+                          <option value="DE02">인사팀</option>
+                          <option value="DE03">행정팀</option>
+                          <option value="DE04">보안팀</option>
+                        </select>
+                        <h3 class="fs-5 mb-2">직급</h3>
+                        <select
+                          class="form-select mb-3"
+                          v-model="data.posCode"
+                        >
+                          <option value="PO01">사원</option>
+                          <option value="PO02">주임</option>
+                          <option value="PO03">대리</option>
+                          <option value="PO04">과장</option>
+                        </select>
+                      </div>
+                      <div class="modal-footer">
+                        <button
+                          type="button"
+                          class="btn btn-secondary"
+                          data-bs-dismiss="modal"
+                        >
+                          닫기
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-primary"
+                          @click="registerModify(data)"
+                        >
+                          등록
+                        </button>
                       </div>
                     </div>
-                  </form>
+                  </div>
                 </div>
-                <button class="delete-button" @click="registerDelete(data)">
-                  삭제
-                </button>
               </td>
             </tr>
           </tbody>
@@ -182,18 +162,19 @@
 
 <script>
 import MemberService from "@/services/member/MemberService";
+import AdminSidebar from "@/components/common/AdminSidebar.vue";
 
 export default {
+  components: {
+    AdminSidebar
+  },
   data() {
     return {
       loginMember: {},
       member: [],
       allMember: [],
-
       searchMemberName: "",
-
       deptCode: "DE01",
-
       page: 1,
       count: 0,
       pageSize: 10,
@@ -202,23 +183,16 @@ export default {
   methods: {
     async getProfile() {
       try {
-        let response = await MemberService.get(
-          this.$store.state.member?.memberId
-        );
+        let response = await MemberService.get(this.$store.state.member?.memberId);
         this.loginMember = response.data;
         console.log(response.data);
       } catch (e) {
         console.log(e);
       }
     },
-
     async getAllProfileSearch() {
       try {
-        let response = await MemberService.getMemberAllDept(
-          this.searchMemberName,
-          this.page -1,
-          this.pageSize
-        );
+        let response = await MemberService.getMemberAllDept(this.searchMemberName, this.page - 1, this.pageSize);
         const { member, totalItems } = response.data;
         this.member = member;
         this.count = totalItems;
@@ -227,15 +201,9 @@ export default {
         console.log(e);
       }
     },
-
     async getAllProfileOfDept() {
       try {
-        let response = await MemberService.getMemberOfDept(
-          "AT02",
-          this.deptCode,
-          this.page - 1,
-          this.pageSize
-        );
+        let response = await MemberService.getMemberOfDept("AT02", this.deptCode, this.page - 1, this.pageSize);
         const { member, totalItems } = response.data;
         this.member = member;
         this.count = totalItems;
@@ -244,7 +212,6 @@ export default {
         console.log(e);
       }
     },
-
     async registerModify(data) {
       try {
         data.memberCode = "AT02";
@@ -261,13 +228,11 @@ export default {
       alert("회원 삭제 처리되었습니다.");
       this.getAllProfile();
     },
-
     pageSizeChange(dept) {
       this.page = 1;
       this.deptCode = dept;
       this.getAllProfileOfDept();
     },
-
     deptName(deptCode) {
       if (deptCode === "DE01") {
         return "영업팀";
@@ -419,5 +384,17 @@ button {
 
 .delete-button:hover {
   background-color: #d32f2f;
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.horizontal-text {
+  display: inline-block;
+  text-align: center;
+  white-space: nowrap;
 }
 </style>
