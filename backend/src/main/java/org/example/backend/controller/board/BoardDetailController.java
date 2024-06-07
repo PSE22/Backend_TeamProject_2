@@ -70,6 +70,22 @@ public class BoardDetailController {
         }
     }
 
+    // 게시글, 작성자 정보 상세 조회 / 수정 / 삭제
+    @GetMapping("/board-detail/edit")
+    public ResponseEntity<Object> findByBoardAndMember(@RequestParam Long boardId) {
+        log.debug("Received boardId: {}", boardId);
+        try {
+            Optional<IBoardDto> optional = boardDetailService.findBoardAndMember(boardId);
+            if (!optional.isPresent()) {
+                return new ResponseEntity<>("데이터 없음", HttpStatus.NO_CONTENT);
+            } else {
+                return new ResponseEntity<>(optional.get(), HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            return handleException(e);
+        }
+    }
+
     // 코드번호로 코드명 조회
     @GetMapping("/board-detail/cmCd")
     public ResponseEntity<Object> findCmCdName(@RequestParam String cmCd) {
