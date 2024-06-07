@@ -6,6 +6,7 @@ import org.example.backend.model.dto.board.IReplyDto;
 import org.example.backend.model.dto.board.IUserDto;
 import org.example.backend.model.entity.board.Board;
 import org.example.backend.model.entity.board.Place;
+import org.example.backend.model.entity.board.Recommend;
 import org.example.backend.model.entity.board.Vote;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -90,4 +91,19 @@ public interface BoardDetailRepository extends JpaRepository<Board, Long> {
             "        AND BF.BOARD_ID = :boardId"
             , nativeQuery = true)
     List<IBoardDetailDto> findBoardImg(@Param("boardId") Long boardId);
+
+    // 추천 데이터 존재하는지 확인
+    @Query(value = "SELECT count(*)\n" +
+            "FROM TB_RECOMMEND \n" +
+            "WHERE BOARD_ID = :boardId\n" +
+            "AND MEMBER_ID = :memberId"
+            , nativeQuery = true)
+    Integer existsRecommend(@Param("boardId") Long boardId, @Param("memberId") String memberId);
+
+    // 추천 수 카운트
+    @Query(value = "SELECT count(*)\n" +
+            "FROM TB_RECOMMEND \n" +
+            "WHERE BOARD_ID = :boardId"
+            , nativeQuery = true)
+    Integer countRecommend(@Param("boardId") Long boardId);
 }
