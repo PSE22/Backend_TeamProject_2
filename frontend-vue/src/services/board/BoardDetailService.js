@@ -34,7 +34,35 @@ class BoardDetailService {
   //   }
   // 글번호로 이미지 조회
   getImg(boardId) {
-    return http.get(`/board/board-detail/board-img?boardId=${boardId}`, {
+    return http.get(`/board/board-detail/board-img?boardId=${boardId}`);
+  }
+  // 추천 데이터 존재 확인
+  getRecommend(boardId, memberId) {
+    return http.get(
+      `/board/board-detail/recommend-exist?boardId=${boardId}&memberId=${memberId}`,
+      {
+        headers: LoginHeader(),
+      }
+    );
+  }
+  // 추천 데이터 저장
+  createRecommend(recommend) {
+    return http.post("/board/board-detail/recommend-exist", recommend, {
+      headers: LoginHeader(),
+    });
+  }
+  // 추천 데이터 삭제
+  deleteRecommend(boardId, memberId) {
+    return http.delete(
+      `/board/board-detail/recommend-exist?boardId=${boardId}&memberId=${memberId}`,
+      {
+        headers: LoginHeader(),
+      }
+    );
+  }
+  // 추천 수 조회
+  getRecommendCnt(boardId) {
+    return http.get(`/board/board-detail/recommend-count?boardId=${boardId}`, {
       headers: LoginHeader(),
     });
   }

@@ -22,7 +22,10 @@
             </div>
             <hr>
             <div class="row">
-                <div class="col-1" type="button"><i class="bi bi-hand-thumbs-up"></i> {{ board?.good }} </div>
+                <div v-if="recommendIcon" @click="toggleRecommend" class="col-1" type="button"><i
+                        class="bi bi-hand-thumbs-up"></i> {{ recommendCnt }} </div>
+                <div v-else @click="toggleRecommend" class="col-1" type="button"><i
+                        class="bi bi-hand-thumbs-up-fill"></i> {{ recommendCnt }} </div>
                 <div class="col-1" type="button"><i class="bi bi-chat-text"></i> {{ replyCount }} </div>
                 <div class="col-1" type="button"><i class="bi bi-exclamation-triangle"></i> 신고 </div>
             </div>
@@ -41,9 +44,9 @@
                         <button>삭제</button>
                         <button>신고</button>
                     </div>
-                    <button @click="setTempRe(data.replyId)">대댓글쓰기</button>
+                    <button @click="openReReply(data.replyId)">대댓글쓰기</button>
                     <!-- 대댓글 작성 폼 -->
-                    <div v-if="tempRe === data.replyId" class="row reply-write">
+                    <div v-if="parentId === data.replyId" class="row reply-write">
                         <div>{{ memberInfo.memberName }} (익명게시판은 별명으로 변경하세요)</div>
                         <textarea v-model="replyTextarea" placeholder="대댓글을 남겨보세요"></textarea>
                         <div class="row">
@@ -99,7 +102,8 @@ export default {
             smcode: this.$route.params.smcode,      // 현재 소메뉴 코드 가져오기
 
             replyTextarea: "",
-            tempRe: "",                 // 현재 대댓글을 작성 중인 댓글의 replyId
+            parentId: "",                 // 현재 대댓글의 상위 댓글의 replyId
+            recommendIcon: true,        // 추천 아이콘 (true는 빈 아이콘)
 
             auth: "",                   // 로그인 사용자 권한 체크
             memberInfo: "",             // 회원정보
@@ -108,20 +112,22 @@ export default {
             vote: "",                   // 투표
             place: "",                  // 장소
             boardImage: "",             // 글 첨부 이미지
+            recommend: "",              // 추천 존재 여부
+            recommendCnt: "",           // 추천 수
             reply: [],                  // 댓글 목록
             replyCount: "",             // 댓글수
         }
     },
     methods: {
         // 회원 권한 체크
-        async checkAuth() {
-            if (this.member.memberCode === "AT01") {
-                // 관리자 로그인
-                this.auth = "A"
-            } else if (this.member.memberId) {
-                this.auth = "B"
-            }
-        },
+        // async checkAuth() {
+        //     if (this.member.memberCode === "AT01") {
+        //         // 관리자 로그인
+        //         this.auth = "A"
+        //     } else if (this.member.memberId) {
+        //         this.auth = "B"
+        //     }
+        // },
         // 로그인된 회원 정보 가져오기
         async retrieveMember() {
             try {
@@ -153,9 +159,13 @@ export default {
             }
         },
         // 글번호로 투표 가져오기
-        async retrieveVote() { },
+        async retrieveVote() {
+
+        },
         // 글번호로 장소 가져오기
-        async retrievePlace() { },
+        async retrievePlace() {
+
+        },
         // 글번호로 이미지 가져오기
         async retrieveImg() {
             try {
@@ -166,6 +176,72 @@ export default {
                 console.log("retrieveImg 에러", e);
             }
         },
+        // 추천 데이터 존재 여부 가져오기
+        async retrieveRecommend() {
+            try {
+                let response = await BoardDetailService.getRecommend(this.boardId, this.member.memberId);
+                this.recommend = response.data;
+                console.log("recommend 데이터 : ", response.data);
+                if (response.data === 1) {
+                    this.recommendIcon = false;
+                } else {
+                    this.recommendIcon = true;
+                }
+            } catch (e) {
+                console.log("retrieveRecommend 에러", e);
+            }
+        },
+        // 추천 버튼 클릭 시 호출 
+        toggleRecommend() {
+            this.recommendIcon = !this.recommendIcon; 
+            if (this.recommendIcon == false) {
+                this.saveRecommend().then(() => {
+                    // 추천 저장 후, 추천 수 다시 불러오기
+                    this.retrieveRecommendCnt();
+                }).catch(e => {
+                    console.error("추천 저장 실패:", e);
+                });
+            } else {
+                this.deleteRecommend().then(() => {
+                    // 추천 삭제 후, 추천 수 다시 불러오기
+                    this.retrieveRecommendCnt();
+                }).catch(e => {
+                    console.error("추천 삭제 실패: ", e);
+                });
+            }
+        },
+        // 추천 저장함수
+        async saveRecommend() {
+            try {
+                let recommend = {
+                    boardId: this.boardId,
+                    memberId: this.member.memberId
+                };
+                let response = await BoardDetailService.createRecommend(recommend);
+                console.log(response.data);
+            } catch (e) {
+                console.log("saveRecommend 에러", e);
+            }
+        },
+        // 추천 삭제함수
+        async deleteRecommend() {
+            try {
+                let response = await BoardDetailService.deleteRecommend(this.boardId, this.member.memberId);
+                console.log(response.data);
+            } catch (e) {
+                console.log("deleteRecommend 에러", e);
+            }
+        },
+        // 추천 수 가져오기
+        async retrieveRecommendCnt() {
+            try {
+                let response = await BoardDetailService.getRecommendCnt(this.boardId);
+                this.recommendCnt = response.data;
+                console.log("추천 수 : ", response.data);
+            } catch (e) {
+                console.log("retrieveRecommendCnt 에러", e)
+            }
+        },
         // 글번호로 댓글 가져오기
         async retrieveReply() {
             try {
@@ -174,7 +250,6 @@ export default {
 
                 // 각 댓글에 대한 대댓글 가져오기
                 for (let i = 0; i < this.reply.length; i++) {
-                    // comment는 현재 순회 중인 댓글 객체를 의미
                     let comment = this.reply[i];
                     // 대댓글 가져오기
                     let reReplyResponse = await ReplyService.getReReply(this.boardId, comment.replyId);
@@ -214,8 +289,9 @@ export default {
             }
         },
         // 대댓글 쓰기 버튼 클릭 시 호출
-        setTempRe(replyId) {
-            this.tempRe = replyId;
+        openReReply(replyId) {
+            // 현재 댓글의 ID를 저장
+            this.parentId = replyId;
         },
         // 새 대댓글 등록
         async createReReply(replyId) {
@@ -231,7 +307,7 @@ export default {
                 this.retrieveReply();
                 this.retrieveReplyCount();
                 this.replyTextarea = "";
-                this.tempRe = "";
+                this.parentId = "";
             } catch (e) {
                 console.log(e);
             }
@@ -245,6 +321,8 @@ export default {
         this.retrieveVote();
         this.retrievePlace();
         this.retrieveImg();
+        this.retrieveRecommend();
+        this.retrieveRecommendCnt();
         this.retrieveReply();
         this.retrieveReplyCount();
     },
