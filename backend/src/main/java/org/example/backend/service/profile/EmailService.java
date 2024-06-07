@@ -36,26 +36,32 @@ public class EmailService {
     final MemberRepository memberRepository;
 
     public void sendSimpleEmail(String to, String memberId) {
+        String randomNumber = myRandomService.generatePassword(memberId);
+        String text = "임시 비밀번호 : ";
+        String subject = "임시 비밀번호 발급안내.";
+        String modifiedText = text + randomNumber;
+
         MimeMessage message = mailSender.createMimeMessage();
+
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(message, false);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(modifiedText, true);
+
+            mailSender.send(message);
+        } catch (Exception e) {
+            log.debug("이메일 전송에 실패하였습니다.", e);
+            throw new RuntimeException("이메일 전송에 실패하였습니다.", e);
+        }
+    }
+
+    public void idAndEmailCheck(String to, String memberId) {
         Optional<Member> optionalMember = memberRepository.findById(memberId);
+        Member member = optionalMember.orElseThrow(() -> new IllegalArgumentException("아이디가 존재하지 않습니다."));
 
-        if (optionalMember.isPresent() && optionalMember.get().getMemberEmail().equals(to)) {
-            try {
-                String randomNumber = myRandomService.generatePassword(memberId);
-                String text = "임시 비밀번호 : ";
-                String subject = "임시 비밀번호 발급 안내";
-                String modifiedText = text + randomNumber;
-
-                MimeMessageHelper helper = new MimeMessageHelper(message, false);
-                helper.setTo(to);
-                helper.setSubject(subject);
-                helper.setText(modifiedText, true);
-
-                mailSender.send(message);
-            } catch (Exception e) {
-                log.debug("이메일 전송에 실패하였습니다.", e);
-                throw new RuntimeException("이메일 전송에 실패하였습니다.", e);
-            }
+        if (!member.getMemberEmail().equals(to)) {
+            throw new IllegalArgumentException("이메일이 일치하지 않습니다.");
         }
     }
 }
