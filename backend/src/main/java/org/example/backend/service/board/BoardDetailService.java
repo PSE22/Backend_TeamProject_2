@@ -128,5 +128,4 @@ public class BoardDetailService {
         board2.setBoardTitle(boardDto.getBoardTitle());
         boardDetailRepository.save(board2);
     }
-
 }
