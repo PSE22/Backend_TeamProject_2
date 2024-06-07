@@ -32,10 +32,13 @@ public class EmailController {
     @PutMapping("/sendEmail/{to}/{memberId}")
     public ResponseEntity<String> sendEmail(@PathVariable String to, @PathVariable String memberId) {
         try {
+            emailService.idAndEmailCheck(to, memberId);
             emailService.sendSimpleEmail(to, memberId);
-            return new ResponseEntity<>(HttpStatus.OK);
+            return ResponseEntity.ok().body("임시 비밀번호가 발급되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage() + e);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.badRequest().body("임시 비밀번호 발급에 실패했습니다." + e);
         }
     }
 }

@@ -46,7 +46,7 @@ public class SseService {
                 } catch (IOException e) {
                     log.error("에미터로 알림 발송 실패: {}", emitter, e);
                     emitter.completeWithError(e);
-                    emitters.remove(emitter);
+                    removeFromEmitterList(emitter);
                 }
             }
         }
@@ -77,18 +77,18 @@ public class SseService {
         emitter.onError((error) -> {
             log.error("onError callback", error);
             emitter.completeWithError(error);
-            sseEmitters.get(memberId).remove(emitter);
+            removeFromEmitterList(emitter);
         });
 
         emitter.onCompletion(() -> {
             log.info("onCompletion callback");
-            sseEmitters.get(memberId).remove(emitter);
+            removeFromEmitterList(emitter);
         });
 
         emitter.onTimeout(() -> {
             log.info("onTimeout callback");
             emitter.complete();
-            sseEmitters.get(memberId).remove(emitter);
+            removeFromEmitterList(emitter);
         });
 
         // 비동기 처리
@@ -99,7 +99,7 @@ public class SseService {
                     Thread.sleep(60000); // 1분에 한 번씩 발송
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
-                    log.error("SseTask interrupted", e);
+                    log.error("인터럽트 발생", e);
                 }
             }
         }, executorService);

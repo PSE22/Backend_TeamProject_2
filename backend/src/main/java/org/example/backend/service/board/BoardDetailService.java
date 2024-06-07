@@ -2,15 +2,18 @@ package org.example.backend.service.board;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.protocol.types.Field;
 import org.example.backend.model.common.BoardIdMemberIdPk;
 import org.example.backend.model.dto.board.IBoardDetailDto;
 import org.example.backend.model.dto.board.IBoardDto;
 import org.example.backend.model.dto.board.IUserDto;
+import org.example.backend.model.entity.board.Board;
 import org.example.backend.model.entity.board.Place;
 import org.example.backend.model.entity.board.Recommend;
 import org.example.backend.model.entity.board.Vote;
 import org.example.backend.repository.board.BoardDetailRepository;
 import org.example.backend.repository.board.RecommendRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,6 +39,7 @@ public class BoardDetailService {
 
     private final BoardDetailRepository boardDetailRepository;
     private final RecommendRepository recommendRepository;
+    private final ModelMapper modelMapper;
 
     // 로그인된 회원 정보 조회
     public Optional<IUserDto> findMember(String memberId) {
@@ -103,5 +107,16 @@ public class BoardDetailService {
     public Integer countRecommend(Long boardId) {
         Integer count = boardDetailRepository.countRecommend(boardId);
         return count;
+    }
+
+    public void deleteBoard(Long boardId) {
+        boardDetailRepository.deleteById(boardId);
+    }
+
+    public void updateBoard(Long boardId, IBoardDto boardDto) {
+        Board board2 = boardDetailRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+        board2.setBoardContent(boardDto.getBoardContent());
+        board2.setBoardTitle(boardDto.getBoardTitle());
+        boardDetailRepository.save(board2);
     }
 }
