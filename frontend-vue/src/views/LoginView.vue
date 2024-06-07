@@ -43,6 +43,9 @@
                   </div>
                   <hr />
                   <div class="text-center">
+                    <a class="small" href="/find-id"> ID 찾기 </a>
+                  </div>
+                  <div class="text-center">
                     <a class="small" href="/find-password"> 비밀번호 찾기 </a>
                   </div>
                   <div class="text-center">
