@@ -116,6 +116,7 @@ public class BoardDetailService {
     public Report saveReport(Report report) {
         Report report2 = reportRepository.save(report);
         return report2;
+    }
 
     public void deleteBoard(Long boardId) {
         boardDetailRepository.deleteById(boardId);
@@ -127,4 +128,5 @@ public class BoardDetailService {
         board2.setBoardTitle(boardDto.getBoardTitle());
         boardDetailRepository.save(board2);
     }
+
 }
