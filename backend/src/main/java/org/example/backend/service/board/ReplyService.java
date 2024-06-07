@@ -3,6 +3,9 @@ package org.example.backend.service.board;
 import lombok.RequiredArgsConstructor;
 import org.example.backend.model.dto.board.IReplyDto;
 import org.example.backend.model.entity.board.Reply;
+import org.example.backend.model.entity.board.ReplyReport;
+import org.example.backend.model.entity.board.Report;
+import org.example.backend.repository.board.ReplyReportRepository;
 import org.example.backend.repository.board.ReplyRepository;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +29,7 @@ import java.util.List;
 public class ReplyService {
 
     private final ReplyRepository replyRepository;
+    private final ReplyReportRepository replyReportRepository;
 
     // 글번호로 댓글 조회
     public List<IReplyDto> findReply(Long boardId) {
@@ -49,5 +53,11 @@ public class ReplyService {
     public Reply saveReply(Reply reply) {
         Reply reply2 = replyRepository.save(reply);
         return reply2;
+    }
+
+    // 댓글 신고 데이터 저장
+    public ReplyReport saveReplyReport(ReplyReport replyReport) {
+        ReplyReport replyReport2 = replyReportRepository.save(replyReport);
+        return replyReport2;
     }
 }

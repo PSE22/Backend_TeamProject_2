@@ -8,9 +8,11 @@ import org.example.backend.model.dto.board.IBoardDto;
 import org.example.backend.model.dto.board.IUserDto;
 import org.example.backend.model.entity.board.Place;
 import org.example.backend.model.entity.board.Recommend;
+import org.example.backend.model.entity.board.Report;
 import org.example.backend.model.entity.board.Vote;
 import org.example.backend.repository.board.BoardDetailRepository;
 import org.example.backend.repository.board.RecommendRepository;
+import org.example.backend.repository.board.ReportRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,6 +38,7 @@ public class BoardDetailService {
 
     private final BoardDetailRepository boardDetailRepository;
     private final RecommendRepository recommendRepository;
+    private final ReportRepository reportRepository;
 
     // 로그인된 회원 정보 조회
     public Optional<IUserDto> findMember(String memberId) {
@@ -103,5 +106,11 @@ public class BoardDetailService {
     public Integer countRecommend(Long boardId) {
         Integer count = boardDetailRepository.countRecommend(boardId);
         return count;
+    }
+
+    // 글 신고 데이터 저장
+    public Report saveReport(Report report) {
+        Report report2 = reportRepository.save(report);
+        return report2;
     }
 }
