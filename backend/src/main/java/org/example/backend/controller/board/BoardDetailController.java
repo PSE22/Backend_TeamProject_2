@@ -33,7 +33,7 @@ import java.util.Optional;
  */
 @Slf4j
 @RestController
-@RequestMapping("api/board")
+@RequestMapping("/api/board")
 @RequiredArgsConstructor
 public class BoardDetailController {
 
@@ -241,7 +241,7 @@ public class BoardDetailController {
     }
 
     // 작성한 댓글 저장
-    @PostMapping("board-detail/reply")
+    @PostMapping("/board-detail/reply")
     public ResponseEntity<Object> createReply(@RequestBody Reply reply) {
         try {
             replyService.saveReply(reply);
@@ -252,7 +252,7 @@ public class BoardDetailController {
     }
 
     // 글 신고 데이터 저장
-    @PostMapping("board-detail/report")
+    @PostMapping("/board-detail/report")
     public ResponseEntity<Object> createReport(@RequestBody Report report) {
         try {
             boardDetailService.saveReport(report);
@@ -263,7 +263,7 @@ public class BoardDetailController {
     }
 
     // 댓글 신고 데이터 저장
-    @PostMapping("board-detail/reply-report")
+    @PostMapping("/board-detail/reply-report")
     public ResponseEntity<Object> createReplyReport(@RequestBody ReplyReport replyReport) {
         try {
             replyService.saveReplyReport(replyReport);
