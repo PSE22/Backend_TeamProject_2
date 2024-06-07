@@ -51,6 +51,12 @@ class BoardDetailService {
       headers: LoginHeader(),
     });
   }
+  // 신고글 저장
+  createReport(report) {
+    return http.post("/board/board-detail/report", report, {
+      headers: LoginHeader(),
+    });
+  }
   // 추천 데이터 삭제
   deleteRecommend(boardId, memberId) {
     return http.delete(
