@@ -62,25 +62,31 @@ public class MemberService {
         return optionalMember;
     }
 
-    //  5) 신규 회원 전체 조회
+    //  5) email 로 회원 상세 조회 후 id 찾기
+    public Optional<Member> findByMemberEmail(String memberId) {
+        Optional<Member> optionalMember = memberRepository.findByMemberEmail(memberId);
+        return optionalMember;
+    }
+
+    //  6) 신규 회원 전체 조회
     public List<Member> findAllByMemberCode(String memberCode) {
         List<Member> memberList = memberRepository.findAllByMemberCode(memberCode);
         return memberList;
     }
 
-    //  6) 기존 회원 전체 조회(검색)
+    //  7) 기존 회원 전체 조회(검색)
     public Page<Member> findAllByMemberName(String memberName, Pageable pageable) {
         Page<Member> memberList = memberRepository.findAllByMemberName(memberName, pageable);
         return memberList;
     }
 
-    //  7) 기존 회원 부서별 전체 조회
+    //  8) 기존 회원 부서별 전체 조회
     public Page<Member> findAllByMemberCodeAndDeptCode(String memberCode, String deptCode, Pageable pageable) {
         Page<Member> memberList = memberRepository.findAllByMemberCodeAndDeptCode(memberCode, deptCode, pageable);
         return memberList;
     }
 
-    //  8) 회원 삭제 (soft delete)
+    //  9) 회원 삭제 (soft delete)
     public boolean removeById(String memberId) {
         if (memberRepository.existsById(memberId) == true) {
             memberRepository.deleteById(memberId);
@@ -90,7 +96,7 @@ public class MemberService {
         }
     }
 
-    //  9) 회원 삭제 (hard delete)
+    //  10) 회원 삭제 (hard delete)
     public void delMember(String memberId) {
         memberRepository.deleteMember(memberId);
     }

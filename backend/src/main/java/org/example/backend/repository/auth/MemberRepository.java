@@ -36,6 +36,12 @@ public interface MemberRepository extends JpaRepository<Member, String> {
 
     @Query(value = "SELECT *\n" +
             "FROM TB_MEMBER\n" +
+            "WHERE MEMBER_EMAIL = :memberEmail\n"
+            , nativeQuery = true)
+    Optional<Member> findByMemberEmail(@Param("memberEmail") String memberEmail);
+
+    @Query(value = "SELECT *\n" +
+            "FROM TB_MEMBER\n" +
             "WHERE MEMBER_CODE = :memberCode\n" +
             "AND STATUS = 'Y'\n" +
             "ORDER BY ADD_DATE"

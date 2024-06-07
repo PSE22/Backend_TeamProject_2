@@ -6,6 +6,11 @@ class MemberService {
         return http.get(`/member/profile/${memberId}`);
     }
 
+    // email 로 회원 상세 조회 후 id 찾기
+    getId(memberEmail) {
+        return http.get(`/member/profile-id/${memberEmail}`);
+    }
+
     // 신규 회원 전체 조회
     getMember(memberCode) {
         return http.get(`/member/profile-all/${memberCode}`);
