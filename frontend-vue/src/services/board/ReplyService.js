@@ -26,6 +26,13 @@ class ReplyService {
       headers: LoginHeader(),
     });
   }
+  //신고 댓글 저장
+  createReplyReport(report) {
+    return http.post("/board/board-detail/reply-report", report, {
+      headers: LoginHeader(),
+    });
+  }
+  // 댓글 수정
 }
 
 export default new ReplyService();

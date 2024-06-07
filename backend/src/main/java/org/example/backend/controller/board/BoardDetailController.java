@@ -162,7 +162,7 @@ public class BoardDetailController {
     @PostMapping("/board-detail/recommend-exist")
     public ResponseEntity<Object> createRecommend(@RequestBody Recommend recommend) {
         try {
-            Recommend recommend2 = boardDetailService.saveRecommend(recommend);
+            boardDetailService.saveRecommend(recommend);
             return new ResponseEntity<>("추천 저장 성공", HttpStatus.OK);
         } catch (Exception e) {
             return handleException(e);
@@ -244,8 +244,30 @@ public class BoardDetailController {
     @PostMapping("board-detail/reply")
     public ResponseEntity<Object> createReply(@RequestBody Reply reply) {
         try {
-            Reply reply2 = replyService.saveReply(reply);
-            return new ResponseEntity<>(reply2, HttpStatus.OK);
+            replyService.saveReply(reply);
+            return new ResponseEntity<>("댓글 저장 성공", HttpStatus.OK);
+        } catch (Exception e){
+            return handleException(e);
+        }
+    }
+
+    // 글 신고 데이터 저장
+    @PostMapping("board-detail/report")
+    public ResponseEntity<Object> createReport(@RequestBody Report report) {
+        try {
+            boardDetailService.saveReport(report);
+            return new ResponseEntity<>("신고 저장 성공", HttpStatus.OK);
+        } catch (Exception e){
+            return handleException(e);
+        }
+    }
+
+    // 댓글 신고 데이터 저장
+    @PostMapping("board-detail/reply-report")
+    public ResponseEntity<Object> createReplyReport(@RequestBody ReplyReport replyReport) {
+        try {
+            replyService.saveReplyReport(replyReport);
+            return new ResponseEntity<>("댓글 신고 저장 성공", HttpStatus.OK);
         } catch (Exception e){
             return handleException(e);
         }
