@@ -30,7 +30,7 @@ class LoginService {
     }
 
     // TODO: 비밀번호 찾기 함수
-    find(to, memberId) {
+    findPassword(to, memberId) {
         return http.put(`/auth/sendEmail/${to}/${memberId}`);
     }
 }
