@@ -70,6 +70,22 @@ public class BoardDetailController {
         }
     }
 
+    // 게시글, 작성자 정보 상세 조회 / 수정 / 삭제
+    @GetMapping("/board-detail/edit")
+    public ResponseEntity<Object> findByBoardAndMember(@RequestParam Long boardId) {
+        log.debug("Received boardId: {}", boardId);
+        try {
+            Optional<IBoardDto> optional = boardDetailService.findBoardAndMember(boardId);
+            if (!optional.isPresent()) {
+                return new ResponseEntity<>("데이터 없음", HttpStatus.NO_CONTENT);
+            } else {
+                return new ResponseEntity<>(optional.get(), HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            return handleException(e);
+        }
+    }
+
     // 코드번호로 코드명 조회
     @GetMapping("/board-detail/cmCd")
     public ResponseEntity<Object> findCmCdName(@RequestParam String cmCd) {
@@ -269,6 +285,26 @@ public class BoardDetailController {
         } else {
             log.error("서버 오류가 발생했습니다", e);
             return new ResponseEntity<>("서버 오류가 발생했습니다", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("board-detail/delete/{boardId}")
+    public ResponseEntity<?> deleteBoard(@RequestParam Long boardId) {
+        try {
+            boardDetailService.deleteBoard(boardId);
+            return ResponseEntity.ok("게시글 삭제가 완료되었습니다.");
+        } catch (Exception e) {
+            return handleException(e);
+        }
+    }
+
+    @PutMapping("board-detail/update/{boardId}")
+    public ResponseEntity<?> updateBoard(@RequestParam Long boardId, @RequestBody IBoardDto boardDto) {
+        try {
+            boardDetailService.updateBoard(boardId, boardDto);
+            return ResponseEntity.ok("게시글 수정이 완료되었습니다.");
+        } catch (Exception e) {
+            return handleException(e);
         }
     }
 }

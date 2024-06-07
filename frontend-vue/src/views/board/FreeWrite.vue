@@ -32,7 +32,10 @@
           />
         </div>
         <!-- 관리자만 보이게 해야함 -->
-        <div class="col-md-2 d-flex align-items-center justify-content-end">
+        <div
+          v-if="isAdmin"
+          class="col-md-2 d-flex align-items-center justify-content-end"
+        >
           <div class="form-check">
             <input
               class="form-check-input"
@@ -275,6 +278,10 @@ import FreeBoardService from "@/services/board/FreeBoardService";
 export default {
   data() {
     return {
+      isAdmin:
+        this.$store.state.member != null &&
+        this.$store.state.member.memberCode === "AT01",
+
       freeBoard: {},
 
       bocode: [],
@@ -332,21 +339,26 @@ export default {
         console.log(e);
       }
     },
+    // 파일추가
     handleFileUpload(event) {
       const newFiles = Array.from(event.target.files);
-      this.files = newFiles.map((file) => ({
-        name: file.name,
-        data: file,
-      }));
+      this.files = this.files.concat(
+        newFiles.map((file) => ({
+          name: file.name,
+          data: file,
+        }))
+      );
     },
+    // 파일 선택 취소
     removeFile(index) {
       this.files.splice(index, 1);
 
       // 파일이 없을 경우 input 초기화
       if (this.files.length === 0) {
-        this.$refs.fileInput.value = '';
+        this.$refs.fileInput.value = "";
       }
     },
+    // 주소 부분
     relayout() {
       this.delayFunction(() => {
         this.map.relayout();
