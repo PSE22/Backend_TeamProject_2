@@ -17,8 +17,5 @@ import lombok.Setter;
 public class Place {
     @Id
     private Long boardId;       // 게시글ID pk
-    private String placeName;   // 장소명
-    private String lat;         // 위도
-    private String lng;         // 경도
     private String address;     // 주소
 }
