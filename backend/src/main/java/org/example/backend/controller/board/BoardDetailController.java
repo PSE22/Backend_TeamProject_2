@@ -8,10 +8,7 @@ import org.example.backend.model.dto.board.IBoardDetailDto;
 import org.example.backend.model.dto.board.IBoardDto;
 import org.example.backend.model.dto.board.IReplyDto;
 import org.example.backend.model.dto.board.IUserDto;
-import org.example.backend.model.entity.board.Place;
-import org.example.backend.model.entity.board.Recommend;
-import org.example.backend.model.entity.board.Reply;
-import org.example.backend.model.entity.board.Vote;
+import org.example.backend.model.entity.board.*;
 import org.example.backend.service.board.BoardDetailService;
 import org.example.backend.service.board.ReplyService;
 import org.springframework.http.HttpStatus;
@@ -250,6 +247,26 @@ public class BoardDetailController {
         } else {
             log.error("서버 오류가 발생했습니다", e);
             return new ResponseEntity<>("서버 오류가 발생했습니다", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("board-detail/delete/{boardId}")
+    public ResponseEntity<?> deleteBoard(@RequestParam Long boardId) {
+        try {
+            boardDetailService.deleteBoard(boardId);
+            return ResponseEntity.ok("게시글 삭제가 완료되었습니다.");
+        } catch (Exception e) {
+            return handleException(e);
+        }
+    }
+
+    @PutMapping("board-detail/update/{boardId}")
+    public ResponseEntity<?> updateBoard(@RequestParam Long boardId, @RequestBody IBoardDto boardDto) {
+        try {
+            boardDetailService.updateBoard(boardId, boardDto);
+            return ResponseEntity.ok("게시글 수정이 완료되었습니다.");
+        } catch (Exception e) {
+            return handleException(e);
         }
     }
 }

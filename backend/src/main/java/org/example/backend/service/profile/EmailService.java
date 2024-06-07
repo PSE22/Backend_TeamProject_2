@@ -57,8 +57,7 @@ public class EmailService {
     }
 
     public void idAndEmailCheck(String to, String memberId) {
-        Optional<Member> optionalMember = memberRepository.findById(memberId);
-        Member member = optionalMember.orElseThrow(() -> new IllegalArgumentException("아이디가 존재하지 않습니다."));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException("아이디가 존재하지 않습니다."));
 
         if (!member.getMemberEmail().equals(to)) {
             throw new IllegalArgumentException("이메일이 일치하지 않습니다.");
