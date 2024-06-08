@@ -189,7 +189,6 @@
                 class="btn btn-outline-dark"
                 data-bs-toggle="modal"
                 data-bs-target="#place-modal"
-                @click="relayout"
               >
                 <i class="bi bi-geo-alt"></i> 장소추가
               </button>
@@ -307,12 +306,23 @@
         <div class="col-md-12">
           <input
             type="file"
-            ref="file"
             class="form-control"
             multiple
-            @change="selectImage"
+            @change="handleFileUpload"
+            ref="fileInput"
           />
-          <div class="mt-2 file-list"></div>
+          <div class="mt-2 file-list">
+            <div v-for="(file, index) in files" :key="index" class="file-item">
+              <p class="d-inline">{{ file.name }}</p>
+              <button
+                type="button"
+                class="btn btn-danger btn-sm ms-2"
+                @click="removeFile(index)"
+              >
+                X
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -339,9 +349,10 @@ export default {
     return {
       bocode: [], // 대분류 코드 가져오기
       smcode: [], // 소분류 코드 가져오기
-      club: {},
+      club: {
+        noticeYn: false, // 공지사항 초기값
+      },
       vote: {
-        // 투표 저장
         voteName: "",
         voteList: {
           vote1: "",
@@ -352,22 +363,17 @@ export default {
         },
         delDate: "",
       },
-      file: [
-        {
-          fileUrl: "",
-        },
-      ],
-      currentFile: undefined,
+      files: [],
+
       showSuccessMessage: false,
       submitted: false,
       selectBocode: "", // 추가
       selectSmcode: "", // 추가
 
-      address: "",
+      address: null,
       map: null,
       geocoder: null,
       marker: null,
-      // searchAddress: "",
     };
   },
   methods: {
@@ -414,49 +420,11 @@ export default {
         },
       }).open();
     },
-    execDaumPostcode() {
-      new window.daum.Postcode({
-        oncomplete: function (data) {
-          var mapContainer = document.getElementById("map"), // 지도를 표시할 div
-            mapOption = {
-              center: new daum.maps.LatLng(37.537187, 127.005476), // 지도의 중심좌표
-              level: 5, // 지도의 확대 레벨
-            };
-          var daum = window.daum;
-          var map = new daum.maps.Map(mapContainer, mapOption);
-          var marker = new daum.maps.Marker({
-            position: new daum.maps.LatLng(37.537187, 127.005476),
-            map: map,
-          });
-          // 우편번호와 주소 정보를 해당 필드에 넣는다.
-          document.getElementById("address").value = this.searchAddress;
-          var geocoder = new daum.maps.services.Geocoder();
-          // 주소로 상세 정보를 검색
-          geocoder.addressSearch(data.address, function (results, status) {
-            // 정상적으로 검색이 완료됐으면
-            if (status === daum.maps.services.Status.OK) {
-              var result = results[0]; //첫번째 결과의 값을 활용
-
-              // 해당 주소에 대한 좌표를 받아서
-              var coords = new daum.maps.LatLng(result.y, result.x);
-              // 지도를 보여준다.
-              mapContainer.style.display = "block";
-              map.relayout();
-              // 지도 중심을 변경한다.
-              map.setCenter(coords);
-              // 마커를 결과값으로 받은 위치로 옮긴다.
-              marker.setPosition(coords);
-            }
-          });
-        },
-      }).open();
-    },
     async retrieveBocode() {
       try {
-        // TODO: 비동기 코딩
         let response = await ClubService.getBocode();
         this.bocode = response.data;
-        console.log(response.data); // 웹브라우저 콘솔탬에 백앤드 데이터 표시
+        console.log(response.data); // 웹브라우저 콘솔탬에 백엔드 데이터 표시
       } catch (e) {
         console.log(e); // 웹브라우저 콘솔탭에 에러표시
       }
@@ -465,27 +433,15 @@ export default {
       try {
         let response = await ClubService.getSmcode();
         this.smcode = response.data;
-        // 로깅
         console.log(response.data); // 웹브라우저 콘솔탭
       } catch (e) {
         console.log(e); // 웹브라우저 콘솔탭
       }
     },
     async saveClub() {
-      // 파일테이블 저장
-      // let file = {
-      //   // uuid: this.$route.params.uuid,
-      //   fileUrl: "",
-      // };
-      // let fileList = [];
-      // for (const data of this.club) {
-      //   // file.uuid = data.uuid;
-      //   file.fileUrl = data.fileUrl;
-      //   fileList.push(file);
-      // }
       try {
         // 임시 객체 변수
-        let board = {
+        let boardDto = {
           memberId: this.$store.state.member.memberId,
           boardTitle: this.club.boardTitle,
           boardContent: this.club.boardContent,
@@ -493,26 +449,47 @@ export default {
           noticeYn: this.club.noticeYn ? "Y" : "N",
           smcode: this.selectSmcode,
         };
-        let vote = this.vote;
 
-        let place = this.address;
-        // 예시: 장소 정보가 없을 경우 null
-        let fileDtos = this.file; // 예시: 파일이 없을 경우 빈 배열
-        let boardFileDtos = []; // 예시: 파일 정보가 없을 경우 빈 배열
-        // 백앤드로 객체 추가 요청
-        let response = await BoardWriteService.create(
-          board,
-          vote,
-          place,
-          fileDtos,
-          boardFileDtos
+        let voteDtos = Object.values(this.vote.voteList)
+          .filter((voteItem) => voteItem.trim() !== "")
+          .map((voteItem) => ({
+            voteName: this.vote.voteName,
+            voteList: voteItem,
+            delDate: this.vote.delDate,
+          }));
+
+        let placeDto = this.address ? { address: this.address } : null;
+
+        let fileDtos = await Promise.all(
+          this.files.map((file) => {
+            return new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => {
+                resolve({
+                  uuid: file.name,
+                  fileUrl: URL.createObjectURL(file.data),
+                  data: reader.result.split(",")[1], // Base64 문자열만 추출
+                });
+              };
+              reader.onerror = reject;
+              reader.readAsDataURL(file.data); // Base64 인코딩
+            });
+          })
         );
-        // 콘솔에 결과 출력
+
+        let response = await BoardWriteService.create({
+          boardDto,
+          voteDtos: voteDtos.length > 0 ? voteDtos : null,
+          placeDto: placeDto,
+          fileDtos: fileDtos.length > 0 ? fileDtos : null,
+        });
         console.log(response);
         this.submitted = true;
         alert("게시글이 등록되었습니다.");
+        this.$router.push(`/board/club`);
       } catch (e) {
         console.log(e);
+        alert("내용을 입력해주세요.");
       }
     },
     // 투표 취소 시 초기화
@@ -551,16 +528,31 @@ export default {
         this.showSuccessMessage = true;
       }
     },
-    // 이미지 선택 변수 저장 함수
-    selectImage() {
-      this.currentFile = this.$refs.file.files;
+    handleFileUpload(event) {
+      const newFiles = Array.from(event.target.files);
+      this.files = this.files.concat(
+        newFiles.map((file) => ({
+          name: file.name,
+          data: file,
+        }))
+      );
+    },
+
+    // 파일 선택 취소
+    removeFile(index) {
+      this.files.splice(index, 1);
+
+      // 파일이 없을 경우 input 초기화
+      if (this.files.length === 0) {
+        this.$refs.fileInput.value = "";
+      }
     },
   },
   computed: {
     minDate() {
       const today = new Date();
       const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate()); // 내일 날짜 계산
+      tomorrow.setDate(tomorrow.getDate() + 1); // 내일 날짜 계산
       return tomorrow.toISOString().slice(0, 10); // YYYY-MM-DD 형식으로 변환
     },
   },
@@ -591,5 +583,11 @@ export default {
 
 .file-list p {
   margin-bottom: 0;
+}
+
+.file-list .file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 </style>
