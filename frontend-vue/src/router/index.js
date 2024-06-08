@@ -59,7 +59,7 @@ const routes = [
   },
   // 부서게시판 상세글 조회
   {
-    path: "/board/dept/:smcode/:boardId",
+    path: "/board/:bocode/:smcode/:boardId",
     component: () => import("../views/board/DeptBoardDetailView.vue"),
   },
   // 부서게시판 상세글 수정 / 삭제

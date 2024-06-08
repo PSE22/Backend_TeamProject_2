@@ -26,7 +26,7 @@
       <tr
         v-for="(data, index) in clubNotice"
         :key="index"
-        @click="goClubDetail"
+        @click="goBoardDetail(smcode, data.boardId)"
       >
         <td class="text-center col-1">{{ data.boardId }}</td>
         <td class="col-1" style="color: lightgray">
@@ -40,7 +40,7 @@
       </tr>
     </tbody>
     <tbody>
-      <tr v-for="(data, index) in club" :key="index" @click="goClubDetail">
+      <tr v-for="(data, index) in club" :key="index" @click="goBoardDetail(smcode, data.boardId)">
         <td class="text-center">{{ data.boardId }}</td>
         <td style="color: lightgray">{{ data.cmCdName }}</td>
         <td>
@@ -186,9 +186,9 @@ export default {
       this.retrieveClub(); // 재조회
     },
     // 게시글 상세 페이지로 이동
-    goClubDetail(boardId) {
-      this.$router.push(`/board/club/${boardId}`);
-    },
+    goBoardDetail(smcode, boardId) {
+            this.$router.push(`/board/club/${smcode}/${boardId}`);
+        },
     goClubWrite() {
       this.$router.push("/board/club/write");
     },
