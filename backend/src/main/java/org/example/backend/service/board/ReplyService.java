@@ -1,15 +1,21 @@
 package org.example.backend.service.board;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.board.IReplyDto;
-import org.example.backend.model.entity.board.Reply;
-import org.example.backend.model.entity.board.ReplyReport;
-import org.example.backend.model.entity.board.Report;
+import org.example.backend.model.entity.board.*;
+import org.example.backend.repository.board.FileRepository;
+import org.example.backend.repository.board.ReplyFileRepository;
 import org.example.backend.repository.board.ReplyReportRepository;
 import org.example.backend.repository.board.ReplyRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * packageName : org.example.backend.service.board
@@ -24,12 +30,15 @@ import java.util.List;
  * -----------------------------------------------------------
  * 2024-06-04         SAMSUNG          최초 생성
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReplyService {
 
     private final ReplyRepository replyRepository;
     private final ReplyReportRepository replyReportRepository;
+    private final FileRepository fileRepository;
+    private final ReplyFileRepository replyFileRepository;
 
     // 글번호로 댓글 조회
     public List<IReplyDto> findReply(Long boardId) {
@@ -49,10 +58,25 @@ public class ReplyService {
         return count;
     }
 
-    // 작성한 댓글 저장
+    // 댓글 저장/수정
     public Reply saveReply(Reply reply) {
         Reply reply2 = replyRepository.save(reply);
         return reply2;
+    }
+
+    // 댓글 파일 저장
+    @Transactional
+    public void saveFile(MultipartFile file, String fileUrl) throws IOException {
+        File file1 = new File();
+        file1.setFileUrl(fileUrl);
+        file1.setData(file.getBytes());
+
+        fileRepository.save(file1);
+
+        ReplyFile replyFile = new ReplyFile();
+        replyFile.setUuid(replyFile.getUuid());
+
+        replyFileRepository.save(replyFile);
     }
 
     // 댓글 신고 데이터 저장
