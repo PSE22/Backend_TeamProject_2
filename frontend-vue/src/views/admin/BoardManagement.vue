@@ -1,69 +1,80 @@
 <template>
   <div class="container">
-    <div class="header">
-      <h2>게시판목록</h2>
-      <p>게시판을 생성/수정/삭제합니다.</p>
+    <AdminSidebar />
+    <div class="main-content">
+      <div class="header">
+        <h2>게시판목록</h2>
+        <p>게시판을 생성/수정/삭제합니다.</p>
+      </div>
+      <div class="controls">
+        <span class="total-count">총 게시판 수: {{ boards.length }}</span>
+        <button class="add-board-button" @click="toggleAddBoardForm">게시판 추가</button>
+      </div>
+      <div v-if="showForm" class="form-container">
+        <input v-model="newBoardCd" placeholder="게시판 코드" />
+        <input v-model="newBoardUpCmCd" placeholder="상위 게시판 코드 (선택사항)" />
+        <input v-model="newBoardName" placeholder="게시판명" />
+        <input v-model="newBoardComment" placeholder="게시판설명" />
+        <button @click="addBoard">추가</button>
+        <button @click="cancelEdit">취소</button>
+        <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+      </div>
+      <div v-if="showEditForm" class="form-container">
+        <input v-model="editBoardData.cmCd" placeholder="게시판 코드" disabled />
+        <input v-model="editBoardData.upCmCd" placeholder="상위 게시판 코드 (선택사항)" />
+        <input v-model="editBoardData.cmCdName" placeholder="게시판명" />
+        <input v-model="editBoardData.cmCdComment" placeholder="게시판설명" />
+        <button @click="updateBoard">저장</button>
+        <button @click="cancelEdit">취소</button>
+        <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+      </div>
+      <div class="table-container">
+        <table class="board-table">
+          <thead>
+            <tr>
+              <th>번호</th>
+              <th>게시판 코드</th>
+              <th>상위 게시판 코드</th>
+              <th>게시판명</th>
+              <th>게시판설명</th>
+              <th>상태</th>
+              <th>기능</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(board, index) in boards" :key="index">
+              <td>{{ index + 1 }}</td>
+              <td>{{ board.cmCd }}</td>
+              <td>{{ board.upCmCd }}</td>
+              <td>{{ board.cmCdName }}</td>
+              <td>{{ board.cmCdComment }}</td>
+              <td>{{ board.status === 'Y' ? '활성화' : '비활성화' }}</td>
+              <td>
+                <div class="button-group">
+                  <button class="edit-button" @click="editBoard(board)">수정</button>
+                  <button class="delete-button" @click="deleteBoard(board.cmCd)">삭제</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-    <div class="controls">
-      <span class="total-count">총 게시판 수: {{ boards.length }}</span>
-      <button class="add-board-button" @click="toggleAddBoardForm">게시판 추가</button>
-    </div>
-    <div v-if="showForm" class="form-container">
-      <input v-model="newBoardCd" placeholder="게시판 코드" />
-      <input v-model="newBoardUpCmCd" placeholder="상위 게시판 코드 (선택사항)" />
-      <input v-model="newBoardName" placeholder="게시판명" />
-      <input v-model="newBoardComment" placeholder="게시판설명" />
-      <button @click="addBoard">추가</button>
-      <button @click="cancelEdit">취소</button>
-      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
-    </div>
-
-    <div v-if="showEditForm" class="form-container">
-      <input v-model="editBoardData.cmCd" placeholder="게시판 코드" disabled />
-      <input v-model="editBoardData.upCmCd" placeholder="상위 게시판 코드 (선택사항)" />
-      <input v-model="editBoardData.cmCdName" placeholder="게시판명" />
-      <input v-model="editBoardData.cmCdComment" placeholder="게시판설명" />
-      <button @click="updateBoard">저장</button>
-      <button @click="cancelEdit">취소</button>
-      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
-    </div>
-    
-    <table class="board-table">
-      <thead>
-        <tr>
-          <th>번호</th>
-          <th>게시판 코드</th>
-          <th>상위 게시판 코드</th>
-          <th>게시판명</th>
-          <th>게시판설명</th>
-          <th>상태</th>
-          <th>기능</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(board, index) in boards" :key="index">
-          <td>{{ index + 1 }}</td>
-          <td>{{ board.cmCd }}</td>
-          <td>{{ board.upCmCd }}</td>
-          <td>{{ board.cmCdName }}</td>
-          <td>{{ board.cmCdComment }}</td>
-          <td>{{ board.status === 'Y' ? '활성화' : '비활성화' }}</td>
-          <td>
-            <button class="edit-button" @click="editBoard(board)">수정</button>
-            <button class="delete-button" @click="deleteBoard(board.cmCd)">삭제</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
   </div>
 </template>
 
 <script>
+import AdminSidebar from  "@/components/common/AdminSidebar.vue";
 import BoardManageService from "@/services/board/BoardManageService";
+import MemberService from "@/services/member/MemberService";
 
 export default {
+  components: {
+    AdminSidebar
+  },
   data() {
     return {
+      loginMember: {},
       boards: [], // 게시판 데이터를 담을 배열
       showForm: false,
       newBoardCd: '',
@@ -81,6 +92,17 @@ export default {
     };
   },
   methods: {
+    async getProfile() {
+      try {
+        let response = await MemberService.get(
+          this.$store.state.member?.memberId
+        );
+        this.loginMember = response.data;
+        console.log(response.data);
+      } catch (e) {
+        console.log(e);
+      }
+    },
     async fetchBoards() {
       try {
         const response = await BoardManageService.getAll();
@@ -158,6 +180,7 @@ export default {
     }
   },
   mounted() {
+    this.getProfile();
     this.fetchBoards(); // 컴포넌트가 마운트될 때 게시판 데이터를 가져옴
   }
 };
@@ -165,8 +188,19 @@ export default {
 
 <style scoped>
 .container {
-  width: 80%;
-  margin: 0 auto;
+  display: flex;
+  height: 100vh;
+  font-family: "Arial, sans-serif";
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 40px;
+  background-color: #f4f4f9;
+  border-radius: 15px;
+  margin: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow-y: auto; /* 스크롤바 추가 */
 }
 
 .header {
@@ -174,6 +208,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 10px 0;
+  background-color: #f4f4f9;
 }
 
 .controls {
@@ -207,6 +242,7 @@ export default {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: center;
+  white-space: nowrap; /* 텍스트를 가로로 표시 */
 }
 
 .board-table th {
@@ -221,6 +257,7 @@ export default {
   cursor: pointer;
   margin-right: 5px;
   border-radius: 5px;
+  white-space: nowrap; /* 버튼 내부 텍스트를 가로로 표시 */
 }
 
 .manage-button {
@@ -248,5 +285,24 @@ export default {
 .error-message {
   color: red;
   margin-top: 10px;
+}
+
+.table-container {
+  max-height: 60vh; /* 테이블 최대 높이 설정 */
+  overflow-y: auto; /* 스크롤바 추가 */
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 10px; /* 버튼 간격 조정 */
+}
+
+.button-group button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: nowrap; /* 버튼 내부 텍스트를 가로로 표시 */
 }
 </style>
