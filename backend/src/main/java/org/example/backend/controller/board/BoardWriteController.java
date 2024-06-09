@@ -33,13 +33,12 @@ public class BoardWriteController {
     public ResponseEntity<Object> create(
             @RequestBody BoardWriteDto boardWriteDto
             ) {
+        log.debug("Received BoardWriteDto: {}", boardWriteDto);
         try {
-            boardWriteService.save(boardWriteDto.getBoard(),boardWriteDto.getVoteDtos()
-                    ,boardWriteDto.getPlace(),boardWriteDto.getFileDtos(),boardWriteDto.getBoardFileDtos()
-            );
+            boardWriteService.save(boardWriteDto);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>("등록을 실패하였습니다.",HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.badRequest().body("게시글 등록에 실패했습니다." + e);
         }
     }
 }
