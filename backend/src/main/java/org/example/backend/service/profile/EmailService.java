@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.entity.auth.Member;
 import org.example.backend.repository.auth.MemberRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -26,6 +25,19 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * packageName : org.example.backend.controller.auth
+ * fileName : ChatController
+ * author : kimtaewan
+ * date : 2024-05-29
+ * description :
+ * 요약 :
+ * <p>
+ * ===========================================================
+ * DATE            AUTHOR             NOTE
+ * -----------------------------------------------------------
+ * 2024-05-29         kimtaewan          최초 생성
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
