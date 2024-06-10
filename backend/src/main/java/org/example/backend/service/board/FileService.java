@@ -3,8 +3,10 @@ package org.example.backend.service.board;
 import lombok.RequiredArgsConstructor;
 import org.example.backend.model.dto.board.FileDto;
 import org.example.backend.model.dto.board.VoteDto;
+import org.example.backend.model.entity.board.BoardFile;
 import org.example.backend.model.entity.board.File;
 import org.example.backend.model.entity.board.Vote;
+import org.example.backend.repository.board.BoardFileRepository;
 import org.example.backend.repository.board.FileRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +19,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FileService {
     private final FileRepository fileRepository;
-    @Autowired
-    ModelMapper modelMapper;
+    private final BoardFileRepository boardFileRepository;
+    private final ModelMapper modelMapper;
 
 //    1개의 파일 저장
     public File saveFile(File file) {
@@ -31,10 +33,14 @@ public class FileService {
         for (FileDto fileDto : fileDtos) {
             if (fileDto.getFileUrl()!= null){
                 File file = modelMapper.map(fileDto, File.class);
-
                 fileRepository.save(file);
             }
-            // Dto를 Vote 엔티티로 변환
         }
+    }
+
+    public BoardFile save(BoardFile boardFile) {
+//        JPA 저장 함수 : return 값 : 저장된 객체
+        BoardFile boardFile2 = boardFileRepository.save(boardFile);
+        return boardFile2;
     }
 }
