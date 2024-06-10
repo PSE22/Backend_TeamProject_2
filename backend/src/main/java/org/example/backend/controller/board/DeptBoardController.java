@@ -33,7 +33,7 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@RequestMapping("api/board")
+@RequestMapping("/api/board")
 @RequiredArgsConstructor
 public class DeptBoardController {
     private final DeptBoardService deptBoardService;
