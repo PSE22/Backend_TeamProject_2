@@ -78,7 +78,7 @@ export default {
     async findPassword() {
       try {
         let response = await LoginService.findPassword(this.to, this.memberId);
-        this.message = "임시 비밀번호가 발급되었습니다.";
+        this.message = "이메일로 임시 비밀번호가 발송되었습니다.";
         this.errorMessage = ""; // 성공 시 오류 메시지 초기화
         console.log(response.data);
       } catch (e) {

@@ -1,13 +1,12 @@
 package org.example.backend.controller.profile;
 
+import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.example.backend.service.profile.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 /**
@@ -23,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
  * -----------------------------------------------------------
  * 2024-05-23         sjuk2          최초 생성
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 public class EmailController {
@@ -30,15 +30,27 @@ public class EmailController {
     private EmailService emailService;
 
     @PutMapping("/sendEmail/{to}/{memberId}")
-    public ResponseEntity<String> sendEmail(@PathVariable String to, @PathVariable String memberId) {
+    public ResponseEntity<Object> sendEmail(@PathVariable String to, @PathVariable String memberId) {
         try {
             emailService.idAndEmailCheck(to, memberId);
             emailService.sendSimpleEmail(to, memberId);
-            return ResponseEntity.ok().body("임시 비밀번호가 발급되었습니다.");
+            return ResponseEntity.ok().body("이메일로 임시 비밀번호가 발송되었습니다.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage() + e);
+            log.debug("400 에러 발생: {}" + e);
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("임시 비밀번호 발급에 실패했습니다." + e);
+            return handleException(e);
+        }
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Object> handleException(Exception e) {
+        if (e instanceof EntityNotFoundException) {
+            log.error("404 에러 발생: {}", e);
+            return new ResponseEntity<>("해당 엔티티를 찾을 수 없습니다", HttpStatus.NOT_FOUND);
+        } else {
+            log.error("500 에러 발생: {}", e);
+            return new ResponseEntity<>("서버 오류가 발생했습니다", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
