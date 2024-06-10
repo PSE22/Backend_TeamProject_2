@@ -3,10 +3,14 @@ package org.example.backend.controller.board;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.board.BoardWriteDto;
+import org.example.backend.model.entity.board.BoardFile;
+import org.example.backend.service.board.BoardFileService;
 import org.example.backend.service.board.BoardWriteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * packageName : org.example.backend.controller.board
@@ -28,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 @RestControllerAdvice   // 전역적으로 예외처리
 public class BoardWriteController {
     private final BoardWriteService boardWriteService;
+    private final BoardFileService boardFileService;
 
     @PostMapping("/board-write")
     public ResponseEntity<Object> create(
@@ -36,6 +41,19 @@ public class BoardWriteController {
         log.debug("Received BoardWriteDto: {}", boardWriteDto);
         try {
             boardWriteService.save(boardWriteDto);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("게시글 등록에 실패했습니다." + e);
+        }
+    }
+
+    @PostMapping("/board-file")
+    public ResponseEntity<Object> createFile(
+            @RequestBody List<BoardFile> boardFile
+    ) {
+        log.debug("Received BoardWriteDto: {}", boardFile);
+        try {
+            boardFileService.saveBoardFile2(boardFile);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("게시글 등록에 실패했습니다." + e);

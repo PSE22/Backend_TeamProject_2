@@ -74,14 +74,14 @@ public class FreeBoardService {
 
 //        placeService.savePlace(boardId, place);
 
-        fileService.saveFiles(fileDtos);
+//        fileService.saveFiles(fileDtos);
 
         boardFileService.saveBoardFile(boardId, boardFileDtos);
 
         //        null 체크
         Optional.ofNullable(voteDtos).ifPresent(voteDtos2 -> voteService.saveVote(boardId, voteDtos2));
 //        Optional.ofNullable(place).ifPresent(place2 -> placeService.savePlace(boardId, place2));
-        Optional.ofNullable(fileDtos).ifPresent(filedtos2 -> fileService.saveFiles(filedtos2));
+//        Optional.ofNullable(fileDtos).ifPresent(filedtos2 -> fileService.saveFiles(filedtos2));
         Optional.ofNullable(boardFileDtos).ifPresent(boardFileDtos2 -> boardFileService.saveBoardFile(boardId, boardFileDtos2));
         }
 

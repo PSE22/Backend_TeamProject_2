@@ -2,11 +2,14 @@ package org.example.backend.service.board;
 
 import lombok.RequiredArgsConstructor;
 import org.example.backend.model.dto.board.BoardFileDto;
+import org.example.backend.model.dto.board.FileDto;
 import org.example.backend.model.entity.board.BoardFile;
+import org.example.backend.model.entity.board.File;
 import org.example.backend.repository.board.BoardFileRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,6 +21,7 @@ public class BoardFileService {
     @Autowired
     ModelMapper modelMapper;
 
+    @Transactional
     public void saveBoardFile(Long boardId, List<BoardFileDto> boardFileDtos) {
         // 리스트에 저장된 fileDto를 반복해서 저장
         for (BoardFileDto boardFileDto : boardFileDtos) {
@@ -25,7 +29,13 @@ public class BoardFileService {
             boardFileDto.setBoardId(boardId);
             // Dto를 BoardFile 엔티티로 변환
             BoardFile boardFile = modelMapper.map(boardFileDto, BoardFile.class);
+            boardFileRepository.save(boardFile);
+        }
 
+    }
+
+    public void saveBoardFile2(List<BoardFile> boardFiles) {
+        for (BoardFile boardFile : boardFiles) {
             boardFileRepository.save(boardFile);
         }
     }
