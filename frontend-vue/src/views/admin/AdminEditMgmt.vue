@@ -161,7 +161,7 @@
 </template>
 
 <script>
-import MemberService from "@/services/member/MemberService";
+import AdminService from "@/services/admin/AdminService";
 import AdminSidebar from "@/components/common/AdminSidebar.vue";
 
 export default {
@@ -181,18 +181,9 @@ export default {
     };
   },
   methods: {
-    async getProfile() {
-      try {
-        let response = await MemberService.get(this.$store.state.member?.memberId);
-        this.loginMember = response.data;
-        console.log(response.data);
-      } catch (e) {
-        console.log(e);
-      }
-    },
     async getAllProfileSearch() {
       try {
-        let response = await MemberService.getMemberAllDept(this.searchMemberName, this.page - 1, this.pageSize);
+        let response = await AdminService.getMemberAllDept(this.searchMemberName, this.page - 1, this.pageSize);
         const { member, totalItems } = response.data;
         this.member = member;
         this.count = totalItems;
@@ -203,7 +194,7 @@ export default {
     },
     async getAllProfileOfDept() {
       try {
-        let response = await MemberService.getMemberOfDept("AT02", this.deptCode, this.page - 1, this.pageSize);
+        let response = await AdminService.getMemberOfDept("AT02", this.deptCode, this.page - 1, this.pageSize);
         const { member, totalItems } = response.data;
         this.member = member;
         this.count = totalItems;
@@ -215,7 +206,7 @@ export default {
     async registerModify(data) {
       try {
         data.memberCode = "AT02";
-        let response = await MemberService.updateProfile(data);
+        let response = await AdminService.updateProfile(data);
         console.log(response.data);
         alert("회원정보가 변경되었습니다.");
       } catch (e) {
@@ -223,7 +214,7 @@ export default {
       }
     },
     async registerDelete(data) {
-      let response = await MemberService.deleteProfile(data.memberId);
+      let response = await AdminService.deleteProfile(data.memberId);
       console.log(response.data);
       alert("회원 삭제 처리되었습니다.");
       this.getAllProfile();
@@ -261,7 +252,6 @@ export default {
     },
   },
   mounted() {
-    this.getProfile();
     this.getAllProfileOfDept();
   },
 };

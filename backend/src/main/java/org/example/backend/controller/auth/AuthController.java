@@ -103,4 +103,17 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @GetMapping("/profile-id/{memberEmail}")
+    public ResponseEntity<Object> findByMemberEmail(@PathVariable String memberEmail) {
+        try {
+            Member member = memberService.findByMemberEmail(memberEmail);
+
+            return ResponseEntity.ok(member.getMemberId());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("아이디 찾기에 실패했습니다.");
+        }
+    }
 }

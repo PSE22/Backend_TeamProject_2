@@ -24,7 +24,7 @@ import java.util.UUID;
 @SQLDelete(sql = "UPDATE TB_FILE SET STATUS = 'N', DEL_DATE = TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI:SS') WHERE UUID = ?")
 public class File extends BaseTimeEntity3 {
     @Id
-    private String uuid = UUID.randomUUID().toString().replace("-", ""); // 무작위 UUID를 생성후 UUID를 문자열로 반환 // 파일ID
+    private String uuid;
     private String fileUrl; // 파일 URL
     private String fileName; // 파일명
 

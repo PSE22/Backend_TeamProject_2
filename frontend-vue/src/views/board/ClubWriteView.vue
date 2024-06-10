@@ -3,7 +3,7 @@
     <h1 class="text-center mb-5 mt-5">동호회 게시판</h1>
     <div class="container mt-3 free-box">
       <!-- 자유게시판 / 닉네임 입력 -->
-      <div align="center">
+      <div>
         <div class="row">
           <div class="col-4">
             <input
@@ -69,210 +69,197 @@
         </div>
 
         <!-- 투표 추가 / 장소 추가 -->
-        <div class="row mt-3">
-          <div class="col-md-2 mb-3">
-            <div class="form-group">
-              <!-- Button trigger modal -->
-              <button
-                type="button"
-                class="btn btn-outline-dark"
-                data-bs-toggle="modal"
-                data-bs-target="#vote-modal"
-              >
-                <i class="bi bi-bar-chart-line"></i> 투표추가
-              </button>
-              <!-- 투표추가 모달 -->
-              <div
-                class="modal fade"
-                id="vote-modal"
-                tabindex="-1"
-                aria-labelledby="exampleModalLabel"
-                aria-hidden="true"
-              >
-                <div class="modal-dialog modal-dialog-centered">
-                  <div class="modal-content">
-                    <div class="modal-header">
+        <div class="d-grid gap-3 d-md-block mt-3 mb-3 text-start">
+          <button
+            type="button"
+            class="btn btn-outline-dark me-3"
+            data-bs-toggle="modal"
+            data-bs-target="#vote-modal"
+          >
+            <i class="bi bi-bar-chart-line"></i> 투표추가
+          </button>
+          <!-- 투표추가 모달 -->
+          <div
+            class="modal fade"
+            id="vote-modal"
+            tabindex="-1"
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalLabel">
+                    투표 등록
+                  </h1>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  <h5 class="text-start">투표명</h5>
+                  <input
+                    type="text"
+                    class="form-control mb-3"
+                    placeholder="제목을 입력하세요"
+                    name="boardTitle"
+                    v-model.lazy="vote.voteName"
+                  />
+                  <hr />
+                  <h5 class="text-start">항목 추가</h5>
+                  <input
+                    type="text"
+                    class="form-control mb-3"
+                    placeholder="1. 항목을 입력하세요"
+                    name="boardTitle"
+                    v-model.lazy="vote.voteList.vote1"
+                  />
+                  <input
+                    type="text"
+                    class="form-control mb-3"
+                    placeholder="2. 항목을 입력하세요"
+                    name="boardTitle"
+                    v-model.lazy="vote.voteList.vote2"
+                  />
+                  <input
+                    type="text"
+                    class="form-control mb-3"
+                    placeholder="3. 항목을 입력하세요"
+                    name="boardTitle"
+                    v-model.lazy="vote.voteList.vote3"
+                  />
+                  <input
+                    type="text"
+                    class="form-control mb-3"
+                    placeholder="4. 항목을 입력하세요"
+                    name="boardTitle"
+                    v-model.lazy="vote.voteList.vote4"
+                  />
+                  <input
+                    type="text"
+                    class="form-control mb-3"
+                    placeholder="5. 항목을 입력하세요"
+                    name="boardTitle"
+                    v-model.lazy="vote.voteList.vote5"
+                  />
+                  <hr />
+                  <h5 class="text-start">
+                    종료일 :
+                    <input type="date" v-model="vote.delDate" :min="minDate" />
+                  </h5>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    @reset="vote"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                    @click="resetVoteForm"
+                  >
+                    초기화
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    data-bs-dismiss="modal"
+                    @click="submitVote"
+                  >
+                    등록
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- 투표추가 모달 끝 -->
+          </div>
+          <button
+            type="button"
+            class="btn btn-outline-dark me-3"
+            data-bs-toggle="modal"
+            data-bs-target="#place-modal"
+          >
+            <i class="bi bi-geo-alt"></i> 장소추가
+          </button>
+          <!-- 장소 Modal -->
+          <div
+            class="modal fade"
+            id="place-modal"
+            tabindex="-1"
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <div class="row">
+                    <div class="col-auto">
                       <h1 class="modal-title fs-5" id="exampleModalLabel">
-                        투표 등록
+                        장소 추가
                       </h1>
-                      <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                      ></button>
                     </div>
-                    <div class="modal-body">
-                      <h5 class="text-start">투표명</h5>
-                      <input
-                        type="text"
-                        class="form-control mb-3"
-                        placeholder="제목을 입력하세요"
-                        name="boardTitle"
-                        v-model.lazy="vote.voteName"
-                      />
-                      <hr />
-                      <h5 class="text-start">항목 추가</h5>
-                      <input
-                        type="text"
-                        class="form-control mb-3"
-                        placeholder="1. 항목을 입력하세요"
-                        name="boardTitle"
-                        v-model.lazy="vote.voteList.vote1"
-                      />
-                      <input
-                        type="text"
-                        class="form-control mb-3"
-                        placeholder="2. 항목을 입력하세요"
-                        name="boardTitle"
-                        v-model.lazy="vote.voteList.vote2"
-                      />
-                      <input
-                        type="text"
-                        class="form-control mb-3"
-                        placeholder="3. 항목을 입력하세요"
-                        name="boardTitle"
-                        v-model.lazy="vote.voteList.vote3"
-                      />
-                      <input
-                        type="text"
-                        class="form-control mb-3"
-                        placeholder="4. 항목을 입력하세요"
-                        name="boardTitle"
-                        v-model.lazy="vote.voteList.vote4"
-                      />
-                      <input
-                        type="text"
-                        class="form-control mb-3"
-                        placeholder="5. 항목을 입력하세요"
-                        name="boardTitle"
-                        v-model.lazy="vote.voteList.vote5"
-                      />
-                      <hr />
-                      <h5 class="text-start">
-                        종료일 :
-                        <input
-                          type="date"
-                          v-model="vote.delDate"
-                          :min="minDate"
-                        />
-                      </h5>
-                    </div>
-                    <div class="modal-footer">
-                      <button
-                        @reset="vote"
-                        class="btn btn-secondary"
-                        data-bs-dismiss="modal"
-                        @click="resetVoteForm"
-                      >
-                        초기화
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn-primary"
-                        data-bs-dismiss="modal"
-                        @click="submitVote"
-                      >
-                        등록
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- 투표추가 모달 끝 -->
-            </div>
-          </div>
-          <div class="col-md-2 mb-3">
-            <div align="center">
-              <button
-                type="button"
-                class="btn btn-outline-dark"
-                data-bs-toggle="modal"
-                data-bs-target="#place-modal"
-              >
-                <i class="bi bi-geo-alt"></i> 장소추가
-              </button>
-              <!-- 장소 Modal -->
-              <div
-                class="modal fade"
-                id="place-modal"
-                tabindex="-1"
-                aria-labelledby="exampleModalLabel"
-                aria-hidden="true"
-              >
-                <div class="modal-dialog modal-lg modal-dialog-centered">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <div class="row">
-                        <div class="col-auto">
-                          <h1 class="modal-title fs-5" id="exampleModalLabel">
-                            장소 추가
-                          </h1>
-                        </div>
 
-                        <div class="col-auto">
-                          <input
-                            class="form-control"
-                            type="text"
-                            v-model="address"
-                            placeholder="주소"
-                            @keypress.enter="openPostcode"
-                          />
-                        </div>
-                        <div class="col-auto">
-                          <input
-                            type="button"
-                            @click="openPostcode"
-                            value="주소 검색"
-                            class="btn btn-dark"
-                          />
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                      ></button>
+                    <div class="col-auto">
+                      <input
+                        class="form-control"
+                        type="text"
+                        v-model.lazy="address"
+                        placeholder="주소"
+                        @keypress.enter="openPostcode"
+                      />
                     </div>
-                    <div class="modal-body">
-                      <div
-                        id="map"
-                        ref="mapContainer"
-                        style="
-                          width: 100%;
-                          height: 500px;
-                          margin-top: 10px;
-                          display: none;
-                        "
-                      ></div>
-                    </div>
-                    <div class="modal-footer">
-                      <button
+                    <div class="col-auto">
+                      <input
                         type="button"
-                        class="btn btn-secondary"
-                        @click="resetPlace"
-                        data-bs-dismiss="modal"
-                      >
-                        취소
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn-primary"
-                        data-bs-dismiss="modal"
-                      >
-                        확인
-                      </button>
+                        @click="openPostcode"
+                        value="주소 검색"
+                        class="btn btn-dark"
+                      />
                     </div>
                   </div>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  <div
+                    id="map"
+                    ref="mapContainer"
+                    style="
+                      width: 100%;
+                      height: 500px;
+                      margin-top: 10px;
+                      display: none;
+                    "
+                  ></div>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    @click="resetPlace"
+                    data-bs-dismiss="modal"
+                  >
+                    취소
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    data-bs-dismiss="modal"
+                  >
+                    확인
+                  </button>
                 </div>
               </div>
-              <!-- 장소 Modal 끝 -->
             </div>
           </div>
-          <div class="col-md-4 mb-4 mb-md-0">
-            <span>{{ address }}</span>
-          </div>
+          <!-- 장소 Modal 끝 -->
+            <span v-if="address"
+              ><i class="bi bi-geo-alt-fill"></i> {{ address }}</span
+            >
         </div>
       </div>
 
@@ -295,7 +282,7 @@
           <textarea
             class="form-control"
             placeholder="내용을 입력해주세요"
-            rows="5"
+            rows="10"
             name="boardContent"
             v-model="club.boardContent"
           ></textarea>
@@ -478,7 +465,7 @@ export default {
               reader.onload = () => {
                 resolve({
                   // uuid: file.name,
-                  fileUrl: URL.createObjectURL(file.data),
+                  fileUrl: file.fileUrl,
                   fileName: file.name,
                   data: reader.result.split(",")[1], // Base64 문자열만 추출
                 });
@@ -581,9 +568,10 @@ export default {
   margin: 100px auto;
   background-color: rgba(255, 255, 255, 1);
   padding: 40px 30px;
-  border: 3px solid #505050;
-  width: 800px;
+  border: 1px solid #959595;
+  width: 1000px;
   position: relative; /* 부모 요소를 기준으로 위치를 설정합니다 */
+  border-radius: 10px;
 }
 
 .fixed-button {

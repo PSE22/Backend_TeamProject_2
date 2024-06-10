@@ -78,7 +78,7 @@ export default {
     async findPassword() {
       try {
         let response = await LoginService.findPassword(this.to, this.memberId);
-        this.message = "임시 비밀번호가 발급되었습니다.";
+        this.message = "이메일로 임시 비밀번호가 발송되었습니다.";
         this.errorMessage = ""; // 성공 시 오류 메시지 초기화
         console.log(response.data);
       } catch (e) {
@@ -93,12 +93,10 @@ export default {
           case 400:
             return error.response.data;
           case 404:
-            return "요청한 사용자를 찾을 수 없습니다.";
-          default:
-            return "알 수 없는 오류가 발생했습니다.";
+            return error.response.data;
         }
       } else {
-        return "서버와 통신할 수 없습니다.";
+        return error.response.data;
       }
     },
 

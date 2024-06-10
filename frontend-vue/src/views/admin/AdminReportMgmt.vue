@@ -1,23 +1,6 @@
 <template>
   <div class="container">
-    <div class="sidebar">
-      <h1 class="sidebar-title">{{ loginMember.memberName }}님</h1>
-      <hr class="sidebar-divider" />
-      <ul class="sidebar-list">
-        <router-link to="/admin/register-mgmt" class="profile-link"
-          ><li class="sidebar-menu mb-5">회원가입승인</li></router-link
-        >
-        <router-link to="/admin/register-deny-mgmt" class="profile-link"
-          ><li class="sidebar-menu mb-5">반려회원관리</li></router-link
-        >
-        <router-link to="/admin/edit-mgmt" class="profile-link"
-          ><li class="sidebar-menu mb-5">회원정보변경</li></router-link
-        >
-        <router-link to="/admin/report-mgmt" class="profile-link"
-          ><li class="sidebar-menu">신고글관리</li></router-link
-        >
-      </ul>
-    </div>
+    <AdminSidebar/>
     <div class="main-content">
       <div class="row">
         <table class="table">
@@ -69,9 +52,12 @@
 
 <script>
 import ReportService from "@/services/admin/ReportService";
-import MemberService from "@/services/member/MemberService";
+import AdminSidebar from  "@/components/common/AdminSidebar.vue";
 
 export default {
+  components: {
+    AdminSidebar
+  },
   data() {
     return {
       loginMember: {},
@@ -98,23 +84,11 @@ export default {
         console.log(e); // 웹브라우저 콘솔탭에 에러표시
       }
     },
-    async getProfile() {
-      try {
-        let response = await MemberService.get(
-          this.$store.state.member?.memberId
-        );
-        this.loginMember = response.data;
-        console.log(response.data);
-      } catch (e) {
-        console.log(e);
-      }
-    },
     goBoardDetail(bocode, smcode, boardId) {
       this.$router.push(`/board/club/${bocode}/${smcode}/${boardId}`);
     },
   },
   mounted() {
-    this.getProfile();
     this.retrieveReport();
   },
 };

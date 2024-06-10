@@ -7,7 +7,7 @@
     <div align="center">
       <div class="row">
         <div class="form-group col-4">
-          <input type="text" class="form-control" disabled v-model="bocode" />
+          <input type="text" class="form-control" disabled/>
         </div>
         <div class="form-group col-3">
           <input
@@ -87,7 +87,7 @@
                       class="form-control mb-3"
                       placeholder="제목을 입력하세요"
                       name="boardTitle"
-                      v-model="board.voteName"
+                      v-model="vote.voteName"
                     />
                     <hr />
                     <h5 class="text-start">항목 추가</h5>
@@ -128,7 +128,7 @@
                     />
                     <hr />
                     <h5 class="text-start">
-                      종료일 : <input type="date" v-model="selectedDaily" />
+                      종료일 : <input type="date" v-model="vote.delDate" :min="minDate" />
                     </h5>
                   </div>
                   <div class="modal-footer">
@@ -136,13 +136,15 @@
                       type="button"
                       class="btn btn-secondary"
                       data-bs-dismiss="modal"
+                      @click="resetVoteForm"
                     >
                       취소
                     </button>
                     <button
                       type="button"
                       class="btn btn-primary"
-                      @click="voteList"
+                      @click="submitVote"
+                      data-bs-dismiss="modal"
                     >
                       등록
                     </button>
@@ -165,54 +167,88 @@
               <i class="bi bi-geo-alt"></i> 장소추가
             </button>
 
-            <!-- Modal -->
+            <!-- 장소 Modal -->
             <div
-              class="modal fade"
-              id="free-place-modal"
-              tabindex="-1"
-              aria-labelledby="exampleModalLabel-5"
-              aria-hidden="true"
-            >
-              <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel-5">
-                      장소 추가
-                    </h1>
-                    <button
-                      type="button"
-                      class="btn-close"
-                      data-bs-dismiss="modal"
-                      aria-label="Close"
-                    ></button>
-                  </div>
-                  <div class="modal-body">
-                    <div
-                      id="map"
-                      style="width: 100%; height: 500px"
-                      ref="map"
-                    ></div>
-                  </div>
-                  <div class="modal-footer">
-                    <button
-                      type="button"
-                      class="btn btn-secondary"
-                      data-bs-dismiss="modal"
-                    >
-                      취소
-                    </button>
-                    <button type="button" class="btn btn-primary">확인</button>
+                class="modal fade"
+                id="free-place-modal"
+                tabindex="-1"
+                aria-labelledby="exampleModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <div class="row">
+                        <div class="col-auto">
+                          <h1 class="modal-title fs-5" id="exampleModalLabel">
+                            장소 추가
+                          </h1>
+                        </div>
+
+                        <div class="col-auto">
+                          <input
+                            class="form-control"
+                            type="text"
+                            v-model="address"
+                            placeholder="주소"
+                            @keypress.enter="openPostcode"
+                          />
+                        </div>
+                        <div class="col-auto">
+                          <input
+                            type="button"
+                            @click="openPostcode"
+                            value="주소 검색"
+                            class="btn btn-dark"
+                          />
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                    <div class="modal-body">
+                      <div
+                        id="map"
+                        ref="mapContainer"
+                        style="
+                          width: 100%;
+                          height: 500px;
+                          margin-top: 10px;
+                          display: none;
+                        "
+                      ></div>
+                    </div>
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        @click="resetPlace"
+                        data-bs-dismiss="modal"
+                      >
+                        취소
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-primary"
+                        data-bs-dismiss="modal"
+                      >
+                        확인
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+              <!-- 장소 Modal 끝 -->
           </div>
         </div>
-        <!-- <KakaoMap/> -->
       </div>
       <div class="col-md-3 mb-3 mb-md-0">
         <div class="form-group">
-          <span class="d-block">그린컴퓨터아카데미</span>
+          <span class="d-block">{{ address }}</span>
         </div>
       </div>
     </div>
@@ -220,8 +256,8 @@
     <!-- 안내 메시지 -->
     <div class="row">
       <div class="col-md-12">
-        <div class="alert alert-info" role="alert">
-          투표가 등록되었습니다. (또는 투표명)
+        <div class="alert alert-info" role="alert" v-if="showSuccessMessage">
+          투표가 등록되었습니다.
         </div>
       </div>
     </div>
@@ -274,18 +310,20 @@
 </template>
 
 <script>
-import FreeBoardService from "@/services/board/FreeBoardService";
+let daum = window.daum;
+import BoardWriteService from "@/services/board/BoardWriteService";
+
 export default {
   data() {
     return {
-      isAdmin:
-        this.$store.state.member != null &&
-        this.$store.state.member.memberCode === "AT01",
-
-      freeBoard: {},
-
-      bocode: [],
-      board: [],
+      isAdmin: this.$store.state.member != null && this.$store.state.member.memberCode === "AT01",
+      bocode: "BO03", // 대분류 코드 고정
+      nickName: this.$store.state.member ? this.$store.state.member.nickName : "",
+      board: {
+        boardTitle: "",
+        boardContent: "",
+        noticeYn: false, // 공지사항 초기값
+      },
       vote: {
         voteName: "",
         voteList: {
@@ -295,51 +333,96 @@ export default {
           vote4: "",
           vote5: "",
         },
-        delDate: this.selectedDaily,
+        delDate: "",
       },
       files: [], // 파일 리스트를 저장하기 위한 배열
-
+      showSuccessMessage: false,
       submitted: false,
-      selectedDaily: new Date().toISOString(),
-
-      // 카카오맵 api
+      address: null,
       map: null,
-      infowindow: null,
-      markers: [],
-      options: {
-        //지도를 생성할 때 필요한 기본 옵션
-        center: {
-          lat: 33.450701,
-          lng: 126.570667,
-        }, //지도의 중심좌표.
-        level: 3, //지도의 레벨(확대, 축소 정도)
-      },
+      geocoder: null,
+      marker: null,
     };
   },
   methods: {
     async saveFreeBoard() {
       try {
-        let data = {
-          board: this.board,
-          voteDtos: this.vote.voteList, // vote 데이터를 함께 전송
-          place: this.place, // place 데이터를 함께 전송
-          boardFileDtos: this.files.map((file) => ({
-            fileBid: null, // 새로운 파일이므로 ID는 null
-            boardId: null, // 새로 생성된 게시글의 ID와 연결
-            uuid: file.data.name, // 파일 이름을 UUID로 사용
-          })),
+        let boardDto = {
+          memberId: this.$store.state.member.memberId,
+          boardTitle: this.board.boardTitle,
+          boardContent: this.board.boardContent,
+          bocode: this.bocode,
+          noticeYn: this.board.noticeYn ? "Y" : "N",
         };
-        console.log(data);
-        // TODO: 벡엔드로 객체 추가 요청
-        let response = await FreeBoardService.create(data);
-        // TODO: 콘솔에 결과 출력
+
+        let voteDtos = Object.values(this.vote.voteList)
+          .filter((voteItem) => voteItem.trim() !== "")
+          .map((voteItem) => ({
+            voteName: this.vote.voteName,
+            voteList: voteItem,
+            delDate: this.vote.delDate,
+          }));
+
+        let placeDto = this.address ? { address: this.address } : null;
+
+        let fileDtos = await Promise.all(
+          this.files.map((file) => {
+            return new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => {
+                resolve({
+                  fileUrl: URL.createObjectURL(file.data),
+                  fileName: file.name,
+                  data: reader.result.split(",")[1], // Base64 문자열만 추출
+                });
+              };
+              reader.onerror = reject;
+              reader.readAsDataURL(file.data); // Base64 인코딩
+            });
+          })
+        );
+
+        let response = await BoardWriteService.create({
+          boardDto,
+          voteDtos: voteDtos.length > 0 ? voteDtos : null,
+          placeDto: placeDto,
+          fileDtos: fileDtos.length > 0 ? fileDtos : null,
+        });
+
         console.log(response);
         this.submitted = true;
+        alert("게시글이 등록되었습니다.");
+        this.$router.push(`/board/free`);
       } catch (e) {
         console.log(e);
+        alert("내용을 입력해주세요.");
       }
     },
-    // 파일추가
+    resetVoteForm() {
+      this.vote = {
+        voteName: "",
+        voteList: {
+          vote1: "",
+          vote2: "",
+          vote3: "",
+          vote4: "",
+          vote5: "",
+        },
+        delDate: "",
+      };
+      this.showSuccessMessage = false;
+    },
+    submitVote() {
+      const voteItems = Object.values(this.vote.voteList).filter(
+        (item) => item.trim() !== ""
+      );
+      if (voteItems.length < 2) {
+        alert("투표 항목을 2개 이상 입력해주세요.");
+        return;
+      } else {
+        this.showSuccessMessage = true;
+      }
+    },
     handleFileUpload(event) {
       const newFiles = Array.from(event.target.files);
       this.files = this.files.concat(
@@ -349,79 +432,74 @@ export default {
         }))
       );
     },
-    // 파일 선택 취소
     removeFile(index) {
       this.files.splice(index, 1);
-
-      // 파일이 없을 경우 input 초기화
       if (this.files.length === 0) {
         this.$refs.fileInput.value = "";
       }
     },
-    // 주소 부분
-    relayout() {
-      this.delayFunction(() => {
-        this.map.relayout();
-        this.retrieveMap("부산 부산진구 중앙대로 749 4층");
-      }, 500);
+    loadDaumPostcodeScript() {
+      const script = document.createElement("script");
+      script.src = "//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+      document.head.appendChild(script);
     },
-    delayFunction(callback, delay) {
-      setTimeout(callback, delay);
+    loadKakaoMapScript() {
+      const script = document.createElement("script");
+      script.src = "//dapi.kakao.com/v2/maps/sdk.js?appkey=55b411073309a73c48d56caa594311c8&libraries=services";
+      script.onload = this.initMap;
+      document.head.appendChild(script);
     },
-    retrieveMap(address) {
-      let kakao = window.kakao;
-      var container = this.$refs.map;
-      const { center, level } = this.options;
-
-      let map = new kakao.maps.Map(container, {
-        center: new kakao.maps.LatLng(center.lat, center.lng),
-        level,
-      }); //지도 생성 및 객체 리턴
-      this.map = map;
-
-      // 주소-좌표 변환 객체를 생성합니다
-      var geocoder = new kakao.maps.services.Geocoder();
-
-      // 주소로 좌표를 검색합니다
-      geocoder.addressSearch(address, function (result, status) {
-        // 정상적으로 검색이 완료됐으면
-        if (status === kakao.maps.services.Status.OK) {
-          var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-
-          // 결과값으로 받은 위치를 마커로 표시합니다
-          var marker = new kakao.maps.Marker({
-            map: map,
-            position: coords,
-          });
-
-          // 인포윈도우로 장소에 대한 설명을 표시합니다
-          var infowindow = new kakao.maps.InfoWindow({
-            content:
-              '<div style="width:150px;text-align:center;padding:6px 0;">모임장소</div>',
-          });
-          infowindow.open(map, marker);
-
-          // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
-          map.setCenter(coords);
-        }
+    initMap() {
+      const mapContainer = this.$refs.mapContainer;
+      const mapOption = {
+        center: new daum.maps.LatLng(37.537187, 127.005476),
+        level: 5,
+      };
+      this.map = new daum.maps.Map(mapContainer, mapOption);
+      this.geocoder = new daum.maps.services.Geocoder();
+      this.marker = new daum.maps.Marker({
+        position: new daum.maps.LatLng(37.537187, 127.005476),
+        map: this.map,
       });
+    },
+    openPostcode() {
+      new daum.Postcode({
+        oncomplete: (data) => {
+          this.address = data.address;
+          this.geocoder.addressSearch(data.address, (results, status) => {
+            if (status === daum.maps.services.Status.OK) {
+              const result = results[0];
+              const coords = new daum.maps.LatLng(result.y, result.x);
+              this.$refs.mapContainer.style.display = "block";
+              this.map.relayout();
+              this.map.setCenter(coords);
+              this.marker.setPosition(coords);
+            }
+          });
+        },
+      }).open();
+    },
+    resetPlace() {
+      this.address = "";
+      if (this.map) {
+        this.map.setCenter(new daum.maps.LatLng(37.537187, 127.005476));
+        this.map.relayout();
+        this.marker.setPosition(new daum.maps.LatLng(37.537187, 127.005476));
+      }
+      this.$refs.mapContainer.style.display = "none";
+    },
+  },
+  computed: {
+    minDate() {
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      return tomorrow.toISOString().slice(0, 10);
     },
   },
   mounted() {
-    if (window.kakao && window.kakao.maps) {
-      this.retrieveMap("부산 부산진구 중앙대로 749 4층");
-    } else {
-      const script = document.createElement("script");
-      // 로드 완료 후 retrieveMap() 메서드 실행 추가
-      script.onload = () => {
-        this.retrieveMap("부산 부산진구 중앙대로 749 4층");
-        // 지도 로드 완료 후 searchPlaces() 메서드 실행
-        this.searchPlaces();
-      };
-      script.src =
-        "//dapi.kakao.com/v2/maps/sdk.js?appkey=55b411073309a73c48d56caa594311c8"; // 발급받은 API 키로 변경
-      document.head.appendChild(script);
-    }
+    this.loadDaumPostcodeScript();
+    this.loadKakaoMapScript();
   },
 };
 </script>

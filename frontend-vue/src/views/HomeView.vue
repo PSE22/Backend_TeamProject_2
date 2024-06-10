@@ -53,7 +53,9 @@
           <div v-for="(item, index) in suggestionBoards.slice(0, 7)" :key="index" class="board-item">
             <div class="content">
               <div class="good">{{ item.good }}</div>
+              <router-link to="/board/suggest/:boardId" class="custom-link">
               <div class="title">{{ item.boardTitle }}</div>
+              </router-link>
             </div>
             <div class="sub-info">
               <span class="nickname">별명: {{ item.nickName }}</span>
@@ -73,7 +75,9 @@
           <div v-for="(item, index) in praiseBoards.slice(0, 7)" :key="index" class="board-item">
             <div class="content">
               <div class="good">{{ item.good }}</div>
+              <router-link to="/board/praise/:boardId" class="custom-link">
               <div class="title">{{ item.boardTitle }}</div>
+              </router-link>
             </div>
             <div class="sub-info">
               <span class="nickname">별명: {{ item.nickName }}</span>

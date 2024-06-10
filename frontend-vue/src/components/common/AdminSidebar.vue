@@ -23,7 +23,7 @@
   </template>
   
   <script>
-  import MemberService from "@/services/member/MemberService";
+  import AdminService from "@/services/admin/AdminService";
   
   export default {
     data() {
@@ -33,7 +33,7 @@
     },
     async created() {
       try {
-        const response = await MemberService.get(this.$store.state.member?.memberId);
+        const response = await AdminService.get(this.$store.state.member?.memberId);
         this.loginMember = response.data;
       } catch (e) {
         console.log(e);
