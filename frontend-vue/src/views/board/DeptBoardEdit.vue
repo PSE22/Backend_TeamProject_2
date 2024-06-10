@@ -267,14 +267,14 @@ export default {
   },
   methods: {
     // 회원 권한 체크
-    async checkAuth() {
-      if (this.member.memberCode === "AT01") {
-        // 관리자 로그인
-        this.auth = "A";
-      } else if (this.member.memberId) {
-        this.auth = "B";
-      }
-    },
+    // async checkAuth() {
+    //   if (this.member.memberCode === "AT01") {
+    //     // 관리자 로그인
+    //     this.auth = "A";
+    //   } else if (this.member.memberId) {
+    //     this.auth = "B";
+    //   }
+    // },
     // 로그인된 회원 정보 가져오기
     async retrieveMember() {
       try {
