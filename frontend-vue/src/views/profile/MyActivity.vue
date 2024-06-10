@@ -4,22 +4,29 @@
       <h1 class="sidebar-title">{{ member.memberName }}님</h1>
       <hr class="sidebar-divider" />
       <ul class="sidebar-list">
-        <router-link to="/profile-edit" class="profile-link"
-          ><li class="sidebar-menu mb-5">회원정보수정</li></router-link
-        >
-        <router-link to="/profile-edit/password" class="profile-link"
-          ><li class="sidebar-menu mb-5">비밀번호변경</li></router-link
-        >
-        <router-link to="/profile-edit/nickname" class="profile-link"
-          ><li class="sidebar-menu mb-5">닉네임변경</li></router-link
-        >
-        <router-link to="/profile-activity" class="profile-link"
-          ><li class="sidebar-menu">활동내역</li></router-link
-        >
+        <router-link to="/profile-edit" class="profile-link">
+          <li class="sidebar-menu mb-5">회원정보수정</li>
+        </router-link>
+        <router-link to="/profile-edit/password" class="profile-link">
+          <li class="sidebar-menu mb-5">비밀번호변경</li>
+        </router-link>
+        <router-link to="/profile-edit/nickname" class="profile-link">
+          <li class="sidebar-menu mb-5">닉네임변경</li>
+        </router-link>
+        <router-link to="/profile-activity" class="profile-link">
+          <li class="sidebar-menu">활동내역</li>
+        </router-link>
       </ul>
     </div>
     <div class="main-content">
-      <div class="row">
+      <button class="activity-button" @click="showBoard">
+        내 작성글 보기
+      </button>
+      <button class="activity-button" @click="showComment">
+        내 작성댓글 보기
+      </button>
+
+      <div class="row" v-if="boardVisible">
         <table class="table">
           <thead class="table-light text-center">
             <tr>
@@ -36,16 +43,40 @@
             </tr>
           </tbody>
         </table>
+        <b-pagination
+          class="col-12 mb-3 justify-content-center"
+          v-model="boardPage"
+          :total-rows="boardCount"
+          :per-page="boardPageSize"
+          @change="retrieveBoard"
+        ></b-pagination>
       </div>
-      <!-- {/* paging 시작 */} -->
-      <b-pagination
-        class="col-12 mb-3 justify-content-center"
-        v-model="page"
-        :total-rows="count"
-        :per-page="pageSize"
-        @click="retrieveBoard"
-      ></b-pagination>
-      <!-- {/* paging 끝 */} -->
+
+      <div class="row" v-if="replyVisible">
+        <table class="table">
+          <thead class="table-light text-center">
+            <tr>
+              <th scope="col">글번호</th>
+              <th scope="col">내용</th>
+              <th scope="col">등록일</th>
+            </tr>
+          </thead>
+          <tbody class="table-group-divider align-middle">
+            <tr v-for="(data, index) in reply" :key="index">
+              <td class="col-1 text-center">{{ data.boardId }}</td>
+              <td class="col-7 text-center">{{ data.reply }}</td>
+              <td class="col-2 text-center">{{ data.addDate }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <b-pagination
+          class="col-12 mb-3 justify-content-center"
+          v-model="replyPage"
+          :total-rows="replyCount"
+          :per-page="replyPageSize"
+          @change="retrieveComment"
+        ></b-pagination>
+      </div>
     </div>
   </div>
 </template>
@@ -60,10 +91,18 @@ export default {
       message: "",
 
       board: [],
+      reply: [],
 
-      page: 1,
-      count: 0,
-      pageSize: 10,
+      boardPage: 1,
+      boardCount: 0,
+      boardPageSize: 10,
+
+      replyPage: 1,
+      replyCount: 0,
+      replyPageSize: 10,
+
+      boardVisible: false,
+      replyVisible: false,
     };
   },
   methods: {
@@ -83,21 +122,51 @@ export default {
       try {
         let response = await MemberService.getAllPost(
           this.$store.state.member?.memberId,
-          this.page - 1,
-          this.pageSize
+          this.boardPage - 1,
+          this.boardPageSize
         );
         const { board, totalItems } = response.data;
         this.board = board;
-        this.count = totalItems;
+        this.boardCount = totalItems;
         console.log(response.data);
       } catch (e) {
         console.log(e);
       }
     },
+
+    async retrieveComment() {
+      try {
+        let response = await MemberService.getAllComment(
+          this.$store.state.member?.memberId,
+          this.replyPage - 1,
+          this.replyPageSize
+        );
+        const { reply, totalItems } = response.data;
+        this.reply = reply;
+        this.replyCount = totalItems;
+        console.log(response.data);
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    showBoard() {
+      this.boardVisible = true;
+      this.replyVisible = false;
+      this.boardPage = 1;
+      this.retrieveBoard();
+    },
+
+    showComment() {
+      this.boardVisible = false;
+      this.replyVisible = true;
+      this.replyPage = 1;
+      this.retrieveComment();
+    },
   },
   mounted() {
     this.getProfile();
-    this.retrieveBoard();
+    this.showBoard();
   },
 };
 </script>
@@ -168,5 +237,17 @@ export default {
   border-radius: 15px;
   margin: 20px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.activity-button {
+  color: white;
+  background-color: black;
+  border: none;
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
 }
 </style>
