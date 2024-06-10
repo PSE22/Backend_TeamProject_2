@@ -107,7 +107,7 @@ public interface MainPageRepository extends JpaRepository<Board, Long> {
                     " FROM TB_BOARD B" +
                     " LEFT JOIN TB_MEMBER M ON B.MEMBER_ID = M.MEMBER_ID" + // 수정된 부분
                     " LEFT JOIN all_replies R ON B.BOARD_ID = R.BOARD_ID" +
-                    " WHERE B.STATUS = 'Y' AND B.BOCODE = 'BO03' AND NVL(R.total_reply_count, 0) >= 1" +
+                    " WHERE B.STATUS = 'Y' AND B.BOCODE = 'BO03' AND NVL(R.total_reply_count, 0) >= 10" +
                     " ORDER BY TO_DATE(B.ADD_DATE, 'YYYY-MM-DD HH24:MI:SS') DESC", nativeQuery = true)
     List<MainPageDto> findHotTopics();
 }
