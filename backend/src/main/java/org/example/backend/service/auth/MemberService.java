@@ -27,7 +27,7 @@ import java.util.Optional;
 @Service
 public class MemberService {
     @Autowired
-    MemberRepository memberRepository; // DI
+    MemberRepository memberRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -50,10 +50,6 @@ public class MemberService {
         Member member2 = memberRepository.save(member);
 
         return member2;
-    }
-
-    public Optional<Member> findById(String memberId) {
-        return memberRepository.findById(memberId);
     }
 
     //  4) 회원 상세 조회
@@ -99,5 +95,10 @@ public class MemberService {
     //  10) 회원 삭제 (hard delete)
     public void delMember(String memberId) {
         memberRepository.deleteMember(memberId);
+    }
+
+    //  chat
+    public Optional<Member> findById(String memberId) {
+        return memberRepository.findById(memberId);
     }
 }

@@ -21,6 +21,7 @@ class MemberService {
     return http.put(`/member/profile-edit/password`, data, {
       headers: LoginHeader(),
     });
+
   }
   // 회원정보 삭제
   deleteProfile(memberId) {
@@ -38,7 +39,14 @@ class MemberService {
 
   // 본인 게시글 전체 조회
   getAllPost(memberId, page, size) {
-    return http.get(`/member/activity/${memberId}?page=${page}&size=${size}`, {
+    return http.get(`/member/activity-board/${memberId}?page=${page}&size=${size}`, {
+      headers: LoginHeader(),
+    });
+  }
+
+  // 본인 댓글 전체 조회
+  getAllComment(memberId, page, size) {
+    return http.get(`/member/activity-comment/${memberId}?page=${page}&size=${size}`, {
       headers: LoginHeader(),
     });
   }
