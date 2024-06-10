@@ -93,12 +93,10 @@ export default {
           case 400:
             return error.response.data;
           case 404:
-            return "요청한 사용자를 찾을 수 없습니다.";
-          default:
-            return "알 수 없는 오류가 발생했습니다.";
+            return error.response.data;
         }
       } else {
-        return "서버와 통신할 수 없습니다.";
+        return error.response.data;
       }
     },
 

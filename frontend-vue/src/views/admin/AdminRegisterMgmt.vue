@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import MemberService from "@/services/member/MemberService";
+import AdminService from "@/services/admin/AdminService";
 import AdminSidebar from "@/components/common/AdminSidebar.vue";
 export default {
   components : {
@@ -57,21 +57,9 @@ export default {
     };
   },
   methods: {
-    async getProfile() {
-      try {
-        let response = await MemberService.get(
-          this.$store.state.member?.memberId
-        );
-        this.loginMember = response.data;
-        console.log(response.data);
-      } catch (e) {
-        console.log(e);
-      }
-    },
-
     async getAllProfile() {
       try {
-        let response = await MemberService.getMember("AT03");
+        let response = await AdminService.getMember("AT03");
         this.member = response.data;
         console.log(response.data);
       } catch (e) {
@@ -82,7 +70,7 @@ export default {
     async registerApprove(data) {
       try {
         data.memberCode = "AT02";
-        let response = await MemberService.updateProfile(data);
+        let response = await AdminService.updateProfile(data);
         console.log(response.data);
         alert("회원가입이 승인되었습니다.");
         this.getAllProfile();
@@ -93,7 +81,7 @@ export default {
     async registerReject(data) {
       try {
         data.memberCode = "AT04";
-        let response = await MemberService.updateProfile(data);
+        let response = await AdminService.updateProfile(data);
         console.log(response.data);
         alert("회원가입이 반려되었습니다.");
         this.getAllProfile();
@@ -130,7 +118,6 @@ export default {
     },
   },
   mounted() {
-    this.getProfile();
     this.getAllProfile();
   },
 };

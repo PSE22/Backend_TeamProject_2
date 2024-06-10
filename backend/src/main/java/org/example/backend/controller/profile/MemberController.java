@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -48,90 +47,6 @@ public class MemberController {
             } else {
                 // 조회 성공
                 return new ResponseEntity<>(optionalMember.get(), HttpStatus.OK);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    //  email 로 회원 상세 조회 후 id 찾기
-    @GetMapping("/profile-id/{memberEmail}")
-    public ResponseEntity<Object> findByMemberEmail(@PathVariable String memberEmail) {
-        try {
-            Optional<Member> optionalMember = memberService.findByMemberEmail(memberEmail);
-            if (optionalMember.isEmpty() == true) {
-                // 데이터 없음
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            } else {
-                // 조회 성공
-                return new ResponseEntity<>(optionalMember.get(), HttpStatus.OK);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    //  신규 회원 전체 조회
-    @GetMapping("/profile-all/{memberCode}")
-    public ResponseEntity<Object> findAllByMemberCode(@PathVariable String memberCode) {
-        try {
-            List<Member> memberList = memberService.findAllByMemberCode(memberCode);
-            if (memberList.isEmpty() == true) {
-                // 데이터 없음
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            } else {
-                // 조회 성공
-                return new ResponseEntity<>(memberList, HttpStatus.OK);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    //  기존 회원 전체 조회(검색)
-    @GetMapping("/profile-all/old-search/{memberCode}/{page}/{size}")
-    public ResponseEntity<Object> findAllByMemberName(@PathVariable String memberCode, @PathVariable int page, @PathVariable int size) {
-        try {
-            Pageable pageable = PageRequest.of(page, size);
-            Page<Member> memberPage = memberService.findAllByMemberName(memberCode, pageable);
-
-            Map<String, Object> response = new HashMap<>();
-            response.put("member", memberPage.getContent()); // member 배열
-            response.put("currentPage", memberPage.getNumber()); // 현재페이지번호
-            response.put("totalItems", memberPage.getTotalElements()); // 총건수(개수)
-            response.put("totalPages", memberPage.getTotalPages()); // 총페이지수
-
-            if (memberPage.isEmpty() == true) {
-                // 데이터 없음
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            } else {
-                // 조회 성공
-                return new ResponseEntity<>(response, HttpStatus.OK);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    //  기존 회원 부서별 전체 조회
-    @GetMapping("/profile-all/old-dept/{memberCode}/{deptCode}/{page}/{size}")
-    public ResponseEntity<Object> findAllByMemberCodeAndDeptCode(@PathVariable String memberCode, @PathVariable String deptCode, @PathVariable int page, @PathVariable int size) {
-        try {
-            Pageable pageable = PageRequest.of(page, size);
-            Page<Member> memberPage = memberService.findAllByMemberCodeAndDeptCode(memberCode, deptCode, pageable);
-
-            Map<String, Object> response = new HashMap<>();
-            response.put("member", memberPage.getContent()); // member 배열
-            response.put("currentPage", memberPage.getNumber()); // 현재페이지번호
-            response.put("totalItems", memberPage.getTotalElements()); // 총건수(개수)
-            response.put("totalPages", memberPage.getTotalPages()); // 총페이지수
-
-            if (memberPage.isEmpty() == true) {
-                // 데이터 없음
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            } else {
-                // 조회 성공
-                return new ResponseEntity<>(response, HttpStatus.OK);
             }
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -185,10 +100,5 @@ public class MemberController {
 //            서버(DB) 에러
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
-    //  hard delete
-    @DeleteMapping("/profile/hard-deletion/{memberId}")
-    public void delMember(@PathVariable String memberId) {
-        memberService.delMember(memberId);
     }
 }

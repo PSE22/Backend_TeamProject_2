@@ -33,6 +33,11 @@ class LoginService {
     findPassword(to, memberId) {
         return http.put(`/auth/sendEmail/${to}/${memberId}`);
     }
+
+    // TODO: email 로 회원 상세 조회 후 id 찾기
+    getId(memberEmail) {
+        return http.get(`/auth/profile-id/${memberEmail}`);
+    }
 }
 
 export default new LoginService();
