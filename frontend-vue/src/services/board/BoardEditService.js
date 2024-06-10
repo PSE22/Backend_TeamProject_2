@@ -38,7 +38,9 @@ class BoardEditService {
     getImg(boardId) {
         // boardId를 숫자로 변환하여 전달합니다.
         const id = Number(boardId);
-        return http.get(`/board/board-detail/board-img?boardId=${id}`);
+        return http.get(`/board/board-detail/board-img?boardId=${id}`, {
+            headers: LoginHeader(),
+        });
     }
 }
 

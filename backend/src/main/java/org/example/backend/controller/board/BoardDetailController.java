@@ -107,7 +107,7 @@ public class BoardDetailController {
         try {
             log.debug("Controller 문제?? boardId :: ", boardId);
             Optional<Place> optional = boardDetailService.findPlace(boardId);
-            if (optional.isEmpty() == true) {
+            if (optional.isEmpty()) {
                 return new ResponseEntity<>("데이터 없음", HttpStatus.NO_CONTENT);
             } else {
                 return new ResponseEntity<>(optional.get(), HttpStatus.OK);
