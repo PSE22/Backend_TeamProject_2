@@ -11,6 +11,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -38,7 +39,6 @@ public class MyRandomService {
     private static final String NUMBER = "0123456789";
     private static final String DATA_FOR_RANDOM_STRING = CHAR_LOWER + CHAR_UPPER + NUMBER;
     private static SecureRandom random = new SecureRandom();
-
     private final ConcurrentHashMap<String, LockAndRequestTime> memberLocks = new ConcurrentHashMap<>();
 
     public String generatePassword(String memberId) {
@@ -76,7 +76,13 @@ public class MyRandomService {
 
             return sb.toString();
         } finally {
+            try {
+                TimeUnit.MINUTES.sleep(1);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
             lock.unlock();
+        }
         }
     }
 
