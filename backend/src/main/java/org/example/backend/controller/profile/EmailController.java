@@ -36,7 +36,10 @@ public class EmailController {
             emailService.sendSimpleEmail(to, memberId);
             return ResponseEntity.ok().body("이메일로 임시 비밀번호가 발송되었습니다.");
         } catch (IllegalArgumentException e) {
-            log.debug("400 에러 발생: {}" + e);
+            log.debug("에러 발생: {}" + e);
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (IllegalStateException e) {
+            log.debug("에러 발생: {}" + e);
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return handleException(e);
@@ -47,7 +50,7 @@ public class EmailController {
     public ResponseEntity<Object> handleException(Exception e) {
         if (e instanceof EntityNotFoundException) {
             log.error("404 에러 발생: {}", e);
-            return new ResponseEntity<>("해당 엔티티를 찾을 수 없습니다", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("정보를 찾을 수 없습니다", HttpStatus.NOT_FOUND);
         } else {
             log.error("500 에러 발생: {}", e);
             return new ResponseEntity<>("서버 오류가 발생했습니다", HttpStatus.INTERNAL_SERVER_ERROR);
