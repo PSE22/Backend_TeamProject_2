@@ -22,4 +22,6 @@ public interface MainPageSearchDto {
     String getMemberName();
     String getCmCode();
     String getCmCodeName();
+    Integer getGood(); // 추가
+    Integer getTotalReplyCount(); // 추가
 }

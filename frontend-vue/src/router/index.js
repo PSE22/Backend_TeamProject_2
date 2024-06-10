@@ -16,6 +16,11 @@ const routes = [
     path: "/register",
     component: () => import("../views/RegisterView.vue"),
   },
+  // ID 찾기
+  {
+    path: "/find-id",
+    component: () => import("../views/FindId.vue"),
+  },
   // 비밀번호 찾기
   {
     path: "/find-password",

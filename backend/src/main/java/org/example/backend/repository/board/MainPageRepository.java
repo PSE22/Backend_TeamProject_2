@@ -22,7 +22,7 @@ import java.util.List;
  * 2024-05-22         GGG          최초 생성
  */
 @Repository
-public interface MainPageRepository extends JpaRepository<Board, Integer> {
+public interface MainPageRepository extends JpaRepository<Board, Long> {
     // 자유게시판 조회
     @Query(value =
             "WITH all_replies AS (" +

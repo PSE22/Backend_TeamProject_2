@@ -54,6 +54,23 @@ public class MemberController {
         }
     }
 
+    //  email 로 회원 상세 조회 후 id 찾기
+    @GetMapping("/profile-id/{memberEmail}")
+    public ResponseEntity<Object> findByMemberEmail(@PathVariable String memberEmail) {
+        try {
+            Optional<Member> optionalMember = memberService.findByMemberEmail(memberEmail);
+            if (optionalMember.isEmpty() == true) {
+                // 데이터 없음
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } else {
+                // 조회 성공
+                return new ResponseEntity<>(optionalMember.get(), HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     //  신규 회원 전체 조회
     @GetMapping("/profile-all/{memberCode}")
     public ResponseEntity<Object> findAllByMemberCode(@PathVariable String memberCode) {
