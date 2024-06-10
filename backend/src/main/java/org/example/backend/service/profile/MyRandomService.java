@@ -83,7 +83,6 @@ public class MyRandomService {
             }
             lock.unlock();
         }
-        }
     }
 
     private static class LockAndRequestTime {
