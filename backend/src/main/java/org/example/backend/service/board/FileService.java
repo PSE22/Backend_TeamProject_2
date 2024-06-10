@@ -29,10 +29,12 @@ public class FileService {
     public void saveFiles(List<FileDto> fileDtos) {
         // 리스트에 저장된 voteDto를 반복해서 저장
         for (FileDto fileDto : fileDtos) {
-            // Dto를 Vote 엔티티로 변환
-            File file = modelMapper.map(fileDto, File.class);
+            if (fileDto.getFileUrl()!= null){
+                File file = modelMapper.map(fileDto, File.class);
 
-            fileRepository.save(file);
+                fileRepository.save(file);
+            }
+            // Dto를 Vote 엔티티로 변환
         }
     }
 }

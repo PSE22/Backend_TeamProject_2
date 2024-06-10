@@ -4,7 +4,7 @@ import LoginHeader from "../login/LoginHeader";
 class ClubService {
   // 동호회 전체조회
   getAll(boardTitle, bocode, page, size) {
-    console.log("들어오나", boardTitle, bocode, page, size)
+    console.log("전체조회", boardTitle, bocode, page, size)
     return http.get(
       `/board/club?boardTitle=${boardTitle}&bocode=${bocode}&page=${page}&size=${size}`,
       {
@@ -30,6 +30,7 @@ class ClubService {
       headers: LoginHeader(),
     });
   }
+  // 소분류
   getSmcode() {
     return http.get(`/board/club-smcode`, {
       headers: LoginHeader(),

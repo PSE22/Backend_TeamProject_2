@@ -39,10 +39,9 @@ public class VoteService {
     public void saveVote(Long boardId, List<VoteDto> voteDtos) {
         // 리스트에 저장된 voteDto를 반복해서 저장
         for (VoteDto voteDto : voteDtos) {
-            // 받아온 boardId를 Dto에 세팅
-            voteDto.setBoardId(boardId);
             // Dto를 Vote 엔티티로 변환
             Vote vote = modelMapper.map(voteDto, Vote.class);
+            vote.setBoardId(boardId);
 
             voteRepository.save(vote);
         }

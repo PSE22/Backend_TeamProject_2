@@ -1,19 +1,25 @@
 package org.example.backend.service.board;
 
+import lombok.RequiredArgsConstructor;
+import org.example.backend.model.dto.board.PlaceDto;
 import org.example.backend.model.entity.board.Place;
 import org.example.backend.repository.board.PlaceRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
+@RequiredArgsConstructor
 public class PlaceService {
-    @Autowired
-    PlaceRepository placeRepository;
+    private final PlaceRepository placeRepository;
+    private final ModelMapper modelMapper;
 
-    public Place savePlace(Long boardId, Place place) {
+    public void savePlace(Long boardId, PlaceDto placeDto) {
+        Place place = modelMapper.map(placeDto, Place.class);
         place.setBoardId(boardId);
-        Place place2 = placeRepository.save(place);
 
-        return place2;
+        placeRepository.save(place);
     }
 }

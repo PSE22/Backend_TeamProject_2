@@ -14,6 +14,7 @@ import org.example.backend.service.board.ReplyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -70,22 +71,6 @@ public class BoardDetailController {
         }
     }
 
-    // 게시글, 작성자 정보 상세 조회 / 수정 / 삭제
-    @GetMapping("/board-detail/edit")
-    public ResponseEntity<Object> findByBoardAndMember(@RequestParam Long boardId) {
-        log.debug("Received boardId: {}", boardId);
-        try {
-            Optional<IBoardDto> optional = boardDetailService.findBoardAndMember(boardId);
-            if (!optional.isPresent()) {
-                return new ResponseEntity<>("데이터 없음", HttpStatus.NO_CONTENT);
-            } else {
-                return new ResponseEntity<>(optional.get(), HttpStatus.OK);
-            }
-        } catch (Exception e) {
-            return handleException(e);
-        }
-    }
-
     // 코드번호로 코드명 조회
     @GetMapping("/board-detail/cmCd")
     public ResponseEntity<Object> findCmCdName(@RequestParam String cmCd) {
@@ -118,11 +103,11 @@ public class BoardDetailController {
 
     // 글번호로 장소 조회 (게시글 하나당 장소 하나)
     @GetMapping("/board-detail/place")
-    public ResponseEntity<Object> findPlace(@RequestParam Long boardId){
+    public ResponseEntity<Object> findPlace(@RequestParam Long boardId) {
         try {
             log.debug("Controller 문제?? boardId :: ", boardId);
             Optional<Place> optional = boardDetailService.findPlace(boardId);
-            if (optional.isEmpty() == true) {
+            if (optional.isEmpty()) {
                 return new ResponseEntity<>("데이터 없음", HttpStatus.NO_CONTENT);
             } else {
                 return new ResponseEntity<>(optional.get(), HttpStatus.OK);
@@ -168,6 +153,7 @@ public class BoardDetailController {
             return handleException(e);
         }
     }
+
     // 추천 삭제함수
     @DeleteMapping("/board-detail/recommend-exist")
     public ResponseEntity<Object> deleteRecommend(@RequestParam Long boardId, @RequestParam String memberId) {
@@ -227,7 +213,7 @@ public class BoardDetailController {
 
     // 댓글 수 조회
     @GetMapping("/board-detail/reply/count")
-    public ResponseEntity<Object> countReply(@RequestParam Long boardId){
+    public ResponseEntity<Object> countReply(@RequestParam Long boardId) {
         try {
             Integer count = replyService.countReply(boardId);
             if (count == null) {
@@ -240,13 +226,24 @@ public class BoardDetailController {
         }
     }
 
-    // 작성한 댓글 저장
+    // 댓글 저장
     @PostMapping("/board-detail/reply")
     public ResponseEntity<Object> createReply(@RequestBody Reply reply) {
         try {
             replyService.saveReply(reply);
             return new ResponseEntity<>("댓글 저장 성공", HttpStatus.OK);
-        } catch (Exception e){
+        } catch (Exception e) {
+            return handleException(e);
+        }
+    }
+
+    // 댓글 수정
+    @PutMapping("/board-detail/reply")
+    public ResponseEntity<Object> updateReply(@RequestParam Long replyId, @RequestBody Reply reply) {
+        try {
+            replyService.saveReply(reply);
+            return new ResponseEntity<>("댓글 수정 성공", HttpStatus.OK);
+        } catch (Exception e) {
             return handleException(e);
         }
     }
@@ -257,7 +254,19 @@ public class BoardDetailController {
         try {
             boardDetailService.saveReport(report);
             return new ResponseEntity<>("신고 저장 성공", HttpStatus.OK);
-        } catch (Exception e){
+        } catch (Exception e) {
+            return handleException(e);
+        }
+    }
+
+    // 댓글 이미지 저장
+    @PostMapping("/board-detail/file/upload")
+    public ResponseEntity<Object> createFile(@RequestParam("file") MultipartFile file, @RequestParam("fileUrl") String fileUrl) {
+        try {
+            // DB 서비스 함수 실행
+            replyService.saveFile(file, fileUrl);
+            return new ResponseEntity<>("업로드 성공", HttpStatus.OK);
+        } catch (Exception e) {
             return handleException(e);
         }
     }
@@ -268,7 +277,7 @@ public class BoardDetailController {
         try {
             replyService.saveReplyReport(replyReport);
             return new ResponseEntity<>("댓글 신고 저장 성공", HttpStatus.OK);
-        } catch (Exception e){
+        } catch (Exception e) {
             return handleException(e);
         }
     }
@@ -285,6 +294,22 @@ public class BoardDetailController {
         } else {
             log.error("서버 오류가 발생했습니다", e);
             return new ResponseEntity<>("서버 오류가 발생했습니다", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // 게시글, 작성자 정보 상세 조회 / 수정 / 삭제
+    @GetMapping("/board-detail/edit")
+    public ResponseEntity<Object> findByBoardAndMember(@RequestParam Long boardId) {
+        log.debug("Received boardId: {}", boardId);
+        try {
+            Optional<IBoardDto> optional = boardDetailService.findBoardAndMember(boardId);
+            if (!optional.isPresent()) {
+                return new ResponseEntity<>("데이터 없음", HttpStatus.NO_CONTENT);
+            } else {
+                return new ResponseEntity<>(optional.get(), HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            return handleException(e);
         }
     }
 

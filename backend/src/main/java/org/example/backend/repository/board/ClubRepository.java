@@ -31,7 +31,9 @@ public interface ClubRepository extends JpaRepository<Board, Long> {
             "M.MEMBER_NAME AS memberName,\n" +
             "B.BOARD_TITLE AS boardTitle,\n" +
             "B.ADD_DATE AS addDate,\n" +
-            "C.CM_CD_NAME AS cmCdName\n" +
+            "C.CM_CD_NAME AS cmCdName,\n" +
+            "B.BOCODE AS bocode, " +  // 추가된 부분
+            "B.SMCODE AS smcode " +  // 추가된 부분
             "FROM TB_BOARD B, TB_MEMBER M, TB_CM_CODE C\n" +
             "WHERE B.BOCODE = :bocode\n" +
             "AND B.MEMBER_ID = M.MEMBER_ID\n" +
@@ -59,7 +61,9 @@ public interface ClubRepository extends JpaRepository<Board, Long> {
             "M.MEMBER_NAME AS memberName,\n" +
             "B.BOARD_TITLE AS boardTitle,\n" +
             "B.ADD_DATE AS addDate,\n" +
-            "C.CM_CD_NAME AS cmCdName\n" +
+            "C.CM_CD_NAME AS cmCdName,\n" +
+            "B.BOCODE AS bocode, " +  // 추가된 부분
+            "B.SMCODE AS smcode " +  // 추가된 부분
             "FROM TB_BOARD B, TB_MEMBER M, TB_CM_CODE C\n" +
             "WHERE B.BOCODE = :bocode\n" +
             "AND B.MEMBER_ID = M.MEMBER_ID\n" +

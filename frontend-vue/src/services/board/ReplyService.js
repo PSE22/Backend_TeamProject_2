@@ -20,9 +20,15 @@ class ReplyService {
       headers: LoginHeader(),
     });
   }
-  // 새 댓글 등록
+  // 댓글 등록
   createReply(data) {
     return http.post(`/board/board-detail/reply`, data, {
+      headers: LoginHeader(),
+    });
+  }
+  // 댓글 수정
+  updateReply(replyId, data) {
+    return http.put(`/board/board-detail/reply?replyId=${replyId}`, data, {
       headers: LoginHeader(),
     });
   }
@@ -32,7 +38,20 @@ class ReplyService {
       headers: LoginHeader(),
     });
   }
-  // 댓글 수정
+
+  // 댓글 파일 업로드
+  // createFile(file, image) {
+  //   let formData = new FormData(); // form 객체
+  //   formData.append('file', this.file);
+  //   formData.append('fileUrl', this.fileUrl);
+
+  //   return http.post("/board/board-detail/file/upload", formData, {
+  //     headers: {
+  //       "Content-Type": "multipart/form-data",
+  //     },
+  //   });
+  // }
+
 }
 
 export default new ReplyService();

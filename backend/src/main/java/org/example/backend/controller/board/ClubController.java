@@ -63,15 +63,12 @@ public class ClubController {
             response.put("totalPages", clubDtoPage.getTotalPages()); // 총페이지수
 
             if (clubDtoPage.isEmpty() == false) {
-                log.debug("뭐가문제고 : " + response);
 //                조회 성공
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
-                log.debug("뭐가문제고2222 : " + response);
 //                데이터 없음
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

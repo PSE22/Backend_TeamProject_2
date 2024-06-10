@@ -26,7 +26,7 @@
       <tr
         v-for="(data, index) in clubNotice"
         :key="index"
-        @click="goClubDetail"
+        @click="goBoardDetail(data.bocode, data.smcode, data.boardId)"
       >
         <td class="text-center col-1">{{ data.boardId }}</td>
         <td class="col-1" style="color: lightgray">
@@ -40,7 +40,7 @@
       </tr>
     </tbody>
     <tbody>
-      <tr v-for="(data, index) in club" :key="index" @click="goClubDetail">
+      <tr v-for="(data, index) in club" :key="index" @click="goBoardDetail(data.bocode, data.smcode, data.boardId)">
         <td class="text-center">{{ data.boardId }}</td>
         <td style="color: lightgray">{{ data.cmCdName }}</td>
         <td>
@@ -107,12 +107,12 @@ import ClubService from "@/services/board/ClubService";
 export default {
   data() {
     return {
-      clubNotice: [],
-      club: [],
-      searchTitle: "",
-      bocodeName: [],
+      clubNotice: [],   // 공지사항
+      club: [],         // 일반글
+      searchTitle: "",  // 검색어
+      bocodeName: [],   // 중메뉴
       boardId: this.$route.params.boardId,
-      boardCode: "BO0201",
+      boardCode: this.$route.query.bocode || "BO0201",
       // 공통 페이징 속성
       page: 1, // 현재 페이지 번호
       count: 0, // 전체 데이터 개수
@@ -122,31 +122,29 @@ export default {
     };
   },
   methods: {
+    // 동호회 게시판 출력
     async retrieveClub() {
-      console.log("page", this.page);
-      console.log("boardCode:", this.boardCode); // boardCode 값 출력
+      console.log("중메뉴 코드:", this.boardCode); // boardCode 값 출력
       try {
         this.retrieveClubNotice();
         this.retrieveBocode();
-        // TODO: 공통 장바구니 전체 조회 서비스 함수 실행
-        // TODO: 비동기 코딩
         let response = await ClubService.getAll(
           this.searchTitle,
           this.boardCode,
           this.page - 1,
           this.pageSize
         );
-        console.log("ClubService.getAll response:", response);
         const { club, totalItems } = response.data;
         this.club = club;
         this.count = totalItems;
         // 로깅
         console.log("club data:", this.club); // club 데이터 출력
-        console.log("이거 왜 안뜸", response.data); // 웹브라우저 콘솔탬에 백앤드 데이터 표시
+        console.log("글 목록", response.data);
       } catch (e) {
         console.log(e); // 웹브라우저 콘솔탭에 에러표시
       }
     },
+    // 상세조회
     async retriveBoardId(boardId) {
       // TODO: 공통 주문 상세조회 서비스 함수 실행
       try {
@@ -186,9 +184,9 @@ export default {
       this.retrieveClub(); // 재조회
     },
     // 게시글 상세 페이지로 이동
-    goClubDetail(boardId) {
-      this.$router.push(`/board/club/${boardId}`);
-    },
+    goBoardDetail(bocode, smcode, boardId) {
+            this.$router.push(`/board/club/${bocode}/${smcode}/${boardId}`);
+        },
     goClubWrite() {
       this.$router.push("/board/club/write");
     },

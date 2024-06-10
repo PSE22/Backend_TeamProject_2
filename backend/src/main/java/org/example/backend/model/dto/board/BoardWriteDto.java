@@ -6,6 +6,7 @@ import org.example.backend.model.entity.board.File;
 import org.example.backend.model.entity.board.Place;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * packageName : org.example.backend.model.dto.board
@@ -26,10 +27,8 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 public class BoardWriteDto {
-    private Board board;
+    private BoardDto boardDto;
     private List<VoteDto> voteDtos;
-    private Place place;
+    private PlaceDto placeDto;
     private List<FileDto> fileDtos;
-    private List<BoardFileDto> boardFileDtos;
-
 }

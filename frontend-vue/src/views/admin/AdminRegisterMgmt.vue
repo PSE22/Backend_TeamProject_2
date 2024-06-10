@@ -1,23 +1,6 @@
 <template>
   <div class="container">
-    <div class="sidebar">
-      <h1 class="sidebar-title">{{ loginMember.memberName }}님</h1>
-      <hr class="sidebar-divider" />
-      <ul class="sidebar-list">
-        <router-link to="/admin/register-mgmt" class="profile-link"
-          ><li class="sidebar-menu mb-5">회원가입승인</li></router-link
-        >
-        <router-link to="/admin/register-deny-mgmt" class="profile-link"
-          ><li class="sidebar-menu mb-5">반려회원관리</li></router-link
-        >
-        <router-link to="/admin/edit-mgmt" class="profile-link"
-          ><li class="sidebar-menu mb-5">회원정보변경</li></router-link
-        >
-        <router-link to="/admin/report-mgmt" class="profile-link"
-          ><li class="sidebar-menu">신고글관리</li></router-link
-        >
-      </ul>
-    </div>
+    <AdminSidebar/>
     <div class="main-content">
       <div class="row">
         <table class="table">
@@ -43,12 +26,14 @@
               <td class="col-1 text-center">{{ deptName(data.deptCode) }}</td>
               <td class="col-1 text-center">{{ posName(data.posCode) }}</td>
               <td class="col-1 text-center">
-                <button class="approve-button" @click="registerApprove(data)">
-                  승인
-                </button>
-                <button class="reject-button" @click="registerReject(data)">
-                  반려
-                </button>
+                <div class="button-container">
+                  <button class="approve-button" @click="registerApprove(data)">
+                    <span class="horizontal-text">승인</span>
+                  </button>
+                  <button class="reject-button" @click="registerReject(data)">
+                    <span class="horizontal-text">반려</span>
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -60,8 +45,11 @@
 
 <script>
 import MemberService from "@/services/member/MemberService";
-
+import AdminSidebar from "@/components/common/AdminSidebar.vue";
 export default {
+  components : {
+    AdminSidebar
+  },
   data() {
     return {
       loginMember: {},
@@ -113,7 +101,7 @@ export default {
         console.log(e);
       }
     },
-    
+
     deptName(deptCode) {
       if (deptCode === "DE01") {
         return "영업팀";
@@ -241,5 +229,14 @@ button {
 
 .reject-button:hover {
   background-color: #e68900;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+.horizontal-text {
+  white-space: nowrap;
 }
 </style>

@@ -24,12 +24,9 @@ import java.util.List;
 public interface CmCodeRepository extends JpaRepository<CmCode, String> {
     //    동호회게시판 중분류 코드
     @Query(value = "SELECT * FROM TB_CM_CODE\n" +
-            "WHERE UP_CM_CD LIKE 'BO02%'",
-            nativeQuery = true)
-    List<CmCode> findByCmCdNameAndBocode();
-
-    @Query(value = "SELECT * FROM TB_CM_CODE\n" +
             "WHERE CM_CD LIKE 'SM%'",
             nativeQuery = true)
     List<CmCode> findByCmCdNameAndSmcode();
+
+
 }

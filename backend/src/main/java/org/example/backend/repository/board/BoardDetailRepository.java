@@ -76,10 +76,7 @@ public interface BoardDetailRepository extends JpaRepository<Board, Long> {
     List<Vote> findVote(@Param("boardId") Long boardId);
 
     // 글번호로 장소 조회 (게시글 하나당 장소 하나)
-    @Query(value = "SELECT *\n" +
-            "FROM TB_PLACE\n" +
-            "WHERE BOARD_ID = :boardId"
-            , nativeQuery = true)
+    @Query(value = "SELECT p FROM Place p WHERE p.boardId = :boardId")
     Optional<Place> findPlace(@Param("boardId") Long boardId);
 
     // 글번호로 이미지 조회
