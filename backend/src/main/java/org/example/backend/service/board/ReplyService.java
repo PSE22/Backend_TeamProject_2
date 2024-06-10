@@ -4,11 +4,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.board.IReplyDto;
+import org.example.backend.model.dto.board.Reply.ReplyDto;
 import org.example.backend.model.entity.board.*;
 import org.example.backend.repository.board.FileRepository;
 import org.example.backend.repository.board.ReplyFileRepository;
 import org.example.backend.repository.board.ReplyReportRepository;
 import org.example.backend.repository.board.ReplyRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -39,6 +41,7 @@ public class ReplyService {
     private final ReplyReportRepository replyReportRepository;
     private final FileRepository fileRepository;
     private final ReplyFileRepository replyFileRepository;
+    ModelMapper modelMapper = new ModelMapper();
 
     // 글번호로 댓글 조회
     public List<IReplyDto> findReply(Long boardId) {
@@ -59,25 +62,68 @@ public class ReplyService {
     }
 
     // 댓글 저장/수정
-    public Reply saveReply(Reply reply) {
+    @Transactional
+    public Reply saveReply(ReplyDto replyDto, MultipartFile file) {
+        // DTO -> Entity 변환
+        Reply reply = modelMapper.map(replyDto, Reply.class);
+
+        // Reply 테이블 저장
         Reply reply2 = replyRepository.save(reply);
+
+        // File 저장
+        File savedFile = saveReplyFile(null, file);
+
+
         return reply2;
     }
 
     // 댓글 파일 저장
-    @Transactional
-    public void saveFile(MultipartFile file, String fileUrl) throws IOException {
-        File file1 = new File();
-        file1.setFileUrl(fileUrl);
-        file1.setData(file.getBytes());
+    public File saveReplyFile(String uuid, MultipartFile file) {
+        File file2 = null;
 
-        fileRepository.save(file1);
+        try {
+            if(uuid == null) {
+                String tmpUuid = UUID.randomUUID()
+                        .toString()
+                        .replace("-", "");
 
-        ReplyFile replyFile = new ReplyFile();
-        replyFile.setUuid(replyFile.getUuid());
+                String fileDownload = ServletUriComponentsBuilder
+                        .fromCurrentContextPath()               // spring 기본주소 : http://localhost:8000
+                        .path("/api/board/file/upload/")        // 추가 경로 넣기
+                        .path(tmpUuid)                          // uuid 넣기
+                        .toUriString();                         // 합치기
+                // File 객체 생성(생성자, setter) + save()
+                File file1 = new File(
+                        tmpUuid,                        // 기존 uuid
+                        fileDownload,                // 파일 다운로드 url
+                        file.getOriginalFilename(),  // 업로드 할때 파일명
+                        file.getBytes()              // 업로드 이미지
+                );
+                file2 = fileRepository.save(file1);  // DB 수정
 
-        replyFileRepository.save(replyFile);
+                ReplyFile replyFile = new ReplyFile();
+                replyFile.setUuid(file2.getUuid());
+            } else {
+                String fileDownload = ServletUriComponentsBuilder
+                        .fromCurrentContextPath()           // spring 기본주소 : http://localhost:8000
+                        .path("/api/board/board-detail/file/upload/")           // 추가 경로 넣기
+                        .path(uuid)                         // uuid 넣기
+                        .toUriString();                     // 합치기
+                // File 객체 생성(생성자, setter) + save()
+                File file1 = new File(
+                        uuid,                        // 기존 uuid
+                        fileDownload,                // 파일 다운로드 url
+                        file.getOriginalFilename(),  // 업로드 할때 파일명
+                        file.getBytes()              // 업로드 이미지
+                );
+                file2 = fileRepository.save(file1);  // DB 수정
+            }
+        } catch (Exception e) {
+            log.debug(e.getMessage());
+        }
+        return file2;
     }
+
 
     // 댓글 신고 데이터 저장
     public ReplyReport saveReplyReport(ReplyReport replyReport) {

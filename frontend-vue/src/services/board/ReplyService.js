@@ -32,25 +32,24 @@ class ReplyService {
       headers: LoginHeader(),
     });
   }
-  //신고 댓글 저장
+  // 신고 댓글 저장
   createReplyReport(report) {
     return http.post("/board/board-detail/reply-report", report, {
       headers: LoginHeader(),
     });
   }
 
-  // 댓글 파일 업로드
-  // createFile(file, image) {
-  //   let formData = new FormData(); // form 객체
-  //   formData.append('file', this.file);
-  //   formData.append('fileUrl', this.fileUrl);
+  // 댓글 파일 저장
+  createReplyFile(image) {
+    let formData = new FormData(); // form 객체
+    formData.append("image", image); // 이미지
 
-  //   return http.post("/board/board-detail/file/upload", formData, {
-  //     headers: {
-  //       "Content-Type": "multipart/form-data",
-  //     },
-  //   });
-  // }
+    return http.post("/board/board-detail/file/upload", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  }
 
 }
 
