@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Slf4j
 @RestController
-@RequestMapping("api/board")
+@RequestMapping("/api/board")
 @RequiredArgsConstructor
 @RestControllerAdvice   // 전역적으로 예외처리
 public class BoardWriteController {

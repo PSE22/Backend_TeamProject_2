@@ -477,8 +477,9 @@ export default {
               const reader = new FileReader();
               reader.onload = () => {
                 resolve({
-                  uuid: file.name,
+                  // uuid: file.name,
                   fileUrl: URL.createObjectURL(file.data),
+                  fileName: file.name,
                   data: reader.result.split(",")[1], // Base64 문자열만 추출
                 });
               };

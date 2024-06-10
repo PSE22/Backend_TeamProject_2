@@ -34,7 +34,7 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@RequestMapping("api/board")
+@RequestMapping("/api/board")
 @RequiredArgsConstructor
 public class ClubController {
     private final ClubService clubService;
