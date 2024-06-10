@@ -2,12 +2,12 @@
     <div class="w-80 p-3 board-detail-container">
         <!-- 글 수정/삭제 버튼 : 글쓴이만 보임 -->
         <div class="row board-button">
-            <button class="col" @click="moveToDeptEdit">수정</button>
+            <button class="col">수정</button>
             <button class="col">삭제</button>
         </div>
         <!-- 게시글 -->
         <div class="row board-content">
-            <!-- 글 상단 부분 -->
+            <!-- 글 제목 부분 -->
             <div>부서게시판 > {{ cmcd?.cmCdName }}</div>
             <div>{{ board?.boardTitle }}</div>
             <div>작성자 | {{ board?.memberName }}</div>
@@ -21,62 +21,13 @@
                 <img :src="data.fileUrl" alt="이미지">
             </div>
             <hr>
-            <!-- 글 하단 버튼 -->
             <div class="row">
-                <!-- 버튼 -->
                 <div v-if="recommendIcon" @click="toggleRecommend" class="col-1" type="button"><i
                         class="bi bi-hand-thumbs-up"></i> {{ recommendCnt }} </div>
                 <div v-else @click="toggleRecommend" class="col-1" type="button"><i
                         class="bi bi-hand-thumbs-up-fill"></i> {{ recommendCnt }} </div>
-                <!-- 댓글 -->
                 <div class="col-1" type="button"><i class="bi bi-chat-text"></i> {{ replyCount }} </div>
-                <!-- 신고 -->
-                <div class="col-1" type="button" data-bs-toggle="modal" data-bs-target="#reportModal"><i
-                        class="bi bi-exclamation-triangle"></i>신고</div>
-                <!-- Modal -->
-                <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="reportModalLabel">게시글 신고</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="mb-2 row">
-                                    <label for="staticWriter" class="col-sm-2 col-form-label">작성자</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticWriter"
-                                            v-model="board.memberName">
-                                    </div>
-                                </div>
-                                <div class="mb-2 row">
-                                    <label for="staticTitle" class="col-sm-2 col-form-label">내용</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticTitle"
-                                            v-model="board.boardTitle">
-                                    </div>
-                                </div>
-                                <div class="mb-2">
-                                    <hr />
-                                    <form class="was-validated">
-                                        <textarea rows="10" class="form-control" placeholder="신고 사유를 입력하세요." required
-                                            v-model="reportReason"></textarea>
-                                        <div class="invalid-feedback">
-                                            신고 사유는 필수 입력값입니다.
-                                        </div>
-                                    </form>
-                                </div>
-
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                                <button type="button" class="btn btn-danger" @click="createReport">신고</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <div class="col-1" type="button"><i class="bi bi-exclamation-triangle"></i> 신고 </div>
             </div>
         </div>
         <!-- 댓글 목록 -->
@@ -86,7 +37,7 @@
                 <li class="list-group-item">
                     <div>{{ data.memberName }}</div>
                     <div>{{ data.reply }}</div>
-                    <img v-if="data.fileUrl" :src="data.fileUrl" height="200px" width="300px" alt="이미지" />
+                    <img v-if="data.fileUrl" :src="data.fileUrl" height="200px" width="300px" alt="이미지">
                     <div>
                         <span> {{ data.addDate }} </span>
                         <button>수정</button>
@@ -96,16 +47,12 @@
                     <button @click="openReReply(data.replyId)">대댓글쓰기</button>
                     <!-- 대댓글 작성 폼 -->
                     <div v-if="parentId === data.replyId" class="row reply-write">
-                        <div>
-                            {{ memberInfo.memberName }} (익명게시판은 별명으로 변경하세요)
-                        </div>
+                        <div>{{ memberInfo.memberName }} (익명게시판은 별명으로 변경하세요)</div>
                         <textarea v-model="replyTextarea" placeholder="대댓글을 남겨보세요"></textarea>
                         <div class="row">
                             <i class="col bi bi-camera" type="button">파일선택</i>
                             <p class="col">파일명</p>
-                            <button class="col" @click="createReReply(data.replyId)">
-                                대댓글등록버튼
-                            </button>
+                            <button class="col" @click="createReReply(data.replyId)">대댓글등록버튼</button>
                         </div>
                     </div>
                 </li>
@@ -115,7 +62,7 @@
                         style="background-color: red">
                         <div>{{ reReply.memberName }}</div>
                         <div>{{ reReply.reply }}</div>
-                        <img v-if="reReply.fileUrl" :src="reReply.fileUrl" height="200px" width="300px" alt="이미지" />
+                        <img v-if="reReply.fileUrl" :src="reReply.fileUrl" height="200px" width="300px" alt="이미지">
                         <div>
                             <span> {{ reReply.addDate }} </span>
                             <button>수정</button>
@@ -144,47 +91,43 @@
 </template>
 
 <script>
-import BoardDetailService from "@/services/board/BoardDetailService";
-import ReplyService from "@/services/board/ReplyService";
+import BoardDetailService from '@/services/board/BoardDetailService';
+import ReplyService from '@/services/board/ReplyService';
 
 export default {
     data() {
         return {
-            member: this.$store.state.member, // 현재 로그인된 회원 가져오기
-            boardId: this.$route.params.boardId, // 현재 글 ID 가져오기
-            smcode: this.$route.params.smcode, // 현재 소메뉴 코드 가져오기
+            member: this.$store.state.member,       // 현재 로그인된 회원 가져오기
+            boardId: this.$route.params.boardId,    // 현재 글 ID 가져오기
+            smcode: this.$route.params.smcode,      // 현재 소메뉴 코드 가져오기
 
-            modalOpen: "modal",
-
-            replyTextarea: "",          // 댓글 입력
-            reReplyTextarea: "",        // 대댓글 입력
-            parentId: "",               // 현재 대댓글의 상위 댓글의 replyId
+            replyTextarea: "",
+            parentId: "",                 // 현재 대댓글의 상위 댓글의 replyId
             recommendIcon: true,        // 추천 아이콘 (true는 빈 아이콘)
-            reportReason: "",           // 신고사유 입력
 
-            auth: "", // 로그인 사용자 권한 체크
-            memberInfo: "", // 회원정보
-            board: "", // 게시글
-            cmcd: "", // 부서코드, 부서명
-            vote: "", // 투표
-            place: "", // 장소
-            boardImage: "", // 글 첨부 이미지
-            recommend: "", // 추천 존재 여부
-            recommendCnt: "", // 추천 수
-            reply: [], // 댓글 목록
-            replyCount: "", // 댓글수
-        };
+            auth: "",                   // 로그인 사용자 권한 체크
+            memberInfo: "",             // 회원정보
+            board: "",                  // 게시글 
+            cmcd: "",                   // 부서코드, 부서명
+            vote: "",                   // 투표
+            place: "",                  // 장소
+            boardImage: "",             // 글 첨부 이미지
+            recommend: "",              // 추천 존재 여부
+            recommendCnt: "",           // 추천 수
+            reply: [],                  // 댓글 목록
+            replyCount: "",             // 댓글수
+        }
     },
     methods: {
         // 회원 권한 체크
-        async checkAuth() {
-            if (this.member.memberCode === "AT01") {
-                // 관리자 로그인
-                this.auth = "A"
-            } else if (this.member.memberId) {
-                this.auth = "B"
-            }
-        },
+        // async checkAuth() {
+        //     if (this.member.memberCode === "AT01") {
+        //         // 관리자 로그인
+        //         this.auth = "A"
+        //     } else if (this.member.memberId) {
+        //         this.auth = "B"
+        //     }
+        // },
         // 로그인된 회원 정보 가져오기
         async retrieveMember() {
             try {
@@ -250,7 +193,7 @@ export default {
         },
         // 추천 버튼 클릭 시 호출 
         toggleRecommend() {
-            this.recommendIcon = !this.recommendIcon;
+            this.recommendIcon = !this.recommendIcon; 
             if (this.recommendIcon == false) {
                 this.saveRecommend().then(() => {
                     // 추천 저장 후, 추천 수 다시 불러오기
@@ -299,27 +242,6 @@ export default {
                 console.log("retrieveRecommendCnt 에러", e)
             }
         },
-        // 글 신고 저장
-        async createReport() {
-            try {
-                if (!this.reportReason) {
-                    alert("신고 사유를 입력해주세요.");
-                } else {
-                    alert("정말로 신고하시겠습니까?");
-                    let report = {
-                        memberId: this.member.memberId,
-                        boardId: this.boardId,
-                        reportReason: this.reportReason,
-                    }
-                    let response = await BoardDetailService.createReport(report);
-                    console.log(response.data);
-                    alert("신고가 완료되었습니다.");
-                    this.reportReason = "";
-                }
-            } catch (e) {
-                console.log("createReport 에러", e);
-            }
-        },
         // 글번호로 댓글 가져오기
         async retrieveReply() {
             try {
@@ -363,7 +285,7 @@ export default {
                 this.retrieveReplyCount();
                 this.replyTextarea = "";
             } catch (e) {
-                console.log("createReply 에러", e);
+                console.log(e);
             }
         },
         // 대댓글 쓰기 버튼 클릭 시 호출
@@ -378,7 +300,7 @@ export default {
                     boardId: this.boardId,
                     reReply: replyId,
                     memberId: this.member.memberId,
-                    reply: this.reReplyTextarea,
+                    reply: this.replyTextarea,
                 }
                 let response = await ReplyService.createReply(temp);
                 console.log("대댓글 전송 : ", response.data);
@@ -389,47 +311,10 @@ export default {
             } catch (e) {
                 console.log(e);
             }
-        },
-        // 반복문의 현재 댓글 정보 (작성자, 내용)를 저장
-        openReplyReport(data) {
-            this.reply.memberName = data.memberName;
-            this.reply.reply = data.reply;
-        },
-        // 댓글 신고 저장
-        async createReplyReport() {
-            try {
-                if (!this.reportReason) {
-                    alert("신고 사유를 입력해주세요.");
-                } else {
-                    alert("정말로 신고하시겠습니까?");
-                    let report = {
-                        memberId: this.member.memberId,
-                        boardId: this.boardId,
-                        reportReason: this.reportReason,
-                    }
-                    let response = await ReplyService.createReplyReport(report);
-                    console.log(response.data);
-                    alert("신고가 완료되었습니다.");
-                    this.reportReason = "";
-                }
-            } catch (e) {
-                console.log("createReplyReport 에러", e);
-            }
-        },
-        // 수정 페이지 이동
-        moveToDeptEdit() {
-            this.$router.push(`/board/dept-edit/${this.smcode}/${this.boardId}`);
-        },
+        }
     },
     mounted() {
-        console.log(
-            "부서코드 : ",
-            this.smcode,
-            "/ 글번호 : ",
-            this.boardId,
-            "/ 로그인ID : ",
-            this.member.memberId
-        );
+        console.log("부서코드 : ", this.smcode, "/ 글번호 : ", this.boardId, "/ 로그인ID : ", this.member.memberId);
         this.retrieveMember();
         this.retrieveBoard();
         this.retrieveCode();
@@ -441,7 +326,7 @@ export default {
         this.retrieveReply();
         this.retrieveReplyCount();
     },
-};
+}
 </script>
 
 <style>
