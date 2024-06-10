@@ -325,9 +325,15 @@
           </div>
         </div>
       </div>
-
-      <!-- 등록 버튼 -->
       <div class="fixed-button">
+        <button
+          type="button"
+          class="btn btn-secondary me-md-2"
+          @click="this.$router.go(-1)"
+        >
+          취소
+        </button>
+        <!-- 등록 버튼 -->
         <button type="button" class="btn btn-primary" @click="saveClub">
           등록
         </button>
@@ -377,6 +383,7 @@ export default {
     };
   },
   methods: {
+    // 지도 API
     loadDaumPostcodeScript() {
       const script = document.createElement("script");
       script.src =
@@ -420,6 +427,7 @@ export default {
         },
       }).open();
     },
+    // 중분류 불러오기
     async retrieveBocode() {
       try {
         let response = await ClubService.getBocode();
@@ -429,6 +437,7 @@ export default {
         console.log(e); // 웹브라우저 콘솔탭에 에러표시
       }
     },
+    // 소분류 불러오기
     async retrieveSmcode() {
       try {
         let response = await ClubService.getSmcode();
@@ -438,9 +447,11 @@ export default {
         console.log(e); // 웹브라우저 콘솔탭
       }
     },
+    // 글쓰기 저장 함수
     async saveClub() {
       try {
         // 임시 객체 변수
+        // Board 테이블
         let boardDto = {
           memberId: this.$store.state.member.memberId,
           boardTitle: this.club.boardTitle,
@@ -449,7 +460,7 @@ export default {
           noticeYn: this.club.noticeYn ? "Y" : "N",
           smcode: this.selectSmcode,
         };
-
+        // Vote 테이블
         let voteDtos = Object.values(this.vote.voteList)
           .filter((voteItem) => voteItem.trim() !== "")
           .map((voteItem) => ({
@@ -457,9 +468,9 @@ export default {
             voteList: voteItem,
             delDate: this.vote.delDate,
           }));
-
+        // Place 테이블
         let placeDto = this.address ? { address: this.address } : null;
-
+        // File 테이블
         let fileDtos = await Promise.all(
           this.files.map((file) => {
             return new Promise((resolve, reject) => {
@@ -476,7 +487,6 @@ export default {
             });
           })
         );
-
         let response = await BoardWriteService.create({
           boardDto,
           voteDtos: voteDtos.length > 0 ? voteDtos : null,
@@ -507,6 +517,7 @@ export default {
       };
       this.showSuccessMessage = false;
     },
+    // 장소 취소 시 초기화
     resetPlace() {
       this.address = "";
       if (this.map) {
@@ -516,8 +527,8 @@ export default {
       }
       this.$refs.mapContainer.style.display = "none";
     },
+    // 투표 항목 수 검사
     submitVote() {
-      // 투표 항목 수 검사
       const voteItems = Object.values(this.vote.voteList).filter(
         (item) => item.trim() !== ""
       );
@@ -537,11 +548,9 @@ export default {
         }))
       );
     },
-
     // 파일 선택 취소
     removeFile(index) {
       this.files.splice(index, 1);
-
       // 파일이 없을 경우 input 초기화
       if (this.files.length === 0) {
         this.$refs.fileInput.value = "";
@@ -549,6 +558,7 @@ export default {
     },
   },
   computed: {
+    // 현재 날짜 전은 선택 불가
     minDate() {
       const today = new Date();
       const tomorrow = new Date(today);

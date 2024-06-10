@@ -64,7 +64,7 @@ const routes = [
   },
   // 부서게시판 상세글 조회
   {
-    path: "/board/:bocode/:smcode/:boardId",
+    path: "/board/dept/:smcode/:boardId",
     component: () => import("../views/board/DeptBoardDetailView.vue"),
   },
   // 부서게시판 상세글 수정 / 삭제
@@ -77,9 +77,9 @@ const routes = [
     path: "/board/club",
     component: () => import("../views/board/ClubView.vue"),
   },
-  // 동호회 - 중메뉴게시판
+  // 동호회 - 상세글 조회
   {
-    path: "/board/club/:boardId",
+    path: "/board/club/:bocode/:smcode/:boardId",
     component: () => import("../views/board/ClubDetailView.vue"),
   },
   // 동호회 - 글쓰기
@@ -152,6 +152,10 @@ const routes = [
   {
     path: '/admin/edit-mgmt',
     component: () => import("../views/admin/AdminEditMgmt.vue"),
+  },
+  {
+    path: '/admin/report-mgmt',
+    component: () => import("../views/admin/AdminReportMgmt.vue"),
   },
 ];
 

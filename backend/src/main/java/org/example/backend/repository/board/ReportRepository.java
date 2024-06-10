@@ -1,7 +1,11 @@
 package org.example.backend.repository.board;
 
+import org.example.backend.model.dto.IReportDto;
 import org.example.backend.model.entity.board.Report;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -19,4 +23,14 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ReportRepository extends JpaRepository<Report, Long> {
+    @Query(value = "SELECT B.BOARD_ID AS boardId,\n" +
+            "R.MEMBER_ID AS ReMemberId,\n" +
+            "B.BOARD_TITLE AS boardTitle,\n" +
+            "R.REPORT_REASON AS reportReason,\n" +
+            "B.MEMBER_ID AS BoMemberId,\n" +
+            "R.ADD_DATE AS addDate " +
+            "FROM TB_BOARD B, TB_REPORT R\n" +
+            "WHERE B.BOARD_ID = R.BOARD_ID",
+    nativeQuery = true)
+    Page<IReportDto> findByBoard(Pageable pageable);
 }

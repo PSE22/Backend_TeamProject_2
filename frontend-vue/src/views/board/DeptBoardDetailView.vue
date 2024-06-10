@@ -271,21 +271,18 @@
 </template>
 
 <script>
-import BoardDetailService from "@/services/board/BoardDetailService";
-import ReplyService from "@/services/board/ReplyService";
+import BoardDetailService from '@/services/board/BoardDetailService';
+import ReplyService from '@/services/board/ReplyService';
 
 export default {
     data() {
         return {
-            member: this.$store.state.member, // 현재 로그인된 회원 가져오기
-            boardId: this.$route.params.boardId, // 현재 글 ID 가져오기
-            smcode: this.$route.params.smcode, // 현재 소메뉴 코드 가져오기
+            member: this.$store.state.member,       // 현재 로그인된 회원 가져오기
+            boardId: this.$route.params.boardId,    // 현재 글 ID 가져오기
+            smcode: this.$route.params.smcode,      // 현재 소메뉴 코드 가져오기
 
-            modalOpen: "modal",
-
-            replyTextarea: "",          // 댓글 입력
-            reReplyTextarea: "",        // 대댓글 입력
-            parentId: "",               // 현재 대댓글의 상위 댓글의 replyId
+            replyTextarea: "",
+            parentId: "",                 // 현재 대댓글의 상위 댓글의 replyId
             recommendIcon: true,        // 추천 아이콘 (true는 빈 아이콘)
             reportReason: "",           // 신고사유 입력
             replyUpdate: true,          // false일 경우 수정란 뜸
@@ -398,7 +395,7 @@ export default {
         },
         // 추천 버튼 클릭 시 호출 
         toggleRecommend() {
-            this.recommendIcon = !this.recommendIcon;
+            this.recommendIcon = !this.recommendIcon; 
             if (this.recommendIcon == false) {
                 this.saveRecommend().then(() => {
                     // 추천 저장 후, 추천 수 다시 불러오기
@@ -555,7 +552,7 @@ export default {
                 this.retrieveReplyCount();
                 this.replyTextarea = "";
             } catch (e) {
-                console.log("createReply 에러", e);
+                console.log(e);
             }
         },
         // 댓글 수정 버튼 클릭 시 호출
@@ -593,7 +590,7 @@ export default {
                     boardId: this.boardId,
                     reReply: replyId,
                     memberId: this.member.memberId,
-                    reply: this.reReplyTextarea,
+                    reply: this.replyTextarea,
                 }
                 let response = await ReplyService.createReply(temp);
                 console.log("대댓글 정보::: ", temp);
@@ -659,7 +656,7 @@ export default {
         this.retrieveReply();
         this.retrieveReplyCount();
     },
-};
+}
 </script>
 
 <style>

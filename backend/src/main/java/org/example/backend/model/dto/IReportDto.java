@@ -1,25 +1,23 @@
-package org.example.backend.model.dto.board;
+package org.example.backend.model.dto;
 
 /**
  * packageName : org.example.backend.model.dto
- * fileName : IClubDto
+ * fileName : IReportDto
  * author : gumiji
- * date : 5/23/24
+ * date : 6/9/24
  * description :
  * 요약 :
  * <p>
  * ===========================================================
  * DATE            AUTHOR             NOTE
  * -----------------------------------------------------------
- * 5/23/24         gumiji          최초 생성
+ * 6/9/24         gumiji          최초 생성
  */
-public interface IClubDto {
+public interface IReportDto {
     Long getBoardId();
-    String getMemberName();
+    String getReMemberId();
     String getBoardTitle();
+    String getReportReason();
+    String getBoMemberId();
     String getAddDate();
-    String getCmCdName();
-    String getCmCd();
-    String getBocode();
-    String getSmcode();
 }
