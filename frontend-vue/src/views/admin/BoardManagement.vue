@@ -66,7 +66,6 @@
 <script>
 import AdminSidebar from  "@/components/common/AdminSidebar.vue";
 import BoardManageService from "@/services/board/BoardManageService";
-import MemberService from "@/services/member/MemberService";
 
 export default {
   components: {
@@ -92,17 +91,6 @@ export default {
     };
   },
   methods: {
-    async getProfile() {
-      try {
-        let response = await MemberService.get(
-          this.$store.state.member?.memberId
-        );
-        this.loginMember = response.data;
-        console.log(response.data);
-      } catch (e) {
-        console.log(e);
-      }
-    },
     async fetchBoards() {
       try {
         const response = await BoardManageService.getAll();
@@ -180,7 +168,6 @@ export default {
     }
   },
   mounted() {
-    this.getProfile();
     this.fetchBoards(); // 컴포넌트가 마운트될 때 게시판 데이터를 가져옴
   }
 };
