@@ -22,14 +22,15 @@
                       />
                     </div>
 
-                    <button
-                      class="btn btn-primary btn-user w-100 mb-3"
-                    >
+                    <button class="btn btn-primary btn-user w-100 mb-3">
                       아이디 찾기
                     </button>
                   </form>
                   <div v-if="message" class="alert alert-success mt-3">
                     {{ message }}
+                  </div>
+                  <div v-if="errorMessage" class="alert alert-danger mt-3">
+                    {{ errorMessage }}
                   </div>
                   <hr />
                   <div class="text-center">
@@ -51,19 +52,34 @@ import MemberService from "@/services/member/MemberService";
 export default {
   data() {
     return {
-      member: {},
       memberEmail: "",
       message: "",
+      errorMessage: "",
     };
   },
   methods: {
+    handleAxiosError(error) {
+      if (error.response) {
+        switch (error.response.status) {
+          case 400:
+            return error.response.data;
+          case 404:
+            return error.response.data;
+        }
+      } else {
+        return error.response.data;
+      }
+    },
+
     async findMember() {
       try {
         let response = await MemberService.getId(this.memberEmail);
-        this.member = response.data;
+        this.message = "회원님의 아이디는 " + response.data + " 입니다.";
+        this.errorMessage = "";
         console.log(response.data);
-        this.message = this.member.memberId;
       } catch (e) {
+        this.message = "";
+        this.errorMessage = this.handleAxiosError(e);
         console.log(e);
       }
     },

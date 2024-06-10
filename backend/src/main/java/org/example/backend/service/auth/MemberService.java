@@ -63,8 +63,8 @@ public class MemberService {
     }
 
     //  5) email 로 회원 상세 조회 후 id 찾기
-    public Optional<Member> findByMemberEmail(String memberId) {
-        Optional<Member> optionalMember = memberRepository.findByMemberEmail(memberId);
+    public Member findByMemberEmail(String memberEmail) {
+        Member optionalMember = memberRepository.findByMemberEmail(memberEmail).orElseThrow(() -> new IllegalArgumentException("이메일이 존재하지 않습니다."));
         return optionalMember;
     }
 
