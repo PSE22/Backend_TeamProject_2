@@ -102,6 +102,11 @@ const routes = [
     path: "/board/free-write",
     component: () => import("../views/board/FreeWrite.vue"),
   },
+    // 자유게시판 수정
+    {
+      path: "/board/free-edit/:boardId",
+      component: () => import("../views/board/FreeBoardEdit.vue"),
+    },
     // 건의게시판
     {
       path: "/board/suggest",

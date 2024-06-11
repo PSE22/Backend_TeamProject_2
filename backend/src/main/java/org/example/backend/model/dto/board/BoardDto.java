@@ -21,6 +21,7 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 public class BoardDto {
+    private Long boardId; // 게시글 ID 추가
     private String memberId;
     private String boardTitle;
     private String boardContent;

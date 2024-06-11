@@ -15,49 +15,35 @@ import java.util.List;
 
 /**
  * packageName : org.example.backend.controller.board
- * fileName : BoardWriteController
- * author : gumiji
- * date : 5/29/24
+ * fileName : BoardEditController
+ * author : GGG
+ * date : 2024-06-11
  * description :
  * 요약 :
  * <p>
  * ===========================================================
  * DATE            AUTHOR             NOTE
  * -----------------------------------------------------------
- * 5/29/24         gumiji          최초 생성
+ * 2024-06-11         GGG          최초 생성
  */
 @Slf4j
 @RestController
 @RequestMapping("/api/board")
 @RequiredArgsConstructor
 @RestControllerAdvice   // 전역적으로 예외처리
-public class BoardWriteController {
-    private final BoardWriteService boardWriteService;
-    private final BoardFileService boardFileService;
+public class BoardEditController {
+    private final BoardEditService boardEditService;
 
-    @PostMapping("/board-write")
-    public ResponseEntity<Object> create(
-            @RequestBody BoardWriteDto boardWriteDto
-            ) {
+//    수정함수
+    @PostMapping("/board-edit")
+    public ResponseEntity<Object> edit(
+            @RequestBody BoardWriteDto boardWriteDto) {
         log.debug("Received BoardWriteDto: {}", boardWriteDto);
         try {
-            boardWriteService.save(boardWriteDto);
+            boardEditService.update(boardWriteDto);  // 수정된 데이터를 저장하는 서비스 호출
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("게시글 등록에 실패했습니다." + e);
-        }
-    }
-
-    @PostMapping("/board-file")
-    public ResponseEntity<Object> createFile(
-            @RequestBody List<BoardFile> boardFile
-    ) {
-        log.debug("Received BoardWriteDto: {}", boardFile);
-        try {
-            boardFileService.saveBoardFile2(boardFile);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("게시글 등록에 실패했습니다." + e);
+            return ResponseEntity.badRequest().body("게시글 수정에 실패했습니다." + e);
         }
     }
 }
