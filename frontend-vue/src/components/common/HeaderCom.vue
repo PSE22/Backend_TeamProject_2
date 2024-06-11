@@ -110,7 +110,7 @@ import NotificationService from "@/services/board/NotificationService";
 import LoginService from "@/services/login/LoginService";
 import Stomp from "webstomp-client";
 import SockJS from "sockjs-client";
-const stompClient = Stomp.over(new SockJS("http://localhost:8000/chat"));
+const stompClient = Stomp.over(new SockJS("http://localhost:7000/chat"));
 
 export default {
   data() {
@@ -260,7 +260,7 @@ export default {
 @import "@/assets/css/home.css";
 
 .chat-container {
-  z-index: 1;
+  z-index: 1000;
   position: fixed;
   bottom: 0;
   right: 0;
@@ -273,6 +273,7 @@ export default {
 }
 
 .chat-header {
+  z-index: 1000;
   display: flex;
   justify-content: space-between;
   padding: 10px;
@@ -281,31 +282,37 @@ export default {
 }
 
 .chat-messages {
+  z-index: 1000;
   flex: 1;
   padding: 10px;
   overflow-y: auto;
 }
 
 .chat-message {
+  z-index: 1000;
   margin-bottom: 10px;
 }
 
 .chat-input {
+  z-index: 1000;
   display: flex;
   border-top: 1px solid #ccc;
   padding: 10px;
 }
 
 .chat-input input {
+  z-index: 1000;
   flex: 1;
   padding: 5px;
 }
 
 .chat-input button {
+  z-index: 1000;
   padding: 5px 10px;
 }
 
 .chat-toggle-button {
+  z-index: 1000;
   position: fixed;
   bottom: 20px;
   right: 20px;

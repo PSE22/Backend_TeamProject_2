@@ -4,7 +4,8 @@ import axios from "axios";
 
 export default axios.create({
     // spring ip 주소
-    baseURL: "http://localhost:8000/api",
+    // baseURL: "http://13.209.24.76:7000/api",
+    baseURL: "http://localhost:7000/api",
     headers: {
         // 문서 종류
         "Content-Type": "application/json"

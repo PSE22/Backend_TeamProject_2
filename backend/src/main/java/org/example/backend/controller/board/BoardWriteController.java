@@ -29,7 +29,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/board")
 @RequiredArgsConstructor
-@RestControllerAdvice   // 전역적으로 예외처리
+//@RestControllerAdvice   // 전역적으로 예외처리
 public class BoardWriteController {
     private final BoardWriteService boardWriteService;
     private final BoardFileService boardFileService;
@@ -47,13 +47,13 @@ public class BoardWriteController {
         }
     }
 
-    @PostMapping("/board-file")
-    public ResponseEntity<Object> createFile(
-            @RequestBody List<BoardFile> boardFile
+    @PutMapping("/board-edit/{boardId}")
+    public ResponseEntity<Object> update(
+            @RequestBody BoardWriteDto boardWriteDto
     ) {
-        log.debug("Received BoardWriteDto: {}", boardFile);
+        log.debug("Received BoardWriteDto: {}", boardWriteDto);
         try {
-            boardFileService.saveBoardFile2(boardFile);
+            boardWriteService.save(boardWriteDto);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("게시글 등록에 실패했습니다." + e);

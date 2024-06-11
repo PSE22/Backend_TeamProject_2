@@ -72,6 +72,15 @@ class BoardDetailService {
       headers: LoginHeader(),
     });
   }
+    // 추천 데이터 삭제
+    deleteBoard(boardId) {
+      return http.delete(
+        `/board/board-detail/delete/${boardId}`,
+        {
+          headers: LoginHeader(),
+        }
+      );
+    }
 }
 
 export default new BoardDetailService();

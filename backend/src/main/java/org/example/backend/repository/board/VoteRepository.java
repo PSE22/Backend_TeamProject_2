@@ -37,4 +37,6 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
             "SET STATUS = 'N' " +
             "WHERE DEL_DATE = :delDate ", nativeQuery = true)
     List<Vote> updateStatus(@Param("delDate") String delDate);
+
+    void deleteByBoardId(Long boardId);
 }

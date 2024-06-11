@@ -19,5 +19,7 @@ public interface IReportDto {
     String getBoardTitle();
     String getReportReason();
     String getBoMemberId();
+    String getBocode();
+    String getSmcode();
     String getAddDate();
 }

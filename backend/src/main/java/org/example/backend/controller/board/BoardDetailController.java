@@ -307,8 +307,9 @@ public class BoardDetailController {
     }
 
     @DeleteMapping("board-detail/delete/{boardId}")
-    public ResponseEntity<?> deleteBoard(@RequestParam Long boardId) {
+    public ResponseEntity<?> deleteBoard(@PathVariable Long boardId) {
         try {
+            log.debug(":"+ boardId);
             boardDetailService.deleteBoard(boardId);
             return ResponseEntity.ok("게시글 삭제가 완료되었습니다.");
         } catch (Exception e) {
