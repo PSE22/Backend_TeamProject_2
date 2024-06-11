@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.protocol.types.Field;
 import org.example.backend.model.common.BoardIdMemberIdPk;
 import org.example.backend.model.dto.NotifyDto;
+import org.example.backend.model.dto.board.DelBoardDto;
 import org.example.backend.model.dto.board.IBoardDetailDto;
 import org.example.backend.model.dto.board.IBoardDto;
 import org.example.backend.model.dto.board.IUserDto;
@@ -13,13 +14,11 @@ import org.example.backend.model.entity.board.Place;
 import org.example.backend.model.entity.board.Recommend;
 import org.example.backend.model.entity.board.Report;
 import org.example.backend.model.entity.board.Vote;
-import org.example.backend.repository.board.BoardDetailRepository;
-import org.example.backend.repository.board.BoardFileRepository;
-import org.example.backend.repository.board.RecommendRepository;
-import org.example.backend.repository.board.ReportRepository;
+import org.example.backend.repository.board.*;
 import org.example.backend.service.auth.NotifyService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +49,11 @@ public class BoardDetailService {
     private final ReportRepository reportRepository;
     private final ModelMapper modelMapper;
     private final BoardFileRepository boardFileRepository;
+    private final ReplyFileRepository replyFileRepository;
+    private final ReplyRepository replyRepository;
+    private final PlaceRepository placeRepository;
+    private final VoteMemberRepository voteMemberRepository;
+    private final VoteRepository voteRepository;
 
     // 로그인된 회원 정보 조회
     public Optional<IUserDto> findMember(String memberId) {
@@ -135,22 +139,54 @@ public class BoardDetailService {
         return report2;
     }
 
+    @Transactional
     public void deleteBoard(Long boardId) {
-        List<Object[]> delData = boardDetailRepository.findByBoardId(boardId);
-        List<Map<String, Object>> boardDetails = delData.stream()
-                .map(objects -> {
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("boardId", objects[0]);
-                    map.put("uuid", objects[1]);
-                    map.put("replyId", objects[2]);
-                    return map;
-                })
-                .collect(Collectors.toList());
-        for (Map<String, Object> item : boardDetails) {
-            String uuid = (String) item.get("uuid");
-            boardFileRepository.deleteByUuid(uuid);
+        List<DelBoardDto> delData = boardDetailRepository.findByBoardId(boardId);
+
+        // 댓글 파일 삭제
+        for (DelBoardDto item : delData) {
+            String uuid = item.getUuid();
+            if (uuid != null) {
+                replyFileRepository.deleteByUuid(uuid);
+            }
         }
+
+        // 게시글 파일 삭제
+        for (DelBoardDto item : delData) {
+            String uuid = item.getUuid();
+            if (uuid != null) {
+                boardFileRepository.deleteByUuid(uuid);
+            }
+        }
+
+        // 파일 삭제
+        for (DelBoardDto item : delData) {
+            String uuid = item.getUuid();
+            if (uuid != null) {
+                boardFileRepository.deleteByUuid(uuid);
+            }
+        }
+
+        // 댓글 삭제
+        for (DelBoardDto item : delData) {
+            Long replyId = item.getReplyId();
+            if (replyId != null) {
+                replyRepository.deleteById(replyId);
+            }
+        }
+
+        // 장소 삭제
+        placeRepository.deleteByBoardId(boardId);
+        // 투표멤버 삭제
+        voteMemberRepository.deleteByBoardId(boardId);
+        // 투표 삭제
+        voteRepository.deleteByBoardId(boardId);
+        // 추천 삭제
+        recommendRepository.deleteByBoardId(boardId);
+        // 게시물 삭제
+        boardDetailRepository.deleteById(boardId);
     }
+
 
     public void updateBoard(Long boardId, IBoardDto boardDto) {
         Board board2 = boardDetailRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));

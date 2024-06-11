@@ -1,5 +1,6 @@
 package org.example.backend.repository.board;
 
+import org.example.backend.model.dto.board.DelBoardDto;
 import org.example.backend.model.dto.board.IBoardDetailDto;
 import org.example.backend.model.dto.board.IBoardDto;
 import org.example.backend.model.dto.board.IUserDto;
@@ -102,7 +103,7 @@ public interface BoardDetailRepository extends JpaRepository<Board, Long> {
             , nativeQuery = true)
     Integer countRecommend(@Param("boardId") Long boardId);
 
-    @Query(value = "SELECT DISTINCT B.BOARD_ID, F.UUID, R.REPLY_ID\n" +
+    @Query(value = "SELECT DISTINCT B.BOARD_ID AS boardId, F.UUID AS uuid, R.REPLY_ID AS replyId\n" +
             "FROM TB_BOARD B\n" +
             "LEFT JOIN TB_BOARD_FILE BF ON B.BOARD_ID = BF.BOARD_ID\n" +
             "LEFT JOIN TB_REPLY R ON B.BOARD_ID = R.BOARD_ID\n" +
@@ -114,5 +115,5 @@ public interface BoardDetailRepository extends JpaRepository<Board, Long> {
             "LEFT JOIN TB_RECOMMEND RE ON B.BOARD_ID = RE.BOARD_ID\n" +
             "WHERE B.BOARD_ID = :boardId"
             , nativeQuery = true)
-    List<Object[]> findByBoardId(@Param("boardId") Long boardId);
+    List<DelBoardDto> findByBoardId(@Param("boardId") Long boardId);
 }

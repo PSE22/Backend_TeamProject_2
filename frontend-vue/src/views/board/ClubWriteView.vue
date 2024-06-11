@@ -257,9 +257,9 @@
             </div>
           </div>
           <!-- 장소 Modal 끝 -->
-            <span v-if="address"
-              ><i class="bi bi-geo-alt-fill"></i> {{ address }}</span
-            >
+          <span v-if="address"
+            ><i class="bi bi-geo-alt-fill"></i> {{ address }}</span
+          >
         </div>
       </div>
 
@@ -458,27 +458,36 @@ export default {
         // Place 테이블
         let placeDto = this.address ? { address: this.address } : null;
         // File 테이블
+        // 모든 파일을 비동기적으로 처리하고 그 결과를 배열로 반환
         let fileDtos = await Promise.all(
+          // this.files 배열의 각 파일을 처리
           this.files.map((file) => {
+            // 새로운 Promise를 생성하여 각 파일을 비동기적으로 처리
             return new Promise((resolve, reject) => {
-              const reader = new FileReader();
+              const reader = new FileReader(); // 파일을 읽기 위한 FileReader 객체 생성(인코딩)
+
+              // 파일을 성공적으로 읽었을 때 실행되는 이벤트 핸들러
               reader.onload = () => {
                 resolve({
-                  // uuid: file.name,
-                  fileUrl: file.fileUrl,
-                  fileName: file.name,
-                  data: reader.result.split(",")[1], // Base64 문자열만 추출
+                  // 파일 정보를 객체로 반환
+                  fileUrl: file.fileUrl, // 파일 URL
+                  fileName: file.name, // 파일 이름
+                  data: reader.result.split(",")[1], // Base64 문자열만 추출 (data URL에서 실제 데이터 부분만)
                 });
               };
+
+              // 파일을 읽는 도중 에러가 발생했을 때 실행되는 이벤트 핸들러
               reader.onerror = reject;
-              reader.readAsDataURL(file.data); // Base64 인코딩
+
+              // 파일을 Base64 인코딩된 데이터 URL로 읽기 시작
+              reader.readAsDataURL(file.data);
             });
           })
         );
         let response = await BoardWriteService.create({
           boardDto,
           voteDtos: voteDtos.length > 0 ? voteDtos : null,
-          placeDto: placeDto,
+          placeDto: placeDto > 0 ? voteDtos : null,
           fileDtos: fileDtos.length > 0 ? fileDtos : null,
         });
         console.log(response);
