@@ -21,11 +21,11 @@ class ReplyService {
     });
   }
   // 댓글 등록
-  createReply(data) {
-    return http.post(`/board/board-detail/reply`, data, {
-      headers: LoginHeader(),
-    });
-  }
+  // createReply(data) {
+  //   return http.post(`/board/board-detail/reply`, data, {
+  //     headers: LoginHeader(),
+  //   });
+  // }
   // 댓글 수정
   updateReply(replyId, data) {
     return http.put(`/board/board-detail/reply?replyId=${replyId}`, data, {
@@ -39,12 +39,18 @@ class ReplyService {
     });
   }
 
-  // 댓글 파일 저장
-  createReplyFile(image) {
+  // 댓글 + 파일 저장
+  createReply(temp, file) {
     let formData = new FormData(); // form 객체
-    formData.append("image", image); // 이미지
+    // formData.append("replyDto", JSON.stringify(temp));
+    formData.append("boardId", temp.boardId);
+    formData.append("memberId", temp.memberId);
+    formData.append("reply", temp.reply);
+    formData.append("file", file);
 
-    return http.post("/board/board-detail/file/upload", formData, {
+    console.log("formdata임:: ", formData)
+
+    return http.post("/board/board-detail/reply", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
