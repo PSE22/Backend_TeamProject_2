@@ -49,7 +49,7 @@ export default {
     connectSSE() {
       if (this.member) {
         this.eventSource = new EventSource(
-          `http://localhost:8000/api/connect/${this.member.memberId}`,
+          `http://localhost:7000/api/connect/${this.member.memberId}`,
           { headers: LoginHeader() },
           { timeout: 3600000 }
         );
