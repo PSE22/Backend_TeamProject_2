@@ -110,7 +110,7 @@ import NotificationService from "@/services/board/NotificationService";
 import LoginService from "@/services/login/LoginService";
 import Stomp from "webstomp-client";
 import SockJS from "sockjs-client";
-const stompClient = Stomp.over(new SockJS("http://localhost:8000/chat"));
+const stompClient = Stomp.over(new SockJS("http://localhost:7000/chat"));
 
 export default {
   data() {
