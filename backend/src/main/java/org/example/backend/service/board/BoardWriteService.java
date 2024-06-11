@@ -37,7 +37,7 @@ public class BoardWriteService {
     private final FileService fileService;
     private final PlaceService placeService;
 
-    //    투표 기능
+    //    글쓰기 등록 기능
     @Transactional
     public void save(BoardWriteDto boardWriteDto) {
         // JPA 저장 함수 실행 : return 값 : 저장된 객체
@@ -55,15 +55,16 @@ public class BoardWriteService {
         board.setMemberId(board2.getMemberId());
         boardRepository.save(board);
 
+//        파일/게시판 파일관리 테이블 저장
 //        null 체크
         if (boardWriteDto.getFileDtos() != null) {
-            fileService.saveFiles(boardWriteDto.getFileDtos());
+            fileService.saveFiles(boardWriteDto.getFileDtos(), board.getBoardId());
         }
-
+//        투표 저장
         if (boardWriteDto.getVoteDtos() != null) {
             voteService.saveVote(board.getBoardId(), boardWriteDto.getVoteDtos());
         }
-
+//        장소 저장
         if (boardWriteDto.getPlaceDto() != null) {
             placeService.savePlace(board.getBoardId(), boardWriteDto.getPlaceDto());
         }

@@ -8,6 +8,7 @@ import org.example.backend.model.dto.board.IBoardDetailDto;
 import org.example.backend.model.dto.board.IBoardDto;
 import org.example.backend.model.dto.board.IReplyDto;
 import org.example.backend.model.dto.board.IUserDto;
+import org.example.backend.model.dto.board.Reply.ReplyDto;
 import org.example.backend.model.entity.board.*;
 import org.example.backend.service.board.BoardDetailService;
 import org.example.backend.service.board.ReplyService;
@@ -155,23 +156,23 @@ public class BoardDetailController {
     }
 
     // 추천 삭제함수
-    @DeleteMapping("/board-detail/recommend-exist")
-    public ResponseEntity<Object> deleteRecommend(@RequestParam Long boardId, @RequestParam String memberId) {
-        try {
-            BoardIdMemberIdPk boardIdMemberIdPk = new BoardIdMemberIdPk(boardId, memberId);
-            boolean success = boardDetailService.deleteRecommend(boardIdMemberIdPk);
-            if (success == true) {
-                return new ResponseEntity<>("추천 삭제 성공", HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>("삭제할 데이터 없음", HttpStatus.NO_CONTENT);
-            }
-        } catch (Exception e) {
-            return handleException(e);
-        }
-    }
+//    @DeleteMapping("/board-detail/recommend-exist")
+//    public ResponseEntity<Object> deleteRecommend(@RequestParam Long boardId, @RequestParam String memberId) {
+//        try {
+//            BoardIdMemberIdPk boardIdMemberIdPk = new BoardIdMemberIdPk(boardId, memberId);
+//            boolean success = boardDetailService.deleteRecommend(boardIdMemberIdPk);
+//            if (success == true) {
+//                return new ResponseEntity<>("추천 삭제 성공", HttpStatus.OK);
+//            } else {
+    @GetMapping("/board-detail/recommend-count")
+//                return new ResponseEntity<>("삭제할 데이터 없음", HttpStatus.NO_CONTENT);
+//            }
+//        } catch (Exception e) {
+//            return handleException(e);
+//        }
+//    }
 
     // 추천 수 카운트
-    @GetMapping("/board-detail/recommend-count")
     public ResponseEntity<Object> countRecommend(@RequestParam Long boardId) {
         try {
             Integer count = boardDetailService.countRecommend(boardId);
@@ -227,26 +228,27 @@ public class BoardDetailController {
     }
 
     // 댓글 저장
-    @PostMapping("/board-detail/reply")
-    public ResponseEntity<Object> createReply(@RequestBody Reply reply) {
-        try {
-            replyService.saveReply(reply);
-            return new ResponseEntity<>("댓글 저장 성공", HttpStatus.OK);
-        } catch (Exception e) {
-            return handleException(e);
-        }
-    }
+//    @PostMapping("/board-detail/reply")
+//    public ResponseEntity<Object> createReply(@RequestPart("reply") ReplyDto replyDto,
+//                                              @RequestPart("file") MultipartFile file) {
+//        try {
+//            replyService.saveReplyFile(reply);
+//            return new ResponseEntity<>("댓글 저장 성공", HttpStatus.OK);
+//        } catch (Exception e) {
+//            return handleException(e);
+//        }
+//    }
 
     // 댓글 수정
-    @PutMapping("/board-detail/reply")
-    public ResponseEntity<Object> updateReply(@RequestParam Long replyId, @RequestBody Reply reply) {
-        try {
-            replyService.saveReply(reply);
-            return new ResponseEntity<>("댓글 수정 성공", HttpStatus.OK);
-        } catch (Exception e) {
-            return handleException(e);
-        }
-    }
+//    @PutMapping("/board-detail/reply")
+//    public ResponseEntity<Object> updateReply(@RequestParam Long replyId, @RequestBody Reply reply) {
+//        try {
+//            replyService.saveReplyFile(reply);
+//            return new ResponseEntity<>("댓글 수정 성공", HttpStatus.OK);
+//        } catch (Exception e) {
+//            return handleException(e);
+//        }
+//    }
 
     // 글 신고 데이터 저장
     @PostMapping("/board-detail/report")
@@ -261,10 +263,12 @@ public class BoardDetailController {
 
     // 댓글 이미지 저장
     @PostMapping("/board-detail/file/upload")
-    public ResponseEntity<Object> createFile(@RequestParam("file") MultipartFile file, @RequestParam("fileUrl") String fileUrl) {
+    public ResponseEntity<Object> create(
+            @RequestParam MultipartFile image   // 첨부파일은 MultipartFile 형태로 받아야함
+    ) {
         try {
             // DB 서비스 함수 실행
-            replyService.saveFile(file, fileUrl);
+            replyService.saveReplyFile(null, image);
             return new ResponseEntity<>("업로드 성공", HttpStatus.OK);
         } catch (Exception e) {
             return handleException(e);

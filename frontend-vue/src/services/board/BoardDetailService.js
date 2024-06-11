@@ -26,12 +26,12 @@ class BoardDetailService {
   //       headers: LoginHeader(),
   //     });
   //   }
-  //   // 글번호로 장소 조회 (게시글 하나당 장소 하나)
-  //   getPlace(boardId) {
-  //     return http.get(`/board/board-detail/place?boardId=${boardId}`, {
-  //       headers: LoginHeader(),
-  //     });
-  //   }
+    // 글번호로 장소 조회 (게시글 하나당 장소 하나)
+    getPlace(boardId) {
+      return http.get(`/board/board-detail/place?boardId=${boardId}`, {
+        headers: LoginHeader(),
+      });
+    }
   // 글번호로 이미지 조회
   getImg(boardId) {
     return http.get(`/board/board-detail/board-img?boardId=${boardId}`);

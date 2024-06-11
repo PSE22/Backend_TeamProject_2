@@ -1,274 +1,186 @@
 <template>
-    <div class="w-80 p-3 board-detail-container">
-        <!-- 글 수정/삭제 버튼 : 글쓴이만 보임 -->
-        <div class="row board-button">
-            <button v-if="auth === 'B'" class="col" @click="moveToDeptEdit">수정</button>
-            <button v-if="auth === 'A' || auth === 'B'" class="col">삭제</button>
+    <div class="container mt-3 board-detail-container">
+        <!-- 글 수정/삭제 버튼 : 글쓴이만 보이게 -->
+        <div class="row mb-3 board-button">
+            <button class="col-1 btn btn-warning me-2" @click="moveToDeptEdit">수정</button>
+            <button class="col-1 btn btn-danger">삭제</button>
         </div>
         <!-- 게시글 -->
-        <div class="row board-content">
-            <!-- 글 상단 부분 -->
-            <div class="board-content-top">
-                <div>부서게시판 > {{ cmcd?.cmCdName }}</div>
-                <div>{{ board?.boardTitle }}</div>
-                <div>작성자 | {{ board?.memberName }}</div>
-                <div>작성일 | {{ board?.addDate }}</div>
-                <hr>
+        <div class="card mb-3">
+            <div class="card-header text-white">
+                부서게시판 <i class="bi bi-caret-right"></i> {{ cmcd?.cmCdName }}
             </div>
-            <!-- 글 내용 부분 -->
-            <div class="board-content-middle">
-                <div>투표</div>
-                <div>글내용 : {{ board?.boardContent }}</div>
-                <div>지도</div>
-                <div v-for="(data, index) in boardImage" :key="index">
-                    <img :src="data.fileUrl" alt="이미지">
+            <div class="card-body">
+                <h5 class="card-title">{{ board?.boardTitle }}</h5>
+                <p class="card-text-name">{{ board?.memberName }}</p>
+                <p class="card-text-date">{{ board?.addDate }}</p>
+                <hr>
+                <p class="card-text-content">{{ board?.boardContent }}</p>
+                <div class="board-images mb-3">
+                    <div v-for="(data, index) in boardImage" :key="index" class="mb-2">
+                        <img :src="data.fileUrl" class="img-fluid" alt="이미지">
+                    </div>
                 </div>
                 <hr>
+                <div class="d-flex justify-content-start">
+                    <!-- 추천 아이콘 -->
+                    <div v-if="recommendIcon" @click="toggleRecommend" class="me-3" type="button"><i
+                            class="bi bi-hand-thumbs-up"></i> {{ recommendCnt }} </div>
+                    <div v-else class="me-3" type="button"><i class="bi bi-hand-thumbs-up-fill"></i> {{ recommendCnt }}
+                    </div>
+                    <!-- 댓글 아이콘 -->
+                    <div class="me-3" type="button"><i class="bi bi-chat-text"></i> {{ replyCount }} </div>
+                    <!-- 신고 아이콘 -->
+                    <div class="me-3" type="button" data-bs-toggle="modal" data-bs-target="#reportModal"><i
+                            class="bi bi-exclamation-triangle"></i>신고</div>
+                </div>
             </div>
-            <!-- 글 하단 버튼 -->
-            <div class="row board-content-bottom">
-                <!-- 추천 아이콘 -->
-                <div v-if="recommendIcon" @click="toggleRecommend" class="col-1" type="button"><i
-                        class="bi bi-hand-thumbs-up"></i> {{ recommendCnt }} </div>
-                <div v-else @click="toggleRecommend" class="col-1" type="button"><i
-                        class="bi bi-hand-thumbs-up-fill"></i> {{ recommendCnt }} </div>
-                <!-- 댓글 아이콘 -->
-                <div class="col-1" type="button"><i class="bi bi-chat-text"></i> {{ replyCount }} </div>
-                <!-- 신고 아이콘 -->
-                <div class="col-1" type="button" data-bs-toggle="modal" data-bs-target="#reportModal"><i
-                        class="bi bi-exclamation-triangle"></i>신고</div>
-                <!-- Modal -->
-                <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="reportModalLabel">게시글 신고</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="mb-2 row">
-                                    <label for="staticWriter" class="col-sm-2 col-form-label">작성자</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticWriter"
-                                            v-model="board.memberName">
-                                    </div>
-                                </div>
-                                <div class="mb-2 row">
-                                    <label for="staticTitle" class="col-sm-2 col-form-label">내용</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticTitle"
-                                            v-model="board.boardTitle">
-                                    </div>
-                                </div>
-                                <div class="mb-2">
-                                    <hr />
-                                    <form class="was-validated">
-                                        <textarea rows="10" class="form-control" placeholder="신고 사유를 입력하세요." required
-                                            v-model="reportReason"></textarea>
-                                        <div class="invalid-feedback">
-                                            신고 사유는 필수 입력값입니다.
-                                        </div>
-                                    </form>
-                                </div>
-
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                                <button type="button" class="btn btn-danger" @click="createReport">신고</button>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="reportModalLabel">게시글 신고</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-2 row">
+                            <label for="staticWriter" class="col-sm-2 col-form-label">작성자</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly class="form-control-plaintext" id="staticWriter"
+                                    v-model="board.memberName">
                             </div>
                         </div>
+                        <div class="mb-2 row">
+                            <label for="staticTitle" class="col-sm-2 col-form-label">내용</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly class="form-control-plaintext" id="staticTitle"
+                                    v-model="board.boardTitle">
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <hr />
+                            <form class="was-validated">
+                                <textarea rows="10" class="form-control" placeholder="신고 사유를 입력하세요." required
+                                    v-model="reportReason"></textarea>
+                                <div class="invalid-feedback">
+                                    신고 사유는 필수 입력값입니다.
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                        <button type="button" class="btn btn-danger" @click="createReport">신고</button>
                     </div>
                 </div>
             </div>
         </div>
         <!-- 댓글 목록 -->
-        <div class="row reply-content">
-            <ul v-for="(data, index) in reply" :key="index" class="list-group">
+        <div class="reply-content mb-3">
+            <ul v-for="(data, index) in reply" :key="index" class="list-group mb-3">
                 <!-- 댓글 -->
                 <li v-if="replyUpdate" class="list-group-item">
-                    <div>{{ data.memberName }}</div>
-                    <div>{{ data.reply }}</div>
-                    <img v-if="data.fileUrl" :src="data.fileUrl" height="200px" width="300px" alt="이미지" />
-                    <div class="row">
-                        <div class="col-3"> {{ data.addDate }} </div>
-                        <button class="col-1 btn btn-secondary" @click="openReplyUpdate(data.replyId)">수정</button>
-                        <button class="col-1 btn btn-secondary">삭제</button>
-                        <!-- 댓글 신고 -->
-                        <button class="col-1 btn btn-secondary" data-bs-toggle="modal"
-                            data-bs-target="#reportReplyModal" @click="openReplyReport(data)">
-                            <i class="bi bi-exclamation-triangle"></i>신고
-                        </button>
-                        <!-- Modal -->
-                        <div class="modal fade" id="reportReplyModal" tabindex="-1"
-                            aria-labelledby="reportReplyModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="reportReplyModalLabel">댓글 신고</h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="mb-2 row">
-                                            <label for="staticWriter" class="col-sm-2 col-form-label">작성자</label>
-                                            <div class="col-sm-10">
-                                                <input type="text" readonly class="form-control-plaintext"
-                                                    id="staticWriter" v-model="reply.memberName">
-                                            </div>
-                                        </div>
-                                        <div class="mb-2 row">
-                                            <label for="staticTitle" class="col-sm-2 col-form-label">내용</label>
-                                            <div class="col-sm-10">
-                                                <input type="text" readonly class="form-control-plaintext"
-                                                    id="staticTitle" v-model="reply.reply">
-                                            </div>
-                                        </div>
-                                        <div class="mb-2">
-                                            <hr />
-                                            <form class="was-validated">
-                                                <textarea rows="10" class="form-control" placeholder="신고 사유를 입력하세요."
-                                                    required v-model="reportReason"></textarea>
-                                                <div class="invalid-feedback">
-                                                    신고 사유는 필수 입력값입니다.
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">닫기</button>
-                                        <button type="submit" class="btn btn-danger"
-                                            @click="createReplyReport">신고</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="btn btn-secondary" @click="openReReply(data.replyId)">대댓글쓰기</button>
-                    <!-- 대댓글 작성 폼 -->
-                    <div v-if="parentId === data.replyId" class="row reply-write">
+                    <div class="reply-name">{{ data.memberName }}</div>
+                    <div class="reply-content">{{ data.reply }}</div>
+                    <img v-if="data.fileUrl" :src="data.fileUrl" class="img-fluid" alt="이미지" />
+                    <div class="d-flex justify-content-between mt-2">
+                        <div class="reply-date">{{ data.addDate }}</div>
                         <div>
-                            {{ memberInfo.memberName }} (익명게시판은 별명으로 변경하세요)
-                        </div>
-                        <textarea v-model="reReplyTextarea" placeholder="대댓글을 남겨보세요"></textarea>
-                        <div class="row">
-                            <i class="col bi bi-camera" type="button">파일선택</i>
-                            <p class="col">파일명</p>
-                            <button class="col btn btn-secondary" @click="createReReply(data.replyId)">
-                                대댓글등록버튼
+                            <button class="btn btn-secondary me-3" @click="openReplyUpdate(data.replyId)">수정</button>
+                            <button class="btn btn-secondary me-3">삭제</button>
+                            <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#reportReplyModal"
+                                @click="openReplyReport(data)">
+                                <i class="bi bi-exclamation-triangle"></i>신고
                             </button>
                         </div>
                     </div>
-                </li>
+                    <button class="btn btn-secondary mt-2" @click="openReReply(data.replyId)">대댓글쓰기</button>
+                    <!-- 대댓글 작성 폼 -->
+                    <div v-if="parentId === data.replyId" class="mt- reReply-container">
+                        <div class="reply-name">{{ memberInfo.memberName }} (익명게시판은 별명으로 변경하세요)</div>
+                        <textarea v-model="reReplyTextarea" placeholder="대댓글을 남겨보세요"
+                            class="form-control mb-2"></textarea>
+                        <div class="d-flex justify-content-between">
 
 
 
+                                <!-- 파일첨부 -->
+                                <div class="input-group mb-3">
+                                    <input type="file" ref="file" @change="selectImage" class="form-control" />
+                                    <button class="btn btn-outline-secondary" type="button"
+                                        @click="createReplyFile">Upload</button>
+                                </div>
 
 
 
-                <!-- 댓글 수정 버튼 클릭 시 보일 부분 -->
-                <li v-if="!replyUpdate" class="list-group-item">
-                    <div>{{ data.memberName }}</div>
-                    <textarea v-model="data.reply"></textarea>
-                    <div class="row">
-                        <button class="col-1 btn btn-secondary" @click="replyUpdate = true">취소</button>
-                        <button class="col-1 btn btn-secondary" @click="updateReply(data)">등록</button>
+                            <button class="btn btn-secondary" @click="createReReply(data.replyId)">대댓글등록버튼</button>
+                        </div>
                     </div>
                 </li>
                 <!-- 댓글 수정 버튼 클릭 시 보일 부분 -->
-
-
-
-                
-
-
+                <li v-if="!replyUpdate" class="list-group-item">
+                    <div>{{ data.memberName }}</div>
+                    <textarea v-model="data.reply" class="form-control mb-2"></textarea>
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-secondary" @click="replyUpdate = true">취소</button>
+                        <button class="btn btn-secondary" @click="updateReply(data)">등록</button>
+                    </div>
+                </li>
                 <!-- 대댓글 -->
-                <li v-for="(reReply, index) in data.reReplies" :key="index" class="list-group-item"
-                    style="background-color: red">
-                    <div>{{ reReply.memberName }}</div>
-                    <div>{{ reReply.reply }}</div>
-                    <img v-if="reReply.fileUrl" :src="reReply.fileUrl" height="200px" width="300px" alt="이미지" />
-                    <div class="row">
-                        <div class="col-3"> {{ reReply.addDate }} </div>
-                        <button class="col-1 btn btn-secondary">수정</button>
-                        <button class="col-1 btn btn-secondary">삭제</button>
-                        <!-- 대댓글 신고 -->
-                        <button class="col-1 btn btn-secondary" data-bs-toggle="modal"
-                            data-bs-target="#reportReReplyModal" @click="openReplyReport(reReply)">
-                            <i class="bi bi-exclamation-triangle"></i>신고
-                        </button>
-                        <!-- Modal -->
-                        <div class="modal fade" id="reportReReplyModal" tabindex="-1"
-                            aria-labelledby="reportReReplyModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="reportReReplyModalLabel">댓글 신고</h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="mb-2 row">
-                                            <label for="staticWriter" class="col-sm-2 col-form-label">작성자</label>
-                                            <div class="col-sm-10">
-                                                <input type="text" readonly class="form-control-plaintext"
-                                                    id="staticWriter" v-model="reply.memberName">
-                                            </div>
-                                        </div>
-                                        <div class="mb-2 row">
-                                            <label for="staticTitle" class="col-sm-2 col-form-label">내용</label>
-                                            <div class="col-sm-10">
-                                                <input type="text" readonly class="form-control-plaintext"
-                                                    id="staticTitle" v-model="reply.reply">
-                                            </div>
-                                        </div>
-                                        <div class="mb-2">
-                                            <hr />
-                                            <form class="was-validated">
-                                                <textarea rows="10" class="form-control" placeholder="신고 사유를 입력하세요."
-                                                    required v-model="reportReason"></textarea>
-                                                <div class="invalid-feedback">
-                                                    신고 사유는 필수 입력값입니다.
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">닫기</button>
-                                        <button type="submit" class="btn btn-danger"
-                                            @click="createReplyReport">신고</button>
-                                    </div>
-                                </div>
-                            </div>
+                <li v-for="(reReply, index) in data.reReplies" :key="index" class="list-group-item reReply-container">
+                    <div class="reply-name">{{ reReply.memberName }}</div>
+                    <div class="reply-content">{{ reReply.reply }}</div>
+                    <img v-if="reReply.fileUrl" :src="reReply.fileUrl" class="img-fluid" alt="이미지" />
+                    <div class="d-flex justify-content-between mt-2">
+                        <div class="reply-date">{{ reReply.addDate }}</div>
+                        <div>
+                            <button class="btn btn-secondary me-2">수정</button>
+                            <button class="btn btn-secondary me-2">삭제</button>
+                            <button class="btn btn-secondary" data-bs-toggle="modal"
+                                data-bs-target="#reportReReplyModal" @click="openReplyReport(reReply)">
+                                <i class="bi bi-exclamation-triangle"></i>신고
+                            </button>
                         </div>
                     </div>
                 </li>
             </ul>
         </div>
+
+
+
+
+
+
+
         <!-- 댓글 작성 -->
-        <div class="row reply-write">
-            <div>{{ memberInfo.memberName }} (익명게시판은 별명으로 변경하세요)</div>
-            <textarea v-model="replyTextarea" placeholder="댓글을 남겨보세요"></textarea>
-            <div class="row">
-
-
-                <!-- 파일 첨부 -->
-                <!-- <input type="file" @change="onFileChange" />
-                <input type="text" v-model="fileUrl" placeholder="Enter file URL" />
-                <button @click="uploadFile">Upload</button>-->
-
-                <button class="col-2 btn btn-primary" @click="createReply">댓글등록버튼</button>
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="reply-name">{{ memberInfo.memberName }} (익명게시판은 별명으로 변경하세요)</div>
+                <textarea v-model="replyTextarea" placeholder="댓글을 남겨보세요" class="form-control mb-2 reply-content"></textarea>
+                <div class="row justify-content-between">
+                    <!-- 파일첨부 -->
+                    <input class="col-7 form-control" type="file" ref="file" @change="selectImage" />
+                    <button class="col-1 btn btn-primary" @click="createReply">등록</button>
+                </div>
             </div>
         </div>
+
+
+
+
+
+
+
+
         <!-- 목록으로 돌아가기 버튼 -->
-        <div class="row">
-            <button class="btn btn-secondary" @click="this.$router.push('/board/dept/' + smcode)">목록</button>
+        <div class="d-grid">
+            <button class="col-1 btn btn-secondary" @click="this.$router.push('/board/dept/' + smcode)">목록</button>
         </div>
     </div>
 </template>
+
 
 <script>
 import BoardDetailService from '@/services/board/BoardDetailService';
@@ -289,17 +201,8 @@ export default {
 
 
 
+            currentImage: undefined,    // 현재 이미지
 
-            // currentImage: undefined,    // 현재 이미지
-            // message: "",
-            // file: {   // 파일 객체
-            //     uuid: null,             // 기본키
-            //     fileUrl: ""             // 파일 url
-            // },
-
-
-            // file: null,
-            // fileUrl: '',
 
 
 
@@ -321,13 +224,13 @@ export default {
         async checkAuth() {
             if (this.member.memberCode === "AT01") {
                 // 관리자 로그인
-                this.auth = "A"
+                this.auth = "A";
             } else if (this.member.memberId === this.board.memberId) {
                 // 글쓴이 로그인
-                this.auth = "B"
+                this.auth = "B";
             } else {
                 // 기타 회원
-                this.auth = "C"
+                this.auth = "C";
             }
         },
         // 로그인된 회원 정보 가져오기
@@ -395,7 +298,7 @@ export default {
         },
         // 추천 버튼 클릭 시 호출 
         toggleRecommend() {
-            this.recommendIcon = !this.recommendIcon; 
+            this.recommendIcon = !this.recommendIcon;
             if (this.recommendIcon == false) {
                 this.saveRecommend().then(() => {
                     // 추천 저장 후, 추천 수 다시 불러오기
@@ -403,14 +306,15 @@ export default {
                 }).catch(e => {
                     console.error("추천 저장 실패:", e);
                 });
-            } else {
-                this.deleteRecommend().then(() => {
-                    // 추천 삭제 후, 추천 수 다시 불러오기
-                    this.retrieveRecommendCnt();
-                }).catch(e => {
-                    console.error("추천 삭제 실패: ", e);
-                });
             }
+            // else {
+            //     this.deleteRecommend().then(() => {
+            //         // 추천 삭제 후, 추천 수 다시 불러오기
+            //         this.retrieveRecommendCnt();
+            //     }).catch(e => {
+            //         console.error("추천 삭제 실패: ", e);
+            //     });
+            // }
         },
         // 추천 저장함수
         async saveRecommend() {
@@ -426,14 +330,14 @@ export default {
             }
         },
         // 추천 삭제함수
-        async deleteRecommend() {
-            try {
-                let response = await BoardDetailService.deleteRecommend(this.boardId, this.member.memberId);
-                console.log(response.data);
-            } catch (e) {
-                console.log("deleteRecommend 에러", e);
-            }
-        },
+        // async deleteRecommend() {
+        //     try {
+        //         let response = await BoardDetailService.deleteRecommend(this.boardId, this.member.memberId);
+        //         console.log(response.data);
+        //     } catch (e) {
+        //         console.log("deleteRecommend 에러", e);
+        //     }
+        // },
         // 추천 수 가져오기
         async retrieveRecommendCnt() {
             try {
@@ -497,45 +401,26 @@ export default {
 
 
 
-        // 파일 선택상자에서 이미지 선택하면 변수에 저장하는 함수
+
+
+        // 파일 선택상자에서 이미지 선택하면 저장하는 함수
         selectImage() {
-            // // 파일 선택상자에서 첫번째로 선택한 이미지를 변수에 저장
-            // this.currentImage = this.$refs.file.files[0];
-            // // 성공 메세지 변수 초기화
-            // this.message = "";
+            // 파일 선택상자에서 첫번째로 선택한 이미지를 저장
+            this.currentImage = this.$refs.file.files[0];
         },
+
+
         // insert (파일 업로드) 함수
-        async createFile() {
-            // try {
-            //     // insert 요청 : 공통 추가 함수 => create()
-            //     let response = await ReplyService.create(this.file, this.currentImage);
-            //     // 로깅
-            //     console.log(response);
-            //     // 화면에 성공메세지 출력
-            //     this.message = response.data;
-            // } catch (e) {
-            //     // 현재 선택된 이미지 변수 초기화
-            //     this.currentImage = undefined;
-            //     this.message = "";
-            //     console.log(e);
-            // }
-
+        async createReplyFile() {
+            try {
+                let response = await ReplyService.createReplyFile(this.currentImage);
+                console.log(response);
+            } catch (e) {
+                // 현재 선택된 이미지 변수 초기화
+                this.currentImage = undefined;
+                console.log(e);
+            }
         },
-        // onFileChange(event) {
-        //     this.file = event.target.files[0];
-        // },
-
-        // async uploadFile() {
-        //     try {
-        //         let response = await ReplyService.create(this.file, this.fileUrl);
-        //         console.log("댓글 이미지 : ", response.data);
-        //     } catch (e) {
-        //         console.log("uploadFile 에러", e);
-        //     }
-        // },
-
-
-
 
 
         // 새 댓글 등록
@@ -555,6 +440,14 @@ export default {
                 console.log(e);
             }
         },
+
+
+
+
+
+
+
+
         // 댓글 수정 버튼 클릭 시 호출
         openReplyUpdate() {
             this.replyUpdate = !this.replyUpdate;
@@ -659,24 +552,89 @@ export default {
 }
 </script>
 
-<style>
-/* 글 상세 컨테이너 */
+<style scoped>
+/* 전체 컨테이너 */
 .board-detail-container {
-    background-color: yellow;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
 }
 
-/* 글 내용 */
-.board-content {
-    background-color: aqua;
+/* 게시글 수정/삭제 버튼 */
+.board-button .btn {
+    border-radius: 50px;
+    font-weight: bold;
 }
 
-/* 댓글 작성 */
-.reply-write {
-    background-color: bisque;
+/* 게시판 헤더 */
+.card-header {
+    background-color: #b3000f;
+    color: white;
+    font-size: 1.2em;
+}
+
+/* 글 제목 */
+.card-title {
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+/* 게시판 작성자 부분 */
+.card-text-name {
+    font-size: 0.8em;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+/* 게시판 작성일 부분 */
+.card-text-date {
+    font-size: 0.8em;
+    margin-bottom: 10px;
 }
 
 /* 댓글 목록 */
+.reply-content .list-group-item {
+    padding: 20px 30px;
+    border: none;
+    border-bottom: 1px solid #e9ecef;
+}
+
+/* 댓글 작성자 */
+.reply-name {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+/* 댓글 내용 */
 .reply-content {
-    background-color: cadetblue;
+    margin-bottom: 10px;
+}
+
+/* 댓글 작성일 */
+.reply-date {
+    font-size: 0.9em;
+    margin-bottom: 10px;
+}
+
+/* 대댓글 */
+.reReply-container {
+    padding: 20px 30px;
+    background-color: rgb(218, 218, 218);
+}
+
+/* 모달창 */
+.modal-content {
+    border-radius: 10px;
+}
+
+/* 모달 헤더 */
+.modal-header {
+    background-color: #b3000f;
+    color: white;
+}
+
+.btn-danger {
+    background-color: #b3000f;
+    border-color: #b3000f;
 }
 </style>
