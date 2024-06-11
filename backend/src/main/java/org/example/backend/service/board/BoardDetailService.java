@@ -123,21 +123,22 @@ public class BoardDetailService {
         return report2;
     }
 
-//    public void deleteBoard(Long boardId) {
-//        List<Object[]> delData = boardDetailRepository.findByBoardId(boardId);
-//        List<Map<String, Object>> boardDetails = delData.stream()
-//                .map(objects -> {
-//                    Map<String, Object> map = new HashMap<>();
-//                    map.put("boardId", objects[0]);
-//                    map.put("uuid", objects[1]);
-//                    map.put("replyId", objects[2]);
-//                    return map;
-//                })
-//                .collect(Collectors.toList());
-//        for (int i = 0; i < boardDetails.get(1).size(); i++) {
-//            boardFileRepository.delete();
-//        }
-//    }
+    public void deleteBoard(Long boardId) {
+        List<Object[]> delData = boardDetailRepository.findByBoardId(boardId);
+        List<Map<String, Object>> boardDetails = delData.stream()
+                .map(objects -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("boardId", objects[0]);
+                    map.put("uuid", objects[1]);
+                    map.put("replyId", objects[2]);
+                    return map;
+                })
+                .collect(Collectors.toList());
+        for (Map<String, Object> item : boardDetails) {
+            String uuid = (String) item.get("uuid");
+            boardFileRepository.deleteByUuid(uuid);
+        }
+    }
 
     public void updateBoard(Long boardId, IBoardDto boardDto) {
         Board board2 = boardDetailRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
