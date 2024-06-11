@@ -31,12 +31,5 @@ public class BoardFileService {
             BoardFile boardFile = modelMapper.map(boardFileDto, BoardFile.class);
             boardFileRepository.save(boardFile);
         }
-
-    }
-
-    public void saveBoardFile2(List<BoardFile> boardFiles) {
-        for (BoardFile boardFile : boardFiles) {
-            boardFileRepository.save(boardFile);
-        }
     }
 }

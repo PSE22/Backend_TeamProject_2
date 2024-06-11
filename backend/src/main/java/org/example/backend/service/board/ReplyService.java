@@ -3,6 +3,7 @@ package org.example.backend.service.board;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.backend.model.dto.NotifyDto;
 import org.example.backend.model.dto.board.IReplyDto;
 import org.example.backend.model.dto.board.Reply.ReplyDto;
 import org.example.backend.model.entity.board.*;
@@ -10,6 +11,7 @@ import org.example.backend.repository.board.FileRepository;
 import org.example.backend.repository.board.ReplyFileRepository;
 import org.example.backend.repository.board.ReplyReportRepository;
 import org.example.backend.repository.board.ReplyRepository;
+import org.example.backend.service.auth.NotifyService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,7 +38,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class ReplyService {
-
+    private final NotifyService notifyService;
     private final ReplyRepository replyRepository;
     private final ReplyReportRepository replyReportRepository;
     private final FileRepository fileRepository;
@@ -73,6 +75,17 @@ public class ReplyService {
         // File 저장
         File savedFile = saveReplyFile(null, file);
 
+        // 댓글 알림
+        Long boardId = replyDto.getBoardId();
+        NotifyDto notifyDto = new NotifyDto();
+//        notifyDto.setNotiUrl();
+        notifyService.createReplyNotify(boardId, notifyDto);
+
+        // 핫토픽 알림
+        int count = countReply(boardId);
+        if (count >= 10) {
+            notifyService.createHotTopicNotify(boardId, notifyDto);
+        }
 
         return reply2;
     }
