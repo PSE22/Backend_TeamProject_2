@@ -28,6 +28,8 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
             "B.BOARD_TITLE AS boardTitle,\n" +
             "R.REPORT_REASON AS reportReason,\n" +
             "B.MEMBER_ID AS BoMemberId,\n" +
+            "B.BOCODE AS bocode, " +
+            "B.SMCODE AS smcode, " +
             "R.ADD_DATE AS addDate " +
             "FROM TB_BOARD B, TB_REPORT R\n" +
             "WHERE B.BOARD_ID = R.BOARD_ID",

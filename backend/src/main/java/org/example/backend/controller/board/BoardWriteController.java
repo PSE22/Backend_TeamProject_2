@@ -29,7 +29,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/board")
 @RequiredArgsConstructor
-@RestControllerAdvice   // 전역적으로 예외처리
+//@RestControllerAdvice   // 전역적으로 예외처리
 public class BoardWriteController {
     private final BoardWriteService boardWriteService;
     private final BoardFileService boardFileService;

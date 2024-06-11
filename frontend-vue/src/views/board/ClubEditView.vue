@@ -235,7 +235,7 @@
           수정
         </button>
         <button type="button" class="btn btn-danger" @click="deleteBoard">
-          삭제
+          취소
         </button>
       </div>
     </div>

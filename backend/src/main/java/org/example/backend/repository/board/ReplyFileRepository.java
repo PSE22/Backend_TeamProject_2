@@ -19,4 +19,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ReplyFileRepository extends JpaRepository<ReplyFile, Long> {
+    void deleteByUuid(String uuid);
 }

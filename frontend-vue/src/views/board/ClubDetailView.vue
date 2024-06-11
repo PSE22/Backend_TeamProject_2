@@ -1,9 +1,43 @@
 <template>
   <div class="w-80 p-3 board-detail-container">
-    <!-- 글 수정/삭제 버튼 : 글쓴이만 보임 -->
     <div class="row board-button">
-      <button class="col" @click="goClubEdit(bocode, smcode, boardId)">수정</button>
-      <button class="col">삭제</button>
+      <button class="col" @click="goClubEdit(bocode, smcode, boardId)">
+        수정
+      </button>
+      <button class="col" data-bs-toggle="modal" data-bs-target="#delete">삭제</button>
+    </div>
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="delete"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">삭제</h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">삭제 하시겠습니까?</div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              취소
+            </button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="deleteBoard">확인</button>
+          </div>
+        </div>
+      </div>
     </div>
     <!-- 게시글 -->
     <div class="row board-content">
@@ -431,6 +465,17 @@ export default {
         path: "/board/club",
         query: { bocode: this.bocode },
       });
+    },
+    async deleteBoard() {
+      try {
+        let response = await BoardDetailService.deleteBoard(this.boardId);
+        console.log("삭제", response);
+        this.$router.push(`/board/club`);
+        alert("삭제되었습니다.");
+      } catch (error) {
+        console.log("삭제 에러", error);
+        alert("삭제에 실패했습니다.");
+      }
     },
   },
   async mounted() {

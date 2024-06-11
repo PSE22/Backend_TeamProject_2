@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <AdminSidebar/>
+    <AdminSidebar />
     <div class="main-content">
       <div class="row">
         <table class="table">
@@ -15,7 +15,11 @@
             </tr>
           </thead>
           <tbody class="table-group-divider align-middle">
-            <tr v-for="(data, index) in report" :key="index" @click="goBoardDetail">
+            <tr
+              v-for="(data, index) in report"
+              :key="index"
+              @click="goBoardDetail(data.bocode, data.smcode, data.boardId)"
+            >
               <td class="col-1 text-center">{{ data.reMemberId }}</td>
               <td class="col-1 text-center">{{ data.boardId }}</td>
               <td class="col-1 text-center">{{ data.boardTitle }}</td>
@@ -52,11 +56,11 @@
 
 <script>
 import ReportService from "@/services/admin/ReportService";
-import AdminSidebar from  "@/components/common/AdminSidebar.vue";
+import AdminSidebar from "@/components/common/AdminSidebar.vue";
 
 export default {
   components: {
-    AdminSidebar
+    AdminSidebar,
   },
   data() {
     return {
