@@ -4,7 +4,7 @@
       <h1 class="sidebar-title">{{ member.memberName }}님</h1>
       <hr class="sidebar-divider" />
       <ul class="sidebar-list">
-        <router-link to="/profile-edit" class="profile-link"><li class="sidebar-menu mb-5">회원정보수정</li></router-link>
+        <router-link to="/profile" class="profile-link"><li class="sidebar-menu mb-5">내 프로필</li></router-link>
         <router-link to="/profile-edit/password" class="profile-link"><li class="sidebar-menu mb-5">비밀번호변경</li></router-link>
         <router-link to="/profile-edit/nickname" class="profile-link"><li class="sidebar-menu mb-5">닉네임변경</li></router-link>
         <router-link to="/profile-activity" class="profile-link"><li class="sidebar-menu">활동내역</li></router-link>
@@ -12,7 +12,7 @@
     </div>
     <div class="main-content">
       <div class="section">
-        <router-link to="/profile" class="profile-main"><h3>Profile</h3></router-link>
+        <h3>Profile</h3>
         <hr />
         <div class="user-info">
           <div class="details">

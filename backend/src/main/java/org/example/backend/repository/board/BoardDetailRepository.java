@@ -2,11 +2,9 @@ package org.example.backend.repository.board;
 
 import org.example.backend.model.dto.board.IBoardDetailDto;
 import org.example.backend.model.dto.board.IBoardDto;
-import org.example.backend.model.dto.board.IReplyDto;
 import org.example.backend.model.dto.board.IUserDto;
 import org.example.backend.model.entity.board.Board;
 import org.example.backend.model.entity.board.Place;
-import org.example.backend.model.entity.board.Recommend;
 import org.example.backend.model.entity.board.Vote;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -59,7 +57,7 @@ public interface BoardDetailRepository extends JpaRepository<Board, Long> {
             "AND B.BOARD_ID = :boardId\n" +
             "AND B.STATUS = 'Y'"
             , nativeQuery = true)
-    Optional<IBoardDto> findBoardAndMember(@Param("boardId")Long boardId);
+    Optional<IBoardDto> findBoardAndMember(@Param("boardId") Long boardId);
 
     // 코드번호로 코드명 조회
     @Query(value = "SELECT c.CM_CD AS cmCd, " +
@@ -103,4 +101,18 @@ public interface BoardDetailRepository extends JpaRepository<Board, Long> {
             "WHERE BOARD_ID = :boardId"
             , nativeQuery = true)
     Integer countRecommend(@Param("boardId") Long boardId);
+
+    @Query(value = "SELECT DISTINCT B.BOARD_ID, F.UUID, R.REPLY_ID\n" +
+            "FROM TB_BOARD B\n" +
+            "LEFT JOIN TB_BOARD_FILE BF ON B.BOARD_ID = BF.BOARD_ID\n" +
+            "LEFT JOIN TB_REPLY R ON B.BOARD_ID = R.BOARD_ID\n" +
+            "LEFT JOIN TB_REPLY_FILE RF ON R.REPLY_ID = RF.REPLY_ID\n" +
+            "LEFT JOIN TB_FILE F ON RF.UUID = F.UUID OR BF.UUID = F.UUID\n" +
+            "LEFT JOIN TB_PLACE P ON B.BOARD_ID = P.BOARD_ID\n" +
+            "LEFT JOIN TB_VOTE V ON B.BOARD_ID = V.BOARD_ID\n" +
+            "LEFT JOIN TB_VOTE_MEMBER VM ON B.BOARD_ID = VM.BOARD_ID\n" +
+            "LEFT JOIN TB_RECOMMEND RE ON B.BOARD_ID = RE.BOARD_ID\n" +
+            "WHERE B.BOARD_ID = :boardId"
+            , nativeQuery = true)
+    List<Object[]> findByBoardId(@Param("boardId") Long boardId);
 }

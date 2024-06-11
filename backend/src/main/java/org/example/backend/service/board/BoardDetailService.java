@@ -13,13 +13,17 @@ import org.example.backend.model.entity.board.Recommend;
 import org.example.backend.model.entity.board.Report;
 import org.example.backend.model.entity.board.Vote;
 import org.example.backend.repository.board.BoardDetailRepository;
+import org.example.backend.repository.board.BoardFileRepository;
 import org.example.backend.repository.board.RecommendRepository;
 import org.example.backend.repository.board.ReportRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * packageName : org.example.backend.service.board
@@ -43,6 +47,7 @@ public class BoardDetailService {
     private final RecommendRepository recommendRepository;
     private final ReportRepository reportRepository;
     private final ModelMapper modelMapper;
+    private final BoardFileRepository boardFileRepository;
 
     // 로그인된 회원 정보 조회
     public Optional<IUserDto> findMember(String memberId) {
@@ -118,9 +123,21 @@ public class BoardDetailService {
         return report2;
     }
 
-    public void deleteBoard(Long boardId) {
-        boardDetailRepository.deleteById(boardId);
-    }
+//    public void deleteBoard(Long boardId) {
+//        List<Object[]> delData = boardDetailRepository.findByBoardId(boardId);
+//        List<Map<String, Object>> boardDetails = delData.stream()
+//                .map(objects -> {
+//                    Map<String, Object> map = new HashMap<>();
+//                    map.put("boardId", objects[0]);
+//                    map.put("uuid", objects[1]);
+//                    map.put("replyId", objects[2]);
+//                    return map;
+//                })
+//                .collect(Collectors.toList());
+//        for (int i = 0; i < boardDetails.get(1).size(); i++) {
+//            boardFileRepository.delete();
+//        }
+//    }
 
     public void updateBoard(Long boardId, IBoardDto boardDto) {
         Board board2 = boardDetailRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
