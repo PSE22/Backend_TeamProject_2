@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.protocol.types.Field;
 import org.example.backend.model.common.BoardIdMemberIdPk;
+import org.example.backend.model.dto.NotifyDto;
 import org.example.backend.model.dto.board.IBoardDetailDto;
 import org.example.backend.model.dto.board.IBoardDto;
 import org.example.backend.model.dto.board.IUserDto;
@@ -15,6 +16,7 @@ import org.example.backend.model.entity.board.Vote;
 import org.example.backend.repository.board.BoardDetailRepository;
 import org.example.backend.repository.board.RecommendRepository;
 import org.example.backend.repository.board.ReportRepository;
+import org.example.backend.service.auth.NotifyService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +40,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class BoardDetailService {
-
+    private final NotifyService notifyService;
     private final BoardDetailRepository boardDetailRepository;
     private final RecommendRepository recommendRepository;
     private final ReportRepository reportRepository;
@@ -92,6 +94,16 @@ public class BoardDetailService {
     // 추천 저장
     public Recommend saveRecommend(Recommend recommend) {
         Recommend recommend2 = recommendRepository.save(recommend);
+
+        // 베스트 알림
+        Long boardId = recommend2.getBoardId();
+        int count = countRecommend(boardId);
+        NotifyDto notifyDto = new NotifyDto();
+//        notifyDto.setNotiUrl();
+        if (count >= 10) {
+            notifyService.createBestNotify(boardId, notifyDto);
+        }
+
         return recommend2;
     }
 
