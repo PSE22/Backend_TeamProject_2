@@ -2,7 +2,7 @@
   <div align="center">
     <h1 class="text-center mb-5 mt-5">동호회 게시판</h1>
     <div class="container mt-3 free-box">
-      <!-- 자유게시판 / 닉네임 입력 -->
+      <!-- 동호회 게시판 / 닉네임 입력 -->
       <div>
         <div class="row">
           <div class="col-4">

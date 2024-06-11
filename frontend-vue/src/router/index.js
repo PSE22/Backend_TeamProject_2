@@ -84,8 +84,13 @@ const routes = [
   },
   // 동호회 - 글쓰기
   {
-    path: "/board/club/write",
+    path: "/board/club-write",
     component: () => import("../views/board/ClubWriteView.vue"),
+  },
+  // 동호회 - 글쓰기
+  {
+    path: "/board/club-edit/:bocode/:smcode/:boardId",
+    component: () => import("../views/board/ClubEditView.vue"),
   },
   // 자유게시판
   {
@@ -102,59 +107,59 @@ const routes = [
     path: "/board/free-write",
     component: () => import("../views/board/FreeWrite.vue"),
   },
-    // 건의게시판
-    {
-      path: "/board/suggest",
-      component: () => import("../views/board/SuggestBoard.vue"),
-    },
-    // 건의게시판 상세글 조회
-    {
-      path: "/board/suggest/:boardId",
-      component: () => import("../views/board/SuggestDetailView.vue"),
-    },
-    // 건의게시판 등록(글쓰기)
-    {
-      path: "/board/suggest-write",
-      component: () => import("../views/board/SuggestWrite.vue"),
-    },
-    // 건의게시판
-    {
-      path: "/board/praise",
-      component: () => import("../views/board/PraiseBoard.vue"),
-    },
-    // 건의게시판 상세글 조회
-    {
-      path: "/board/praise/:boardId",
-      component: () => import("../views/board/PraiseDetailView.vue"),
-    },
-    // 건의게시판 등록(글쓰기)
-    {
-      path: "/board/praise-write",
-      component: () => import("../views/board/PraiseWrite.vue"),
-    },
+  // 건의게시판
   {
-    path: '/board/main-search',
-    name: 'SearchResults',
+    path: "/board/suggest",
+    component: () => import("../views/board/SuggestBoard.vue"),
+  },
+  // 건의게시판 상세글 조회
+  {
+    path: "/board/suggest/:boardId",
+    component: () => import("../views/board/SuggestDetailView.vue"),
+  },
+  // 건의게시판 등록(글쓰기)
+  {
+    path: "/board/suggest-write",
+    component: () => import("../views/board/SuggestWrite.vue"),
+  },
+  // 건의게시판
+  {
+    path: "/board/praise",
+    component: () => import("../views/board/PraiseBoard.vue"),
+  },
+  // 건의게시판 상세글 조회
+  {
+    path: "/board/praise/:boardId",
+    component: () => import("../views/board/PraiseDetailView.vue"),
+  },
+  // 건의게시판 등록(글쓰기)
+  {
+    path: "/board/praise-write",
+    component: () => import("../views/board/PraiseWrite.vue"),
+  },
+  {
+    path: "/board/main-search",
+    name: "SearchResults",
     component: () => import("../views/board/SearchResults.vue"),
   },
   {
-    path: '/admin/board-mgmt',
+    path: "/admin/board-mgmt",
     component: () => import("../views/admin/BoardManagement.vue"),
   },
   {
-    path: '/admin/register-mgmt',
+    path: "/admin/register-mgmt",
     component: () => import("../views/admin/AdminRegisterMgmt.vue"),
   },
   {
-    path: '/admin/register-deny-mgmt',
+    path: "/admin/register-deny-mgmt",
     component: () => import("../views/admin/AdminRegisterDenyMgmt.vue"),
   },
   {
-    path: '/admin/edit-mgmt',
+    path: "/admin/edit-mgmt",
     component: () => import("../views/admin/AdminEditMgmt.vue"),
   },
   {
-    path: '/admin/report-mgmt',
+    path: "/admin/report-mgmt",
     component: () => import("../views/admin/AdminReportMgmt.vue"),
   },
 ];
