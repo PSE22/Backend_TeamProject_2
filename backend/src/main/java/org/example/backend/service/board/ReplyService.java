@@ -3,6 +3,7 @@ package org.example.backend.service.board;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.backend.model.dto.board.BoardDto;
 import org.example.backend.model.dto.board.IReplyDto;
 import org.example.backend.model.dto.board.Reply.ReplyDto;
 import org.example.backend.model.entity.board.*;
@@ -67,17 +68,20 @@ public class ReplyService {
         // DTO -> Entity 변환
         Reply reply = modelMapper.map(replyDto, Reply.class);
 
-        // Reply 테이블 저장
-        Reply reply2 = replyRepository.save(reply);
+        // Reply 저장
+        reply.setBoardId(replyDto.getBoardId());
+        reply.setMemberId(replyDto.getMemberId());
+        reply.setReply(replyDto.getReply());
+        replyRepository.save(reply);
 
         // File 저장
-        File savedFile = saveReplyFile(null, file);
-
-
-        return reply2;
+        if (file != null) {
+            saveReplyFile(null, file);
+        }
+        return reply;
     }
 
-    // 댓글 파일 저장
+    // 댓글 파일 첨부 저장
     public File saveReplyFile(String uuid, MultipartFile file) {
         File file2 = null;
 
@@ -106,7 +110,7 @@ public class ReplyService {
             } else {
                 String fileDownload = ServletUriComponentsBuilder
                         .fromCurrentContextPath()           // spring 기본주소 : http://localhost:8000
-                        .path("/api/board/board-detail/file/upload/")           // 추가 경로 넣기
+                        .path("/api/board/file/upload/")           // 추가 경로 넣기
                         .path(uuid)                         // uuid 넣기
                         .toUriString();                     // 합치기
                 // File 객체 생성(생성자, setter) + save()

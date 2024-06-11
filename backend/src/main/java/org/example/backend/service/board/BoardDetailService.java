@@ -95,17 +95,6 @@ public class BoardDetailService {
         return recommend2;
     }
 
-    // 추천 삭제
-    public boolean deleteRecommend(BoardIdMemberIdPk boardIdMemberIdPk) {
-        if (recommendRepository.existsById(boardIdMemberIdPk)) {
-            // 추천 데이터가 존재하면 삭제
-            recommendRepository.deleteById(boardIdMemberIdPk);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     // 추천 수 카운트
     public Integer countRecommend(Long boardId) {
         Integer count = boardDetailRepository.countRecommend(boardId);
