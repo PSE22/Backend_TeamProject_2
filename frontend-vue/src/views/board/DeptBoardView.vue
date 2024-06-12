@@ -27,7 +27,7 @@
                 </tr>
             </thead>
             <!-- 테이블 : 공지사항 -->
-            <tbody>
+            <tbody v-if="smcode == this.$store.state.member?.deptCode">
                 <tr v-for="(data, index) in deptNotice" :key="index"  @click="goBoardDetail(smcode, data.boardId)">
                     <td class="text-center col-1">{{ data.boardId }}</td>
                     <td class="col-5">
@@ -38,7 +38,7 @@
                 </tr>
             </tbody>
             <!-- 테이블 : 일반글 -->
-            <tbody>
+            <tbody v-if="smcode == this.$store.state.member?.deptCode">
                 <tr v-for="(data, index) in board" :key="index"  @click="goBoardDetail(smcode, data.boardId)">
                     <td class="text-center">{{ data.boardId }}</td>
                     <td>{{ data.boardTitle }}</td>
@@ -49,7 +49,7 @@
         </table>
 
         <!-- 페이징 -->
-        <div class="row justify-content-between">
+        <div class="row justify-content-between" v-if="smcode == this.$store.state.member?.deptCode">
             <div class="col-4 w-25 mb-3">
                 <select class="form-select form-select-sm" v-model="pageSize" @change="retrieveDept()">
                     <option v-for="(data, index) in pageSizes" :key="index" :value="data">
@@ -61,7 +61,7 @@
                 <button type="button" class="btn btn-dark" @click="goWritePage">글쓰기</button>
             </div>
         </div>
-        <div class="row">
+        <div class="row" v-if="smcode == this.$store.state.member?.deptCode">
             <b-pagination class="col-12 mb-3 justify-content-center" v-model="page" :total-rows="count"
                 :per-page="pageSize" @click="retrieveDept"></b-pagination>
             
