@@ -188,7 +188,7 @@ export default {
             this.$router.push(`/board/club/${bocode}/${smcode}/${boardId}`);
         },
     goClubWrite() {
-      this.$router.push("/board/club/write");
+      this.$router.push("/board/club-write");
     },
   },
   mounted() {

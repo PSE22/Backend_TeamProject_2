@@ -44,7 +44,7 @@ public class NotifyService {
     @Transactional
     public void createBestNotify(Long boardId, NotifyDto notifyDto) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RuntimeException("Board not found"));
-        String content = board.getBoardTitle() + "이 베스트에 선정되었습니다.";
+        String content = board.getBoardTitle() + " : 베스트에 선정되었습니다.";
         Notify notify = new Notify();
         notify.setMemberId(board.getMemberId());
         notify.setNotiContent(content);
@@ -59,7 +59,7 @@ public class NotifyService {
     @Transactional
     public void createHotTopicNotify(Long boardId, NotifyDto notifyDto) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RuntimeException("Board not found"));
-        String content = board.getBoardTitle() + "이 핫토픽에 선정되었습니다.";
+        String content = board.getBoardTitle() + " : 핫토픽에 선정되었습니다.";
         Notify notify = new Notify();
         notify.setMemberId(board.getMemberId());
         notify.setNotiContent(content);
@@ -73,7 +73,7 @@ public class NotifyService {
     @Transactional
     public void createReplyNotify(Long boardId, NotifyDto notifyDto) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RuntimeException("Board not found"));
-        String content = board.getBoardTitle() + "에 새로운 댓글이 있습니다.";
+        String content = board.getBoardTitle() + " : 새로운 댓글이 있습니다.";
         Notify notify = new Notify();
         notify.setMemberId(board.getMemberId());
         notify.setNotiContent(content);

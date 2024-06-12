@@ -84,8 +84,13 @@ const routes = [
   },
   // 동호회 - 글쓰기
   {
-    path: "/board/club/write",
+    path: "/board/club-write",
     component: () => import("../views/board/ClubWriteView.vue"),
+  },
+  // 동호회 - 글쓰기
+  {
+    path: "/board/club-edit/:bocode/:smcode/:boardId",
+    component: () => import("../views/board/ClubEditView.vue"),
   },
   // 자유게시판
   {
@@ -102,6 +107,7 @@ const routes = [
     path: "/board/free-write",
     component: () => import("../views/board/FreeWrite.vue"),
   },
+
     // 자유게시판 수정
     {
       path: "/board/free-edit/:boardId",
@@ -137,29 +143,35 @@ const routes = [
       path: "/board/praise-write",
       component: () => import("../views/board/PraiseWrite.vue"),
     },
+  
   {
     path: '/board/main-search',
     name: 'SearchResults',
     component: () => import("../views/board/SearchResults.vue"),
   },
+  // 관리자 게시판 관리
   {
-    path: '/admin/board-mgmt',
+    path: "/admin/board-mgmt",
     component: () => import("../views/admin/BoardManagement.vue"),
   },
+  // 관리자 회원가입 관리
   {
-    path: '/admin/register-mgmt',
+    path: "/admin/register-mgmt",
     component: () => import("../views/admin/AdminRegisterMgmt.vue"),
   },
+  // 관리자 반려회원 관리
   {
-    path: '/admin/register-deny-mgmt',
+    path: "/admin/register-deny-mgmt",
     component: () => import("../views/admin/AdminRegisterDenyMgmt.vue"),
   },
+  // 관리자 회원정보 수정
   {
-    path: '/admin/edit-mgmt',
+    path: "/admin/edit-mgmt",
     component: () => import("../views/admin/AdminEditMgmt.vue"),
   },
+  // 관리자 신고 관리
   {
-    path: '/admin/report-mgmt',
+    path: "/admin/report-mgmt",
     component: () => import("../views/admin/AdminReportMgmt.vue"),
   },
 ];

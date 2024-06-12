@@ -3,6 +3,8 @@ package org.example.backend.service.board;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.backend.model.dto.board.BoardDto;
+import org.example.backend.model.dto.NotifyDto;
 import org.example.backend.model.dto.board.IReplyDto;
 import org.example.backend.model.dto.board.Reply.ReplyDto;
 import org.example.backend.model.entity.board.*;
@@ -10,6 +12,7 @@ import org.example.backend.repository.board.FileRepository;
 import org.example.backend.repository.board.ReplyFileRepository;
 import org.example.backend.repository.board.ReplyReportRepository;
 import org.example.backend.repository.board.ReplyRepository;
+import org.example.backend.service.auth.NotifyService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,7 +39,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class ReplyService {
-
+    private final NotifyService notifyService;
     private final ReplyRepository replyRepository;
     private final ReplyReportRepository replyReportRepository;
     private final FileRepository fileRepository;
@@ -67,17 +70,34 @@ public class ReplyService {
         // DTO -> Entity 변환
         Reply reply = modelMapper.map(replyDto, Reply.class);
 
-        // Reply 테이블 저장
-        Reply reply2 = replyRepository.save(reply);
+        // Reply 저장
+        reply.setBoardId(replyDto.getBoardId());
+        reply.setMemberId(replyDto.getMemberId());
+        reply.setReply(replyDto.getReply());
+        replyRepository.save(reply);
 
         // File 저장
+        if (file != null) {
+            saveReplyFile(null, file);
+        }
         File savedFile = saveReplyFile(null, file);
 
+        // 댓글 알림
+        Long boardId = replyDto.getBoardId();
+        NotifyDto notifyDto = new NotifyDto();
+//        notifyDto.setNotiUrl();
+        notifyService.createReplyNotify(boardId, notifyDto);
 
-        return reply2;
+        // 핫토픽 알림
+        int count = countReply(boardId);
+        if (count >= 10) {
+            notifyService.createHotTopicNotify(boardId, notifyDto);
+        }
+
+        return reply;
     }
 
-    // 댓글 파일 저장
+    // 댓글 파일 첨부 저장
     public File saveReplyFile(String uuid, MultipartFile file) {
         File file2 = null;
 
@@ -106,7 +126,7 @@ public class ReplyService {
             } else {
                 String fileDownload = ServletUriComponentsBuilder
                         .fromCurrentContextPath()           // spring 기본주소 : http://localhost:8000
-                        .path("/api/board/board-detail/file/upload/")           // 추가 경로 넣기
+                        .path("/api/board/file/upload/")           // 추가 경로 넣기
                         .path(uuid)                         // uuid 넣기
                         .toUriString();                     // 합치기
                 // File 객체 생성(생성자, setter) + save()

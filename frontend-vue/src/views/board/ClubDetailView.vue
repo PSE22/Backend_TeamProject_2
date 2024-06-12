@@ -1,9 +1,43 @@
 <template>
   <div class="w-80 p-3 board-detail-container">
-    <!-- 글 수정/삭제 버튼 : 글쓴이만 보임 -->
     <div class="row board-button">
-      <button class="col">수정</button>
-      <button class="col">삭제</button>
+      <button class="col" @click="goClubEdit(bocode, smcode, boardId)">
+        수정
+      </button>
+      <button class="col" data-bs-toggle="modal" data-bs-target="#delete">삭제</button>
+    </div>
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="delete"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">삭제</h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">삭제 하시겠습니까?</div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              취소
+            </button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="deleteBoard">확인</button>
+          </div>
+        </div>
+      </div>
     </div>
     <!-- 게시글 -->
     <div class="row board-content">
@@ -172,7 +206,7 @@ export default {
           lat: 33.450701,
           lng: 126.570667,
         }, //지도의 중심좌표.
-        level: 3, //지도의 레벨(확대, 축소 정도)
+        level: 4, //지도의 레벨(확대, 축소 정도)
       },
       address: "",
     };
@@ -222,6 +256,9 @@ export default {
     // 글번호로 장소 가져오기
     async retrievePlace() {
       try {
+        let response = await BoardDetailService.getPlace(this.boardId);
+        this.address = response.data.address;
+        if (!this.address) return;
         let kakao = window.kakao;
         var container = this.$refs.map;
         const { center, level } = this.options;
@@ -231,8 +268,7 @@ export default {
           level,
         }); //지도 생성 및 객체 리턴
         this.map = map;
-        let response = await BoardDetailService.getPlace(this.boardId)
-        this.address = response.data.address;
+
         // 주소-좌표 변환 객체를 생성합니다
         var geocoder = new kakao.maps.services.Geocoder();
         // 주소로 좌표를 검색합니다
@@ -421,14 +457,28 @@ export default {
         console.log(e);
       }
     },
+    goClubEdit(bocode, smcode, boardId) {
+      this.$router.push(`/board/club-edit/${bocode}/${smcode}/${boardId}`);
+    },
     goBack() {
       this.$router.push({
         path: "/board/club",
         query: { bocode: this.bocode },
       });
     },
+    async deleteBoard() {
+      try {
+        let response = await BoardDetailService.deleteBoard(this.boardId);
+        console.log("삭제", response);
+        this.$router.push(`/board/club`);
+        alert("삭제되었습니다.");
+      } catch (error) {
+        console.log("삭제 에러", error);
+        alert("삭제에 실패했습니다.");
+      }
+    },
   },
-  mounted() {
+  async mounted() {
     console.log("Route params:", this.$route.params);
     console.log(
       "부서코드 : ",
@@ -449,17 +499,20 @@ export default {
     this.retrieveReply();
     this.retrieveReplyCount();
 
-    if (window.kakao && window.kakao.maps) {
-      this.retrievePlace(this.address);
-    } else {
-      const script = document.createElement("script");
-      // 로드 완료 후 retrieveMap() 메서드 실행 추가
-      script.onload = () => {
-        this.retrievePlace(this.address);
-      };
-      script.src =
-        "//dapi.kakao.com/v2/maps/sdk.js?appkey=55b411073309a73c48d56caa594311c8"; // 발급받은 API 키로 변경
-      document.head.appendChild(script);
+    let placeResponse = await BoardDetailService.getPlace(this.boardId);
+    if (placeResponse.data.address) {
+      this.address = placeResponse.data.address;
+      if (window.kakao && window.kakao.maps) {
+        this.retrievePlace();
+      } else {
+        const script = document.createElement("script");
+        script.onload = () => {
+          this.retrievePlace();
+        };
+        script.src =
+          "//dapi.kakao.com/v2/maps/sdk.js?appkey=55b411073309a73c48d56caa594311c8"; // 발급받은 API 키로 변경
+        document.head.appendChild(script);
+      }
     }
   },
 };

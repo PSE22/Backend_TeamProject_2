@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.protocol.types.Field;
 import org.example.backend.model.common.BoardIdMemberIdPk;
+import org.example.backend.model.dto.NotifyDto;
+import org.example.backend.model.dto.board.DelBoardDto;
 import org.example.backend.model.dto.board.IBoardDetailDto;
 import org.example.backend.model.dto.board.IBoardDto;
 import org.example.backend.model.dto.board.IUserDto;
@@ -12,14 +14,17 @@ import org.example.backend.model.entity.board.Place;
 import org.example.backend.model.entity.board.Recommend;
 import org.example.backend.model.entity.board.Report;
 import org.example.backend.model.entity.board.Vote;
-import org.example.backend.repository.board.BoardDetailRepository;
-import org.example.backend.repository.board.RecommendRepository;
-import org.example.backend.repository.board.ReportRepository;
+import org.example.backend.repository.board.*;
+import org.example.backend.service.auth.NotifyService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * packageName : org.example.backend.service.board
@@ -38,11 +43,17 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class BoardDetailService {
-
+    private final NotifyService notifyService;
     private final BoardDetailRepository boardDetailRepository;
     private final RecommendRepository recommendRepository;
     private final ReportRepository reportRepository;
     private final ModelMapper modelMapper;
+    private final BoardFileRepository boardFileRepository;
+    private final ReplyFileRepository replyFileRepository;
+    private final ReplyRepository replyRepository;
+    private final PlaceRepository placeRepository;
+    private final VoteMemberRepository voteMemberRepository;
+    private final VoteRepository voteRepository;
 
     // 로그인된 회원 정보 조회
     public Optional<IUserDto> findMember(String memberId) {
@@ -92,18 +103,17 @@ public class BoardDetailService {
     // 추천 저장
     public Recommend saveRecommend(Recommend recommend) {
         Recommend recommend2 = recommendRepository.save(recommend);
-        return recommend2;
-    }
 
-    // 추천 삭제
-    public boolean deleteRecommend(BoardIdMemberIdPk boardIdMemberIdPk) {
-        if (recommendRepository.existsById(boardIdMemberIdPk)) {
-            // 추천 데이터가 존재하면 삭제
-            recommendRepository.deleteById(boardIdMemberIdPk);
-            return true;
-        } else {
-            return false;
+        // 베스트 알림
+        Long boardId = recommend2.getBoardId();
+        int count = countRecommend(boardId);
+        NotifyDto notifyDto = new NotifyDto();
+//        notifyDto.setNotiUrl();
+        if (count >= 10) {
+            notifyService.createBestNotify(boardId, notifyDto);
         }
+
+        return recommend2;
     }
 
     // 추천 수 카운트
@@ -118,9 +128,54 @@ public class BoardDetailService {
         return report2;
     }
 
+    @Transactional
     public void deleteBoard(Long boardId) {
+        List<DelBoardDto> delData = boardDetailRepository.findByBoardId(boardId);
+
+        // 댓글 파일 삭제
+        for (DelBoardDto item : delData) {
+            String uuid = item.getUuid();
+            if (uuid != null) {
+                replyFileRepository.deleteByUuid(uuid);
+            }
+        }
+
+        // 게시글 파일 삭제
+        for (DelBoardDto item : delData) {
+            String uuid = item.getUuid();
+            if (uuid != null) {
+                boardFileRepository.deleteByUuid(uuid);
+            }
+        }
+
+        // 파일 삭제
+        for (DelBoardDto item : delData) {
+            String uuid = item.getUuid();
+            if (uuid != null) {
+                boardFileRepository.deleteByUuid(uuid);
+            }
+        }
+
+        // 댓글 삭제
+        for (DelBoardDto item : delData) {
+            Long replyId = item.getReplyId();
+            if (replyId != null) {
+                replyRepository.deleteById(replyId);
+            }
+        }
+
+        // 장소 삭제
+        placeRepository.deleteByBoardId(boardId);
+        // 투표멤버 삭제
+        voteMemberRepository.deleteByBoardId(boardId);
+        // 투표 삭제
+        voteRepository.deleteByBoardId(boardId);
+        // 추천 삭제
+        recommendRepository.deleteByBoardId(boardId);
+        // 게시물 삭제
         boardDetailRepository.deleteById(boardId);
     }
+
 
     public void updateBoard(Long boardId, IBoardDto boardDto) {
         Board board2 = boardDetailRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));

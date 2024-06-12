@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BoardFileRepository extends JpaRepository<BoardFile, Long> {
+    void deleteByUuid(String uuid);
 }

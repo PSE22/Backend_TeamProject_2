@@ -4,24 +4,16 @@
       <h1 class="sidebar-title">{{ member.memberName }}님</h1>
       <hr class="sidebar-divider" />
       <ul class="sidebar-list">
-        <router-link to="/profile-edit" class="profile-link"
-          ><li class="sidebar-menu mb-5">회원정보수정</li></router-link
-        >
-        <router-link to="/profile-edit/password" class="profile-link"
-          ><li class="sidebar-menu mb-5">비밀번호변경</li></router-link
-        >
-        <router-link to="/profile-edit/nickname" class="profile-link"
-          ><li class="sidebar-menu mb-5">닉네임변경</li></router-link
-        >
-        <router-link to="/profile-activity" class="profile-link"
-          ><li class="sidebar-menu">활동내역</li></router-link
-        >
+        <router-link to="/profile" class="profile-link"><li class="sidebar-menu mb-5">내 프로필</li></router-link>
+        <router-link to="/profile-edit/password" class="profile-link"><li class="sidebar-menu mb-5">비밀번호변경</li></router-link>
+        <router-link to="/profile-edit/nickname" class="profile-link"><li class="sidebar-menu mb-5">닉네임변경</li></router-link>
+        <router-link to="/profile-activity" class="profile-link"><li class="sidebar-menu">활동내역</li></router-link>
       </ul>
     </div>
     <div class="main-content">
       <div class="section">
         <router-link to="/profile" class="profile-main"
-          ><h3>Profile</h3></router-link
+          ><h3>비밀번호 변경</h3></router-link
         >
         <hr />
         <div class="user-info">
@@ -32,7 +24,7 @@
                 class="edit-box"
                 type="password"
                 placeholder="비밀번호 입력"
-                v-model="member.memberPw"
+                v-model="password"
               />
             </div>
             <div class="detail-item">
@@ -61,6 +53,7 @@ export default {
   data() {
     return {
       member: {},
+      password: "",
       rePw: "",
     };
   },
@@ -80,7 +73,7 @@ export default {
       try {
         let data = {
           memberId: this.member.memberId,
-          memberPw: this.member.memberPw,
+          memberPw: this.password,
           memberName: this.member.memberName,
           memberEmail: this.member.memberEmail,
           memberExt: this.member.memberExt,
@@ -100,7 +93,7 @@ export default {
   },
   computed: {
     isPasswordMatch() {
-      return this.member.memberPw === this.rePw;
+      return this.password === this.rePw;
     },
   },
   mounted() {
