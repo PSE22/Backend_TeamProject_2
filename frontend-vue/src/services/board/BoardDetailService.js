@@ -40,7 +40,6 @@ class BoardDetailService {
     });
   }
 
-
   // 글번호로 이미지 조회
   getImg(boardId) {
     return http.get(`/board/board-detail/board-img?boardId=${boardId}`);

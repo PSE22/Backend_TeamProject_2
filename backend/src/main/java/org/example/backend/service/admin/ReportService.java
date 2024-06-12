@@ -28,8 +28,14 @@ import java.util.List;
 public class ReportService {
     private final ReportRepository reportRepository;
 
+//    신고 목록 불러오기
     public Page<IReportDto> findByBoard(Pageable pageable) {
         Page<IReportDto> list = reportRepository.findByBoard(pageable);
         return list;
+    }
+
+    //  10) 회원 삭제 (hard delete)
+    public void delReport(Long reportId) {
+        reportRepository.deleteReport(reportId);
     }
 }

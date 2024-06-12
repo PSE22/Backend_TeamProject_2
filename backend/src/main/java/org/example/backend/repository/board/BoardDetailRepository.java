@@ -81,7 +81,8 @@ public interface BoardDetailRepository extends JpaRepository<Board, Long> {
     // 글번호로 이미지 조회
     @Query(value = "SELECT BF.BOARD_ID AS boardId,\n" +
             "              F.UUID AS uuid,\n" +
-            "              F.FILE_URL AS fileUrl\n" +
+            "              F.FILE_URL AS fileUrl,\n" +
+            "F.FILE_NAME AS fileName " +
             "        FROM TB_BOARD_FILE BF, TB_FILE F\n" +
             "        WHERE BF.UUID = F.UUID\n" +
             "        AND BF.BOARD_ID = :boardId"

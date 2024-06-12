@@ -20,6 +20,7 @@ public interface IBoardDetailDto {
     Long getBoardId();      // 게시판 ID
     String getUuid();       // 파일 ID
     String getFileUrl();    // 파일 URL
+    String getFileName();    // 파일 URL
 
 
 }
