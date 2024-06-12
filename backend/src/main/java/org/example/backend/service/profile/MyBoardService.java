@@ -1,6 +1,7 @@
 package org.example.backend.service.profile;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.backend.model.dto.IMyReplyDto;
 import org.example.backend.model.entity.board.Board;
 import org.example.backend.model.entity.board.Reply;
 import org.example.backend.repository.profile.MyBoardRepository;
@@ -40,10 +41,10 @@ public class MyBoardService {
         return page;
     }
 
-    public Page<Reply> findByMemberIdOfComment(
+    public Page<IMyReplyDto> findByMemberIdOfComment(
             String memberId, Pageable pageable
     ) {
-        Page<Reply> page = myCommentRepository.findByMemberIdOfComment(memberId, pageable);
+        Page<IMyReplyDto> page = myCommentRepository.findByMemberIdOfComment(memberId, pageable);
         return page;
     }
 }
