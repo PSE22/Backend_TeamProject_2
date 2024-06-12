@@ -72,6 +72,12 @@ const routes = [
     path: "/board/dept-edit/:smcode/:boardId",
     component: () => import("../views/board/DeptBoardEdit.vue"),
   },
+  {
+    path: "/board/dept-write",
+    name: "DeptBoardWrite",
+    component: () => import("../views/board/DeptBoardWrite.vue"),
+  },
+  
   // 동호회게시판
   {
     path: "/board/club",
