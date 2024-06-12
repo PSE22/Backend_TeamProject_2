@@ -1,6 +1,7 @@
 package org.example.backend.controller.profile;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.backend.model.dto.IMyReplyDto;
 import org.example.backend.model.entity.board.Board;
 import org.example.backend.model.entity.board.Reply;
 import org.example.backend.service.profile.MyBoardService;
@@ -80,17 +81,17 @@ public class MyBoardController {
             Pageable pageable = PageRequest.of(page, size);
 
 //            전체 조회 서비스 실행
-            Page<Reply> replyPage
+            Page<IMyReplyDto> myReplyDtos
                     = myBoardService.findByMemberIdOfComment(memberId, pageable);
 
 //            공통 페이징 객체 생성 : 자료 구조 맵 사용
             Map<String, Object> response = new HashMap<>();
-            response.put("reply", replyPage.getContent()); // reply 배열
-            response.put("currentPage", replyPage.getNumber()); // 현재페이지번호
-            response.put("totalItems", replyPage.getTotalElements()); // 총건수(개수)
-            response.put("totalPages", replyPage.getTotalPages()); // 총페이지수
+            response.put("reply", myReplyDtos.getContent()); // reply 배열
+            response.put("currentPage", myReplyDtos.getNumber()); // 현재페이지번호
+            response.put("totalItems", myReplyDtos.getTotalElements()); // 총건수(개수)
+            response.put("totalPages", myReplyDtos.getTotalPages()); // 총페이지수
 
-            if (replyPage.isEmpty() == false) {
+            if (myReplyDtos.isEmpty() == false) {
 //                조회 성공
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else {

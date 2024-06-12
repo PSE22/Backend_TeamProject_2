@@ -26,6 +26,7 @@ public interface MyBoardRepository extends JpaRepository<Board, Long> {
     @Query(value = "SELECT *\n" +
             "FROM TB_BOARD\n" +
             "WHERE MEMBER_ID = :memberId\n" +
+            "AND STATUS = 'Y'\n" +
             "ORDER BY ADD_DATE DESC"
     , nativeQuery = true)
     Page<Board> findByMemberIdOfBoard(@Param("memberId") String memberId, Pageable pageable);

@@ -1,5 +1,6 @@
 package org.example.backend.repository.profile;
 
+import org.example.backend.model.dto.IMyReplyDto;
 import org.example.backend.model.entity.board.Reply;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,10 +24,12 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface MyCommentRepository extends JpaRepository<Reply, Long> {
-    @Query(value = "SELECT *\n" +
-            "FROM TB_REPLY\n" +
-            "WHERE MEMBER_ID = :memberId\n" +
-            "ORDER BY ADD_DATE DESC"
+    @Query(value = "SELECT B.BOARD_ID AS boardId, B.BOCODE AS bocode, B.SMCODE AS smcode, R.REPLY_ID AS replyId, R.MEMBER_ID AS memberId, R.REPLY AS reply, R.ADD_DATE AS addDate\n" +
+            "FROM TB_BOARD B, TB_REPLY R\n" +
+            "WHERE B.BOARD_ID = R.BOARD_ID\n" +
+            "AND R.MEMBER_ID = :memberId\n" +
+            "AND B.STATUS = 'Y'\n" +
+            "AND R.STATUS = 'Y'"
             , nativeQuery = true)
-    Page<Reply> findByMemberIdOfComment(@Param("memberId") String memberId, Pageable pageable);
+    Page<IMyReplyDto> findByMemberIdOfComment(@Param("memberId") String memberId, Pageable pageable);
 }

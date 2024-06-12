@@ -30,13 +30,6 @@ class MemberService {
     });
   }
 
-  // 활동내역 조회
-  getActivity(memberId) {
-    return http.get(`/member/profile-activity/${memberId}`, {
-      headers: LoginHeader(),
-    });
-  }
-
   // 본인 게시글 전체 조회
   getAllPost(memberId, page, size) {
     return http.get(`/member/activity-board/${memberId}?page=${page}&size=${size}`, {
