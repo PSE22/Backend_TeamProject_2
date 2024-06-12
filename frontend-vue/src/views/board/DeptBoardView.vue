@@ -48,7 +48,7 @@
             </tbody>
         </table>
 
-        <!-- {/* paging 시작 */} -->
+        <!-- 페이징 -->
         <div class="row justify-content-between">
             <div class="col-4 w-25 mb-3">
                 <select class="form-select form-select-sm" v-model="pageSize" @change="retrieveDept()">
@@ -58,15 +58,14 @@
                 </select>
             </div>
             <div class="col-1">
-                <button type="button" class="btn btn-dark">글쓰기</button>
+                <button type="button" class="btn btn-dark" @click="goWritePage">글쓰기</button>
             </div>
         </div>
         <div class="row">
             <b-pagination class="col-12 mb-3 justify-content-center" v-model="page" :total-rows="count"
                 :per-page="pageSize" @click="retrieveDept"></b-pagination>
-            <!-- {/* paging 끝 */} -->
-
-            <!-- {/* 검색어 start */} -->
+            
+            <!-- 검색어 입력 -->
             <div class="col-md-4 mx-auto">
                 <div class="input-group mb-3">
                     <input type="text" class="form-control" placeholder="검색어를 입력해주세요" v-model="searchTitle"
@@ -76,7 +75,6 @@
                     </button>
                 </div>
             </div>
-            <!-- {/* 검색어 end */} -->
         </div>
     </div>
 </template>
@@ -136,6 +134,10 @@ export default {
             this.smcode = dept;
             this.retrieveDeptNotice();
             this.retrieveDept();    // 재조회
+        },
+        // 글쓰기 페이지로 이동
+        goWritePage() {
+            this.$router.push({ path: '/board/dept-write', query: { smcode: this.smcode } });
         },
     },
     mounted() {

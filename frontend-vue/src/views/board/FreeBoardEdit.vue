@@ -114,7 +114,7 @@
                           @click="resetPlace"
                           data-bs-dismiss="modal"
                         >
-                          취소
+                          초기화
                         </button>
                         <button
                           type="button"
@@ -206,13 +206,13 @@
         </div>
   
         <!-- 수정 버튼 -->
-        <div class="fixed-button-container">
+        <div class="fixed-button">
           <button type="button" class="btn btn-primary" @click="editBoard">
             수정
           </button>
           <button type="button" class="btn btn-danger" @click="deleteBoard">
-            삭제
-          </button>
+          취소
+        </button>
         </div>
       </div>
     </div>
@@ -397,17 +397,6 @@
           alert("게시글 수정 중 에러가 발생했습니다.");
         }
       },
-      async deleteBoard() {
-        try {
-          // Delete the board using the service
-          await BoardEditService.deleteBoard(this.boardId);
-          alert("게시글이 삭제되었습니다.");
-          this.$router.push(`/board`); // Redirect to the board list page
-        } catch (error) {
-          console.error("게시글 삭제 중 에러 발생:", error);
-          alert("게시글 삭제 중 에러가 발생했습니다.");
-        }
-      },
     },
     computed: {
       minDate() {
@@ -447,31 +436,30 @@
   </script>
   
   <style>
-  .free-box {
-    margin: 100px auto;
-    background-color: rgba(255, 255, 255, 1);
-    padding: 40px 30px;
-    border: 3px solid #505050;
-    width: 800px;
-    position: relative; /* 부모 요소를 기준으로 위치를 설정합니다 */
-  }
-  
-  .fixed-button-container {
-    position: absolute;
-    bottom: -60px; /* free-box 아래에 위치를 조정 (간격 조정) */
-    right: 0px; /* 오른쪽 끝에 위치를 조정 */
-    display: flex;
-    gap: 10px;
-  }
-  
-  .file-list p {
-    margin-bottom: 0;
-  }
-  
-  .file-list .file-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
+.free-box {
+  margin: 100px auto;
+  background-color: rgba(255, 255, 255, 1);
+  padding: 40px 30px;
+  border: 1px solid #959595;
+  width: 1000px;
+  position: relative; /* 부모 요소를 기준으로 위치를 설정합니다 */
+  border-radius: 10px;
+}
+
+.fixed-button {
+  position: absolute;
+  bottom: -60px; /* free-box 아래에 위치를 조정 (간격 조정) */
+  right: 0px; /* 오른쪽 끝에 위치를 조정 */
+}
+
+.file-list p {
+  margin-bottom: 0;
+}
+
+.file-list .file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
   </style>
   

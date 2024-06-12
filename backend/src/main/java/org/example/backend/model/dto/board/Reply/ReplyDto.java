@@ -28,11 +28,6 @@ public class ReplyDto {
     private Long replyId;       // 댓글 ID
     private Long boardId;       // 글 ID
     private String memberId;    // 회원 ID
-//    private Long reReplyId;     // 대댓글 ID
     private String reply;       // 대댓글 내용
-
-    // ReplyFile
-//    private Long fileRid;    // 댓글파일ID (PK)
-//    private Long replyId;   // 댓글ID (FK)
-//    private String uuid;   //파일ID (FK)
+    private Long reReply;       // 대댓글 ID
 }
