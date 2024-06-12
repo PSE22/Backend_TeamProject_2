@@ -46,9 +46,13 @@ class ReplyService {
     formData.append("boardId", temp.boardId);
     formData.append("memberId", temp.memberId);
     formData.append("reply", temp.reply);
+    formData.append("reReply", temp.reReply);
     formData.append("file", file);
 
-    console.log("formdata임:: ", formData)
+    //formData 로그
+    for (const x of formData) {
+      console.log("formData ::: ", x);
+    }
 
     return http.post("/board/board-detail/reply", formData, {
       headers: {

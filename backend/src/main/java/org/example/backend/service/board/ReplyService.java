@@ -67,35 +67,46 @@ public class ReplyService {
     // 댓글 저장/수정
     @Transactional
     public Reply saveReply(ReplyDto replyDto, MultipartFile file) {
-        // DTO -> Entity 변환
+        // DTO -> Entity 매핑
         Reply reply = modelMapper.map(replyDto, Reply.class);
 
         // Reply 저장
         reply.setBoardId(replyDto.getBoardId());
         reply.setMemberId(replyDto.getMemberId());
         reply.setReply(replyDto.getReply());
+        reply.setReReply(replyDto.getReReply());
         replyRepository.save(reply);
 
-        // File 저장
-        if (file != null) {
-            saveReplyFile(null, file);
+        // File, ReplyFile 저장
+        if (file != null && !file.isEmpty()) {
+            File file2 = saveReplyFile(null, file);
+
+            ReplyFile replyFile = modelMapper.map(replyDto, ReplyFile.class);
+
+            replyFile.setReplyId(reply.getReplyId());
+            replyFile.setUuid(file2.getUuid());
+            replyFileRepository.save(replyFile);
         }
-        File savedFile = saveReplyFile(null, file);
+
+
 
         // 댓글 알림
-        Long boardId = replyDto.getBoardId();
-        NotifyDto notifyDto = new NotifyDto();
-//        notifyDto.setNotiUrl();
-        notifyService.createReplyNotify(boardId, notifyDto);
-
-        // 핫토픽 알림
-        int count = countReply(boardId);
-        if (count >= 10) {
-            notifyService.createHotTopicNotify(boardId, notifyDto);
-        }
+//        Long boardId = replyDto.getBoardId();
+//        NotifyDto notifyDto = new NotifyDto();
+////        notifyDto.setNotiUrl();
+//        notifyService.createReplyNotify(boardId, notifyDto);
+//
+//        // 핫토픽 알림
+//        int count = countReply(boardId);
+//        if (count >= 10) {
+//            notifyService.createHotTopicNotify(boardId, notifyDto);
+//        }
 
         return reply;
     }
+
+    // 댓글 관리 테이블에 저장
+
 
     // 댓글 파일 첨부 저장
     public File saveReplyFile(String uuid, MultipartFile file) {
