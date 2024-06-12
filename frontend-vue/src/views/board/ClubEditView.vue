@@ -10,7 +10,7 @@
               type="text"
               class="form-control"
               disabled
-              v-model="board.bocodeName"
+              v-model="boardName"
             />
           </div>
           <div class="col-4">
@@ -18,7 +18,7 @@
               type="text"
               class="form-control"
               disabled
-              v-model="cmcd.cmcdName"
+              v-model="boCmcd.cmcdName"
             />
           </div>
           <div class="col-4">
@@ -53,116 +53,218 @@
             </div>
           </div>
         </div>
-
-        <!-- 장소 추가 -->
-        <div class="row mt-3">
-          <div class="col-md-3 mb-3 align-items-center d-flex">
-            <div>
-              <button
-                type="button"
-                class="btn btn-outline-dark me-3"
-                data-bs-toggle="modal"
-                data-bs-target="#vote-modal"
-              >
-                <i class="bi bi-bar-chart-line"></i> 투표
-              </button>
-              <button
-                type="button"
-                class="btn btn-outline-dark"
-                data-bs-toggle="modal"
-                data-bs-target="#place-modal-edit"
-                @click="relayout"
-              >
-                <i class="bi bi-geo-alt"></i> 장소
-              </button>
-              <!-- 장소 Modal -->
-              <div
-                class="modal fade"
-                id="place-modal-edit"
-                tabindex="-1"
-                aria-labelledby="exampleModalLabel"
-                aria-hidden="true"
-              >
-                <div class="modal-dialog modal-lg modal-dialog-centered">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <div class="row">
-                        <div class="col-auto">
-                          <h1 class="modal-title fs-5" id="exampleModalLabel">
-                            장소 추가
-                          </h1>
-                        </div>
-
-                        <div class="col-auto">
-                          <input
-                            class="form-control"
-                            type="text"
-                            v-model="address"
-                            placeholder="주소검색 사용"
-                            @keypress.enter="openPostcode"
-                            disabled
-                          />
-                        </div>
-                        <div class="col-auto">
-                          <input
-                            type="button"
-                            @click="openPostcode"
-                            value="주소 검색"
-                            class="btn btn-dark"
-                          />
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                      ></button>
-                    </div>
-                    <div class="modal-body">
-                      <div
-                        id="map"
-                        ref="mapContainer"
-                        style="
-                          width: 100%;
-                          height: 500px;
-                          margin-top: 10px;
-                          display: none;
-                        "
-                      ></div>
-                    </div>
-                    <div class="modal-footer">
-                      <button
-                        type="button"
-                        class="btn btn-secondary"
-                        @click="resetPlace"
-                        data-bs-dismiss="modal"
-                      >
-                        취소
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn-primary"
-                        data-bs-dismiss="modal"
-                        @click="placeEdit"
-                      >
-                        확인
-                      </button>
-                    </div>
+        <!-- 투표 추가 -->
+        <div class="d-grid gap-3 d-md-block mt-3 mb-3 text-start">
+          <button
+            type="button"
+            class="btn btn-outline-dark me-3"
+            data-bs-toggle="modal"
+            data-bs-target="#vote-modal"
+            v-if="this.vote"
+          >
+            <i class="bi bi-bar-chart-line"></i> 투표
+          </button>
+          <!-- 투표추가 모달 -->
+          <div
+            class="modal fade"
+            id="vote-modal"
+            tabindex="-1"
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalLabel">
+                    투표
+                  </h1>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  <h5 class="text-start">투표명</h5>
+                  <input
+                    type="text"
+                    class="form-control mb-3"
+                    disabled
+                    v-if="vote.length > 0"
+                    v-model="vote[0].voteName"
+                  />
+                  <hr />
+                  <h5 class="text-start">항목 보기</h5>
+                  <div v-for="(data, index) in vote" :key="index">
+                    <input
+                      type="text"
+                      class="form-control mb-3"
+                      disabled
+                      v-model="data.voteList"
+                    />
                   </div>
+                  <hr />
+                  <h5 class="text-start">
+                    종료일 :
+                    <input
+                      type="date"
+                      v-if="vote.length > 0"
+                      v-model="vote[0].delDate"
+                      disabled
+                    />
+                  </h5>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    data-bs-dismiss="modal"
+                    @click="submitVote"
+                  >
+                    확인
+                  </button>
                 </div>
               </div>
-              <!-- 장소 Modal 끝 -->
+            </div>
+            <!-- 투표추가 모달 끝 -->
+          </div>
+          <button
+            type="button"
+            class="btn btn-outline-dark me-3"
+            data-bs-toggle="modal"
+            data-bs-target="#place-modal"
+            @click="relayout"
+          >
+            <i class="bi bi-geo-alt"></i> 장소
+          </button>
+          <!-- 장소 장소 보기Modal -->
+          <div
+            v-if="address"
+            class="modal fade"
+            id="place-modal"
+            tabindex="-1"
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <div class="row">
+                    <div class="col-auto">
+                      <h1 class="modal-title fs-5" id="exampleModalLabel">
+                        장소 추가
+                      </h1>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  <div
+                    id="map"
+                    style="width: 100%; height: 500px"
+                    ref="map"
+                  ></div>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    data-bs-dismiss="modal"
+                  >
+                    확인
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-          <!-- 기존 주소명 -->
-          <div class="col-md-4 mb-4 mb-md-0" v-if="!placeExists">
-            <span>{{ address.address }}</span>
+          <!-- 장소 장소 보기 Modal 끝 -->
+          <!-- 장소 추가 Modal -->
+          <div
+            class="modal fade"
+            id="place-modal"
+            tabindex="-1"
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <div class="row">
+                    <div class="col-auto">
+                      <h1 class="modal-title fs-5" id="exampleModalLabel">
+                        장소 추가
+                      </h1>
+                    </div>
+
+                    <div class="col-auto">
+                      <input
+                        class="form-control"
+                        type="text"
+                        v-model="address"
+                        placeholder="주소검색 사용"
+                        @keypress.enter="openPostcode"
+                        disabled
+                      />
+                    </div>
+                    <div class="col-auto">
+                      <input
+                        type="button"
+                        @click="openPostcode"
+                        value="주소 검색"
+                        class="btn btn-dark"
+                      />
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  <div
+                    id="map"
+                    ref="mapContainer"
+                    style="
+                      width: 100%;
+                      height: 500px;
+                      margin-top: 10px;
+                      display: none;
+                    "
+                  ></div>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    @click="resetPlace"
+                    data-bs-dismiss="modal"
+                  >
+                    취소
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    data-bs-dismiss="modal"
+                    @click="placeEdit"
+                  >
+                    확인
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
-          <!-- 신규 주소명 -->
-          <div class="col-md-4 mb-4 mb-md-0" v-if="placeExists">
-            <span>{{ address.address }}</span>
-          </div>
+          <!-- 장소 Modal 끝 -->
+          <span v-if="address"
+            ><i class="bi bi-geo-alt-fill"></i> {{ address }}</span
+          >
         </div>
       </div>
 
@@ -216,10 +318,10 @@
               :key="'existing_' + index"
               class="file-item"
             >
-              <p class="d-inline">{{ existingFile.fileUrl }}</p>
+              <p class="d-inline">{{ existingFile.fileName }}</p>
               <button
                 type="button"
-                class="btn btn-danger btn-sm ms-2"
+                class="btn btn-danger"
                 @click="removeExistingFile(index)"
               >
                 x
@@ -231,10 +333,14 @@
 
       <!-- 수정 버튼 -->
       <div class="fixed-button">
-        <button type="button" class="btn btn-secondary me-md-2" @click="editBoard">
+        <button
+          type="button"
+          class="btn btn-danger me-md-2"
+          @click="editBoard"
+        >
           수정
         </button>
-        <button type="button" class="btn btn-danger" @click="deleteBoard">
+        <button type="button" class="btn btn-secondary" @click="deleteBoard">
           취소
         </button>
       </div>
@@ -244,7 +350,9 @@
 
 <script>
 let daum = window.daum;
+import BoardDetailService from "@/services/board/BoardDetailService";
 import BoardEditService from "@/services/board/BoardEditService";
+import BoardWrite from "@/services/board/BoardWriteService";
 export default {
   components: {
     // KakaoMap,
@@ -262,11 +370,13 @@ export default {
         noticeYn: "N",
         bocodeName: "", // board 객체에 bocodeName 속성 추가
       }, // 게시글
-      cmcd: {
+      boCmcd: {
         cmcdName: "", // cmcd 객체에 cmcdName 속성 추가
       }, // 부서코드, 부서명
       smCmcd: {},
-      vote: {},
+      boardName: "동호회 게시판",
+
+      vote: [],
       voteExists: false, // 투표가 생성되었는지 여부를 저장하는 변수
 
       place: "", // 장소
@@ -277,10 +387,18 @@ export default {
       selectBocode: "",
       existingFiles: [], // 기존 파일 목록을 저장하는 배열
 
-      address: "", // 주소 데이터
       map: null,
-      geocoder: null,
-      marker: null,
+      infowindow: null,
+      markers: [],
+      options: {
+        //지도를 생성할 때 필요한 기본 옵션
+        center: {
+          lat: 33.450701,
+          lng: 126.570667,
+        }, //지도의 중심좌표.
+        level: 4, //지도의 레벨(확대, 축소 정도)
+      },
+      address: "",
     };
   },
   methods: {
@@ -307,26 +425,15 @@ export default {
         console.log("retrieveBoard 에러", e);
       }
     },
-    // 코드번호로 코드명 가져오기 / 게시판명
-    async retrieveUpCode() {
-      try {
-        let response = await BoardEditService.getCmCd("BO02"); // BO01 코드를 가져오도록 수정
-        // 부서게시판 코드명을 board 객체에 할당합니다.
-        this.board.bocodeName = response.data.cmCdName;
-        console.log("부서게시판 코드명: ", this.board.bocodeName);
-      } catch (e) {
-        console.log("retrieveCode 에러", e);
-      }
-    },
     // 코드번호로 코드명 가져오기 / 부서명
-    async retrieveCode() {
+    async retrieveBocode() {
       try {
         let response = await BoardEditService.getCmCd(this.bocode); // DE01 코드를 가져오도록 수정
         // 영업팀 코드명을 board 객체에 할당합니다.
-        this.cmcd.cmcdName = response.data.cmCdName;
-        console.log("부서코드명: ", this.cmcd.cmcdName);
+        this.boCmcd.cmcdName = response.data.cmCdName;
+        console.log("부서코드명: ", this.boCmcd.cmcdName);
       } catch (e) {
-        console.log("retrieveCode 에러", e);
+        console.log("retrieveBocode 에러", e);
       }
     },
     async retrieveSmcode() {
@@ -335,24 +442,73 @@ export default {
         // 영업팀 코드명을 board 객체에 할당합니다.
         this.smCmcd = response.data;
       } catch (e) {
-        console.log("retrieveCode 에러", e);
+        console.log("retrieveSmcode 에러", e);
       }
     },
     // 글번호로 투표 가져오기
-    async retrieveVote() {},
+    async retrieveVote() {
+      try {
+        let response = await BoardEditService.getVote(this.boardId);
+        this.vote = response.data;
+        console.log("투표 :", response);
+        console.log("투표 :", this.vote);
+      } catch (e) {
+        console.log("vote 에러", e);
+      }
+    },
+    relayout() {
+      this.delayFunction(() => {
+        this.map.relayout();
+        this.retrievePlace(this.searchAddres);
+      }, 160); // 1초 후 실행
+      // this.map.relayout();
+    },
+    delayFunction(callback, delay) {
+      setTimeout(callback, delay);
+    },
     // 글번호로 장소를 가져오는 메서드
     async retrievePlace() {
       try {
-        // 백엔드에서 장소를 가져오는 로직을 수행합니다.
-        const response = await BoardEditService.getPlace(this.boardId);
-        if (response.data) {
-          // 장소가 있으면 가져온 장소를 데이터에 할당합니다.
-          this.address = response.data;
-        } else {
-          this.placeExists = false;
-        }
-      } catch (error) {
-        console.error("장소를 가져오는 중 에러 발생:", error);
+        let response = await BoardDetailService.getPlace(this.boardId);
+        this.address = response.data.address;
+        if (!this.address) return;
+        let kakao = window.kakao;
+        var container = this.$refs.map;
+        const { center, level } = this.options;
+
+        let map = new kakao.maps.Map(container, {
+          center: new kakao.maps.LatLng(center.lat, center.lng),
+          level,
+        }); //지도 생성 및 객체 리턴
+        this.map = map;
+
+        // 주소-좌표 변환 객체를 생성합니다
+        var geocoder = new kakao.maps.services.Geocoder();
+        // 주소로 좌표를 검색합니다
+        geocoder.addressSearch(this.address, function (result, status) {
+          // 정상적으로 검색이 완료됐으면
+          if (status === kakao.maps.services.Status.OK) {
+            var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+            // 결과값으로 받은 위치를 마커로 표시합니다
+            var marker = new kakao.maps.Marker({
+              map: map,
+              position: coords,
+            });
+
+            // 인포윈도우로 장소에 대한 설명을 표시합니다
+            var infowindow = new kakao.maps.InfoWindow({
+              content:
+                '<div style="width:150px;text-align:center;padding:6px 0;">장소</div>',
+            });
+            infowindow.open(map, marker);
+
+            // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+            map.setCenter(coords);
+          }
+        });
+      } catch (e) {
+        console.log("장소를 표시할 수 없습니다.", e);
       }
     },
     // 카카오 API 호출하고, 장소 추가 후 확인 버튼 이벤트
@@ -482,14 +638,28 @@ export default {
       }
       this.$refs.mapContainer.style.display = "none";
     },
+    async editBoard() {
+      try {
+        // Prepare the data for update
+        const boardDto = this.board;
+        const voteDtos = this.voteExists ? [this.vote] : [];
+        const fileDtos = this.files.map((file) => file.data);
+        const placeDto = this.placeExists ? this.address : null;
+
+        // Call the update function
+        await BoardWrite.update(boardDto, voteDtos, fileDtos, placeDto);
+        alert("게시글이 수정되었습니다.");
+        this.$router.push({
+          path: "/board/club",
+          query: { bocode: this.bocode },
+        });
+      } catch (error) {
+        console.error("게시글 수정 중 에러 발생:", error);
+        alert("게시글 수정 중 에러가 발생했습니다.");
+      }
+    },
   },
   computed: {
-    minDate() {
-      const today = new Date();
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate()); // 내일 날짜 계산
-      return tomorrow.toISOString().slice(0, 10); // YYYY-MM-DD 형식으로 변환
-    },
     isNoticeChecked: {
       get() {
         return this.board.noticeYn === "Y";
@@ -510,14 +680,24 @@ export default {
     );
     this.retrieveMember();
     this.retrieveBoard();
-    this.retrieveUpCode();
-    this.retrieveCode();
+    this.retrieveBocode();
     this.retrieveSmcode();
     this.retrieveVote();
-    this.retrievePlace();
     this.retrieveImg();
     this.loadDaumPostcodeScript();
     this.loadKakaoMapScript();
+
+    if (window.kakao && window.kakao.maps) {
+      this.retrievePlace();
+    } else {
+      const script = document.createElement("script");
+      script.onload = () => {
+        this.retrievePlace();
+      };
+      script.src =
+        "//dapi.kakao.com/v2/maps/sdk.js?appkey=55b411073309a73c48d56caa594311c8"; // 발급받은 API 키로 변경
+      document.head.appendChild(script);
+    }
   },
 };
 </script>

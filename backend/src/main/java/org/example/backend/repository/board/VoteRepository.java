@@ -39,4 +39,6 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
     List<Vote> updateStatus(@Param("delDate") String delDate);
 
     void deleteByBoardId(Long boardId);
+
+    List<Vote> findByBoardId(Long boardId);
 }

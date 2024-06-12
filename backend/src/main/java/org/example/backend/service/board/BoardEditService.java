@@ -6,7 +6,9 @@ import org.example.backend.model.dto.board.*;
 import org.example.backend.model.entity.board.Board;
 import org.example.backend.model.entity.board.File;
 import org.example.backend.model.entity.board.Place;
+import org.example.backend.model.entity.board.Vote;
 import org.example.backend.repository.board.BoardRepository;
+import org.example.backend.repository.board.VoteRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BoardEditService {
     private final BoardRepository boardRepository;
+    private final VoteRepository voteRepository;
     private final VoteService voteService;
     private final FileService fileService;
     private final PlaceService placeService;
@@ -68,5 +71,9 @@ public class BoardEditService {
         if (boardWriteDto.getPlaceDto() != null) {
             placeService.savePlace(board.getBoardId(), boardWriteDto.getPlaceDto());
         }
+    }
+
+    public List<Vote> findAll(Long boardId) {
+        return voteRepository.findByBoardId(boardId);
     }
 }

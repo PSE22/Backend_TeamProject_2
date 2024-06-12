@@ -3,7 +3,9 @@ package org.example.backend.controller.board;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.board.BoardWriteDto;
+import org.example.backend.model.dto.board.IClubDto;
 import org.example.backend.model.entity.board.BoardFile;
+import org.example.backend.model.entity.board.Vote;
 import org.example.backend.service.board.BoardEditService;
 import org.example.backend.service.board.BoardFileService;
 import org.example.backend.service.board.BoardWriteService;
@@ -44,6 +46,25 @@ public class BoardEditController {
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("게시글 수정에 실패했습니다." + e);
+        }
+    }
+
+    @GetMapping("/board-votes")
+    public ResponseEntity<Object> getAll(@RequestParam Long boardId){
+        try {
+//            전체 조회 서비스 실행
+            List<Vote> list
+                    = boardEditService.findAll(boardId);
+            if (list.isEmpty() == false) {
+//                조회 성공
+                return new ResponseEntity<>(list, HttpStatus.OK);
+            } else {
+//                데이터 없음
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+        } catch (Exception e) {
+            log.debug("에러 : " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

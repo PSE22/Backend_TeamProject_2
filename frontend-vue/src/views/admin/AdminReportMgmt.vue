@@ -18,26 +18,72 @@
             <tr
               v-for="(data, index) in report"
               :key="index"
-              @click="goBoardDetail(data.bocode, data.smcode, data.boardId)"
+              
             >
               <td class="col-1 text-center">{{ data.reMemberId }}</td>
               <td class="col-1 text-center">{{ data.boardId }}</td>
-              <td class="col-1 text-center">{{ data.boardTitle }}</td>
+              <td class="col-1 text-center" @click="goBoardDetail(data.bocode, data.smcode, data.boardId)">{{ data.boardTitle }}</td>
               <td class="col-1 text-center">{{ data.reportReason }}</td>
               <td class="col-1 text-center">{{ data.boMemberId }}</td>
               <td class="col-1 text-center">
-                <div>
+                <div class="button-container">
                   <button
                     type="button"
                     class="btn btn-primary"
-                    data-bs-toggle="modal"
+                    @click="deleteReport(data.reportId)"
                   >
-                    반려
+                    확인
                   </button>
-                  <button class="delete-button" @click="registerDelete(data)">
+                  <button
+                  class="delete-button" 
+                    data-bs-toggle="modal"
+                    data-bs-target="#delete"
+                  >
                     삭제
                   </button>
                 </div>
+                <!-- 삭제 경고 Modal -->
+                <div
+                  class="modal fade"
+                  id="delete"
+                  tabindex="-1"
+                  aria-labelledby="exampleModalLabel"
+                  aria-hidden="true"
+                >
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">
+                          삭제
+                        </h1>
+                        <button
+                          type="button"
+                          class="btn-close"
+                          data-bs-dismiss="modal"
+                          aria-label="Close"
+                        ></button>
+                      </div>
+                      <div class="modal-body">삭제 하시겠습니까?</div>
+                      <div class="modal-footer">
+                        <button
+                          type="button"
+                          class="btn btn-secondary"
+                          data-bs-dismiss="modal"
+                        >
+                          취소
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-primary"
+                          @click="deleteBoard"
+                        >
+                          확인
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- 삭제 경고 모달 끝 -->
               </td>
             </tr>
           </tbody>
@@ -55,8 +101,10 @@
 </template>
 
 <script>
+import BoardDetailService from "@/services/board/BoardDetailService";
 import ReportService from "@/services/admin/ReportService";
 import AdminSidebar from "@/components/common/AdminSidebar.vue";
+import AdminService from "@/services/admin/AdminService";
 
 export default {
   components: {
@@ -82,11 +130,30 @@ export default {
         this.report = response.data.content;
         this.count = response.data.totalElen;
         // 로깅
-        console.log("report data:", this.report); // club 데이터 출력
+        console.log("report data:", this.report); // 데이터 출력
         console.log("글 목록", response.data);
       } catch (e) {
         console.log(e); // 웹브라우저 콘솔탭에 에러표시
       }
+    },
+    // 게시글 삭제
+    async deleteBoard() {
+      try {
+        let response = await BoardDetailService.deleteBoard(this.boardId);
+        console.log("삭제", response);
+        this.$router.push(`/board/club`);
+        alert("삭제되었습니다.");
+      } catch (error) {
+        console.log("삭제 에러", error);
+        alert("삭제에 실패했습니다.");
+      }
+    },
+    async deleteReport(reportId) {
+      let response = await AdminService.deleteReport(reportId);
+      console.log(response);
+      console.log("신고 아이디",reportId)
+      alert("신고 내역이 처리되었습니다.");
+      this.retrieveReport(); // 신고 목록을 다시 가져옴
     },
     goBoardDetail(bocode, smcode, boardId) {
       this.$router.push(`/board/club/${bocode}/${smcode}/${boardId}`);
@@ -183,5 +250,15 @@ button {
 
 .delete-button:hover {
   background-color: #d32f2f;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.horizontal-text {
+  white-space: nowrap;
 }
 </style>

@@ -20,12 +20,12 @@ class BoardDetailService {
       headers: LoginHeader(),
     });
   }
-  //   // 글번호로 투표 조회
-  //   getVote(boardId) {
-  //     return http.get(`/board/board-detail/vote?boardId=${boardId}`, {
-  //       headers: LoginHeader(),
-  //     });
-  //   }
+    // 글번호로 투표 조회
+    getVote(boardId) {
+      return http.get(`/board/board-detail/vote?boardId=${boardId}`, {
+        headers: LoginHeader(),
+      });
+    }
     // 글번호로 장소 조회 (게시글 하나당 장소 하나)
     getPlace(boardId) {
       return http.get(`/board/board-detail/place?boardId=${boardId}`, {
