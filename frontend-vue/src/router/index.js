@@ -107,57 +107,69 @@ const routes = [
     path: "/board/free-write",
     component: () => import("../views/board/FreeWrite.vue"),
   },
-  // 건의게시판
+
+    // 자유게시판 수정
+    {
+      path: "/board/free-edit/:boardId",
+      component: () => import("../views/board/FreeBoardEdit.vue"),
+    },
+    // 건의게시판
+    {
+      path: "/board/suggest",
+      component: () => import("../views/board/SuggestBoard.vue"),
+    },
+    // 건의게시판 상세글 조회
+    {
+      path: "/board/suggest/:boardId",
+      component: () => import("../views/board/SuggestDetailView.vue"),
+    },
+    // 건의게시판 등록(글쓰기)
+    {
+      path: "/board/suggest-write",
+      component: () => import("../views/board/SuggestWrite.vue"),
+    },
+    // 건의게시판
+    {
+      path: "/board/praise",
+      component: () => import("../views/board/PraiseBoard.vue"),
+    },
+    // 건의게시판 상세글 조회
+    {
+      path: "/board/praise/:boardId",
+      component: () => import("../views/board/PraiseDetailView.vue"),
+    },
+    // 건의게시판 등록(글쓰기)
+    {
+      path: "/board/praise-write",
+      component: () => import("../views/board/PraiseWrite.vue"),
+    },
+  
   {
-    path: "/board/suggest",
-    component: () => import("../views/board/SuggestBoard.vue"),
-  },
-  // 건의게시판 상세글 조회
-  {
-    path: "/board/suggest/:boardId",
-    component: () => import("../views/board/SuggestDetailView.vue"),
-  },
-  // 건의게시판 등록(글쓰기)
-  {
-    path: "/board/suggest-write",
-    component: () => import("../views/board/SuggestWrite.vue"),
-  },
-  // 건의게시판
-  {
-    path: "/board/praise",
-    component: () => import("../views/board/PraiseBoard.vue"),
-  },
-  // 건의게시판 상세글 조회
-  {
-    path: "/board/praise/:boardId",
-    component: () => import("../views/board/PraiseDetailView.vue"),
-  },
-  // 건의게시판 등록(글쓰기)
-  {
-    path: "/board/praise-write",
-    component: () => import("../views/board/PraiseWrite.vue"),
-  },
-  {
-    path: "/board/main-search",
-    name: "SearchResults",
+    path: '/board/main-search',
+    name: 'SearchResults',
     component: () => import("../views/board/SearchResults.vue"),
   },
+  // 관리자 게시판 관리
   {
     path: "/admin/board-mgmt",
     component: () => import("../views/admin/BoardManagement.vue"),
   },
+  // 관리자 회원가입 관리
   {
     path: "/admin/register-mgmt",
     component: () => import("../views/admin/AdminRegisterMgmt.vue"),
   },
+  // 관리자 반려회원 관리
   {
     path: "/admin/register-deny-mgmt",
     component: () => import("../views/admin/AdminRegisterDenyMgmt.vue"),
   },
+  // 관리자 회원정보 수정
   {
     path: "/admin/edit-mgmt",
     component: () => import("../views/admin/AdminEditMgmt.vue"),
   },
+  // 관리자 신고 관리
   {
     path: "/admin/report-mgmt",
     component: () => import("../views/admin/AdminReportMgmt.vue"),

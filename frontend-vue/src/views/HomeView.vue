@@ -2,14 +2,16 @@
   <div class="main-page">
     <div class="board-container">
       <div class="board-section hot-topics-section">
-        <router-link to="/board/hot-topic" class="custom-link"><h2>핫토픽 게시판</h2></router-link>
+        <a @click.prevent="checkLoginAndNavigate('/board/hot-topic')" class="custom-link">
+          <h2>핫토픽 게시판</h2>
+        </a>
         <div v-if="hotTopics.length">
           <div v-for="(hotTopic, index) in hotTopics.slice(0, 5)" :key="index" class="board-item">
             <div class="content">
               <div class="good">{{ hotTopic.good }}</div>
-              <router-link to="/board/free/:boardId" class="custom-link">
-              <div class="title">{{ hotTopic.boardTitle }}</div>
-             </router-link>
+              <a @click.prevent="checkLoginAndNavigate(`/board/free/${hotTopic.boardId}`)" class="custom-link">
+                <div class="title">{{ hotTopic.boardTitle }}</div>
+              </a>
             </div>
             <div class="sub-info">
               <span class="nickname">별명: {{ hotTopic.nickName }}</span>
@@ -26,14 +28,16 @@
 
     <div class="board-container">
       <div class="board-section">
-        <router-link to="/board/free" class="custom-link"><h2>자유게시판</h2></router-link>
+        <a @click.prevent="checkLoginAndNavigate('/board/free')" class="custom-link">
+          <h2>자유게시판</h2>
+        </a>
         <div v-if="freeBoards.length">
           <div v-for="(item, index) in freeBoards.slice(0, 7)" :key="index" class="board-item">
             <div class="content">
               <div class="good">{{ item.good }}</div>
-              <router-link to="/board/free/:boardId" class="custom-link">
-              <div class="title">{{ item.boardTitle }}</div>
-              </router-link>
+              <a @click.prevent="checkLoginAndNavigate(`/board/free/${item.boardId}`)" class="custom-link">
+                <div class="title">{{ item.boardTitle }}</div>
+              </a>
             </div>
             <div class="sub-info">
               <span class="nickname">별명: {{ item.nickName }}</span>
@@ -48,14 +52,16 @@
       </div>
 
       <div class="board-section">
-        <router-link to="/board/suggest" class="custom-link"><h2>건의게시판</h2></router-link>
+        <a @click.prevent="checkLoginAndNavigate('/board/suggest')" class="custom-link">
+          <h2>건의게시판</h2>
+        </a>
         <div v-if="suggestionBoards.length">
           <div v-for="(item, index) in suggestionBoards.slice(0, 7)" :key="index" class="board-item">
             <div class="content">
               <div class="good">{{ item.good }}</div>
-              <router-link to="/board/suggest/:boardId" class="custom-link">
-              <div class="title">{{ item.boardTitle }}</div>
-              </router-link>
+              <a @click.prevent="checkLoginAndNavigate(`/board/suggest/${item.boardId}`)" class="custom-link">
+                <div class="title">{{ item.boardTitle }}</div>
+              </a>
             </div>
             <div class="sub-info">
               <span class="nickname">별명: {{ item.nickName }}</span>
@@ -70,14 +76,16 @@
       </div>
 
       <div class="board-section">
-        <router-link to="/board/praise" class="custom-link"><h2>칭찬게시판</h2></router-link>
+        <a @click.prevent="checkLoginAndNavigate('/board/praise')" class="custom-link">
+          <h2>칭찬게시판</h2>
+        </a>
         <div v-if="praiseBoards.length">
           <div v-for="(item, index) in praiseBoards.slice(0, 7)" :key="index" class="board-item">
             <div class="content">
               <div class="good">{{ item.good }}</div>
-              <router-link to="/board/praise/:boardId" class="custom-link">
-              <div class="title">{{ item.boardTitle }}</div>
-              </router-link>
+              <a @click.prevent="checkLoginAndNavigate(`/board/praise/${item.boardId}`)" class="custom-link">
+                <div class="title">{{ item.boardTitle }}</div>
+              </a>
             </div>
             <div class="sub-info">
               <span class="nickname">별명: {{ item.nickName }}</span>
@@ -106,7 +114,6 @@ export default {
       hotTopics: []
     };
   },
-
   methods: {
     async fetchHotTopics() {
       try {
@@ -139,6 +146,13 @@ export default {
       } catch (error) {
         console.error('Error fetching praise board data:', error);
       }
+    },
+    checkLoginAndNavigate(path) {
+      if (this.$store.state.loggedIn) {
+        this.$router.push(path);
+      } else {
+        alert("로그인이 필요합니다.");
+      }
     }
   },
   mounted() {
@@ -155,5 +169,6 @@ export default {
 .custom-link {
   color: black; /* 기본 텍스트 색상 */
   text-decoration: none; /* 밑줄 제거 */
+  cursor: pointer; /* 마우스를 올렸을 때 포인터 커서 표시 */
 }
 </style>

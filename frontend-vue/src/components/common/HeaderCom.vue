@@ -35,28 +35,28 @@
     <nav class="header-nav">
       <ul>
         <li>
-          <router-link to="/board/dept" class="router-link"
-            >부서 게시판</router-link
+          <a @click.prevent="checkLoginAndNavigate('/board/dept')" class="router-link nav-link"
+            >부서 게시판</a
           >
         </li>
         <li>
-          <router-link to="/board/club" class="router-link"
-            >동호회 게시판</router-link
+          <a @click.prevent="checkLoginAndNavigate('/board/club')" class="router-link nav-link"
+            >동호회 게시판</a
           >
         </li>
         <li>
-          <router-link to="/board/free" class="router-link"
-            >자유 게시판</router-link
+          <a @click.prevent="checkLoginAndNavigate('/board/free')" class="router-link nav-link"
+            >자유 게시판</a
           >
         </li>
         <li>
-          <router-link to="/board/suggest" class="router-link"
-            >건의 게시판</router-link
+          <a @click.prevent="checkLoginAndNavigate('/board/suggest')" class="router-link nav-link"
+            >건의 게시판</a
           >
         </li>
         <li>
-          <router-link to="/board/praise" class="router-link"
-            >칭찬 게시판</router-link
+          <a @click.prevent="checkLoginAndNavigate('/board/praise')" class="router-link nav-link"
+            >칭찬 게시판</a
           >
         </li>
       </ul>
@@ -142,6 +142,13 @@ export default {
     },
   },
   methods: {
+    checkLoginAndNavigate(path) {
+      if (this.isLoggedIn) {
+        this.$router.push(path);
+      } else {
+        alert("로그인이 필요합니다.");
+      }
+    },
     connect() {
       stompClient.connect(
         {},
@@ -326,5 +333,9 @@ export default {
 .profile-icon {
   margin-left: 25px;
   font-size: 1.5em; /* 원하는 크기로 설정 */
+}
+
+.nav-link {
+  cursor: pointer;
 }
 </style>

@@ -27,7 +27,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/main")
+@RequestMapping("/api/auth")
 public class MainPageController {
 
     @Autowired
