@@ -155,24 +155,8 @@ public class BoardDetailController {
         }
     }
 
-    // 추천 삭제함수
-//    @DeleteMapping("/board-detail/recommend-exist")
-//    public ResponseEntity<Object> deleteRecommend(@RequestParam Long boardId, @RequestParam String memberId) {
-//        try {
-//            BoardIdMemberIdPk boardIdMemberIdPk = new BoardIdMemberIdPk(boardId, memberId);
-//            boolean success = boardDetailService.deleteRecommend(boardIdMemberIdPk);
-//            if (success == true) {
-//                return new ResponseEntity<>("추천 삭제 성공", HttpStatus.OK);
-//            } else {
-    @GetMapping("/board-detail/recommend-count")
-//                return new ResponseEntity<>("삭제할 데이터 없음", HttpStatus.NO_CONTENT);
-//            }
-//        } catch (Exception e) {
-//            return handleException(e);
-//        }
-//    }
-
     // 추천 수 카운트
+    @GetMapping("/board-detail/recommend-count")
     public ResponseEntity<Object> countRecommend(@RequestParam Long boardId) {
         try {
             Integer count = boardDetailService.countRecommend(boardId);
@@ -228,16 +212,21 @@ public class BoardDetailController {
     }
 
     // 댓글 저장
-//    @PostMapping("/board-detail/reply")
-//    public ResponseEntity<Object> createReply(@RequestPart("reply") ReplyDto replyDto,
-//                                              @RequestPart("file") MultipartFile file) {
-//        try {
-//            replyService.saveReplyFile(reply);
-//            return new ResponseEntity<>("댓글 저장 성공", HttpStatus.OK);
-//        } catch (Exception e) {
-//            return handleException(e);
-//        }
-//    }
+    @PostMapping("/board-detail/reply")
+    public ResponseEntity<Object> createReply(
+            @RequestParam(defaultValue = "") Long boardId,
+            @RequestParam(defaultValue = "") String memberId,
+            @RequestParam(defaultValue = "") String reply,
+            @RequestParam MultipartFile file
+    ) {
+        try {
+            ReplyDto replyDto = new ReplyDto(null, boardId, memberId, reply);
+            replyService.saveReply(replyDto, file);
+            return new ResponseEntity<>("댓글 저장 성공", HttpStatus.OK);
+        } catch (Exception e) {
+            return handleException(e);
+        }
+    }
 
     // 댓글 수정
 //    @PutMapping("/board-detail/reply")
@@ -318,8 +307,9 @@ public class BoardDetailController {
     }
 
     @DeleteMapping("board-detail/delete/{boardId}")
-    public ResponseEntity<?> deleteBoard(@RequestParam Long boardId) {
+    public ResponseEntity<?> deleteBoard(@PathVariable Long boardId) {
         try {
+            log.debug(":"+ boardId);
             boardDetailService.deleteBoard(boardId);
             return ResponseEntity.ok("게시글 삭제가 완료되었습니다.");
         } catch (Exception e) {

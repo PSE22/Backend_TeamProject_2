@@ -9,6 +9,14 @@ class BoardWrite {
         headers: LoginHeader(),
     });
   }
+
+  // 게시물 수정
+  update(boardDto, voteDtos, fileDtos, placeDto) {
+    console.log("수정되나", boardDto, voteDtos, fileDtos, placeDto )
+    return http.post("/board/board-edit", { boardDto, voteDtos, fileDtos, placeDto }, {
+        headers: LoginHeader(),
+    });
+  }
 }
 
 export default new BoardWrite();

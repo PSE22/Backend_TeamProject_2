@@ -106,12 +106,12 @@
 
 
 
-                                <!-- 파일첨부 -->
-                                <div class="input-group mb-3">
-                                    <input type="file" ref="file" @change="selectImage" class="form-control" />
-                                    <button class="btn btn-outline-secondary" type="button"
-                                        @click="createReplyFile">Upload</button>
-                                </div>
+                            <!-- 파일첨부 -->
+                            <div class="input-group mb-3">
+                                <input type="file" ref="file" @change="selectImage" class="form-control" />
+                                <button class="btn btn-outline-secondary" type="button"
+                                    @click="createReplyFile">Upload</button>
+                            </div>
 
 
 
@@ -158,11 +158,12 @@
         <div class="card mb-3">
             <div class="card-body">
                 <div class="reply-name">{{ memberInfo.memberName }} (익명게시판은 별명으로 변경하세요)</div>
-                <textarea v-model="replyTextarea" placeholder="댓글을 남겨보세요" class="form-control mb-2 reply-content"></textarea>
-                <div class="row justify-content-between">
+                <textarea v-model="replyTextarea" placeholder="댓글을 남겨보세요"
+                    class="form-control mb-2 reply-content"></textarea>
+                <div class="d-flex justify-content-between">
                     <!-- 파일첨부 -->
-                    <input class="col-7 form-control" type="file" ref="file" @change="selectImage" />
-                    <button class="col-1 btn btn-primary" @click="createReply">등록</button>
+                    <input class="form-control file-upload-input" type="file" ref="file" @change="selectImage" />
+                    <button class="btn btn-primary file-upload-button" @click="createReply">등록</button>
                 </div>
             </div>
         </div>
@@ -329,15 +330,6 @@ export default {
                 console.log("saveRecommend 에러", e);
             }
         },
-        // 추천 삭제함수
-        // async deleteRecommend() {
-        //     try {
-        //         let response = await BoardDetailService.deleteRecommend(this.boardId, this.member.memberId);
-        //         console.log(response.data);
-        //     } catch (e) {
-        //         console.log("deleteRecommend 에러", e);
-        //     }
-        // },
         // 추천 수 가져오기
         async retrieveRecommendCnt() {
             try {
@@ -348,6 +340,7 @@ export default {
                 console.log("retrieveRecommendCnt 에러", e)
             }
         },
+
         // 글 신고 저장
         async createReport() {
             try {
@@ -410,11 +403,20 @@ export default {
         },
 
 
-        // insert (파일 업로드) 함수
-        async createReplyFile() {
+        // 댓글 + 파일 저장
+        async createReply() {
             try {
-                let response = await ReplyService.createReplyFile(this.currentImage);
-                console.log(response);
+                let temp = {
+                    boardId: this.boardId,
+                    memberId: this.member.memberId,
+                    reply: this.replyTextarea,
+                }
+                let response = await ReplyService.createReply(temp, this.currentImage);
+                console.log("댓글 전송 : ", response);
+                this.retrieveReply();
+                this.retrieveReplyCount();
+                this.replyTextarea = "";
+                this.currentImage = undefined;
             } catch (e) {
                 // 현재 선택된 이미지 변수 초기화
                 this.currentImage = undefined;
@@ -424,22 +426,22 @@ export default {
 
 
         // 새 댓글 등록
-        async createReply() {
-            try {
-                let temp = {
-                    boardId: this.boardId,
-                    memberId: this.member.memberId,
-                    reply: this.replyTextarea,
-                }
-                let response = await ReplyService.createReply(temp);
-                console.log("댓글 전송 : ", response.data);
-                this.retrieveReply();
-                this.retrieveReplyCount();
-                this.replyTextarea = "";
-            } catch (e) {
-                console.log(e);
-            }
-        },
+        // async createReply() {
+        //     try {
+        //         let temp = {
+        //             boardId: this.boardId,
+        //             memberId: this.member.memberId,
+        //             reply: this.replyTextarea,
+        //         }
+        //         let response = await ReplyService.createReply(temp);
+        //         console.log("댓글 전송 : ", response.data);
+        //         this.retrieveReply();
+        //         this.retrieveReplyCount();
+        //         this.replyTextarea = "";
+        //     } catch (e) {
+        //         console.log(e);
+        //     }
+        // },
 
 
 
@@ -631,6 +633,17 @@ export default {
 .modal-header {
     background-color: #b3000f;
     color: white;
+}
+
+/* 파일 업로드 input */
+.file-upload-input {
+    width: 700px;
+}
+
+/* 파일 업로드 버튼 */
+.file-upload-button {
+    width: 100px;
+    display: inline-block;
 }
 
 .btn-danger {
