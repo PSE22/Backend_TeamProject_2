@@ -9,11 +9,7 @@ import org.example.backend.model.dto.board.DelBoardDto;
 import org.example.backend.model.dto.board.IBoardDetailDto;
 import org.example.backend.model.dto.board.IBoardDto;
 import org.example.backend.model.dto.board.IUserDto;
-import org.example.backend.model.entity.board.Board;
-import org.example.backend.model.entity.board.Place;
-import org.example.backend.model.entity.board.Recommend;
-import org.example.backend.model.entity.board.Report;
-import org.example.backend.model.entity.board.Vote;
+import org.example.backend.model.entity.board.*;
 import org.example.backend.repository.board.*;
 import org.example.backend.service.auth.NotifyService;
 import org.modelmapper.ModelMapper;
@@ -48,6 +44,7 @@ public class BoardDetailService {
     private final RecommendRepository recommendRepository;
     private final ReportRepository reportRepository;
     private final ModelMapper modelMapper;
+    private final FileRepository fileRepository;
     private final BoardFileRepository boardFileRepository;
     private final ReplyFileRepository replyFileRepository;
     private final ReplyRepository replyRepository;
@@ -92,6 +89,11 @@ public class BoardDetailService {
     public List<IBoardDetailDto> findBoardImg(Long boardId) {
         List<IBoardDetailDto> list = boardDetailRepository.findBoardImg(boardId);
         return list;
+    }
+
+    // 첨부파일 다운로드
+    public Optional<File> fileDownload(String uuid) {
+        return fileRepository.findById(uuid);
     }
 
     // 추천 데이터 존재하는지 확인

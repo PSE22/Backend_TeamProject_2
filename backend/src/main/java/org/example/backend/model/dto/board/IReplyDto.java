@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.Query;
 
 /**
  * packageName : org.example.backend.model.dto.board
- * fileName : IReplyDto
+ * fileName : IMyReplyDto
  * author : SAMSUNG
  * date : 2024-05-30
  * description :
@@ -25,4 +25,5 @@ public interface IReplyDto {
     String getReply();      // 댓글내용
     String getAddDate();    // 작성일
     String getFileUrl();    // 파일 URL
+    String getFileName();    // 파일 URL
 }

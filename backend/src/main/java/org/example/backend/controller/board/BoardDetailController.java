@@ -12,6 +12,7 @@ import org.example.backend.model.dto.board.Reply.ReplyDto;
 import org.example.backend.model.entity.board.*;
 import org.example.backend.service.board.BoardDetailService;
 import org.example.backend.service.board.ReplyService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -166,6 +167,17 @@ public class BoardDetailController {
         }
     }
 
+    // 첨부파일 다운로드
+    @GetMapping("/file-download/{uuid}")
+    public ResponseEntity<byte[]> fileDownload(@PathVariable String uuid) {
+        File file = boardDetailService.fileDownload(uuid).get();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFileName() + "\"")
+                .body(file.getData()); // BLOB 데이터
+    }
+
+
+
     // 글번호로 댓글 조회
     @GetMapping("/board-detail/reply")
     public ResponseEntity<Object> findReplyCount(@RequestParam Long boardId) {
@@ -217,10 +229,12 @@ public class BoardDetailController {
             @RequestParam(defaultValue = "") Long boardId,
             @RequestParam(defaultValue = "") String memberId,
             @RequestParam(defaultValue = "") String reply,
-            @RequestParam MultipartFile file
+            @RequestParam(defaultValue = "") Long reReply,
+            @RequestPart(value = "file", required = false) MultipartFile file
     ) {
         try {
-            ReplyDto replyDto = new ReplyDto(null, boardId, memberId, reply);
+            ReplyDto replyDto = new ReplyDto(null, boardId, memberId, reply, reReply);
+            log.debug("ReplyDto :::: ", replyDto);
             replyService.saveReply(replyDto, file);
             return new ResponseEntity<>("댓글 저장 성공", HttpStatus.OK);
         } catch (Exception e) {
@@ -305,6 +319,7 @@ public class BoardDetailController {
             return handleException(e);
         }
     }
+
 
     @DeleteMapping("board-detail/delete/{boardId}")
     public ResponseEntity<?> deleteBoard(@PathVariable Long boardId) {
