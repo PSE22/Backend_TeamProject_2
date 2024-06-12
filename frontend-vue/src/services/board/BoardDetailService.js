@@ -26,12 +26,21 @@ class BoardDetailService {
   //       headers: LoginHeader(),
   //     });
   //   }
-    // 글번호로 장소 조회 (게시글 하나당 장소 하나)
-    getPlace(boardId) {
-      return http.get(`/board/board-detail/place?boardId=${boardId}`, {
-        headers: LoginHeader(),
-      });
-    }
+  // 글번호로 장소 조회 (게시글 하나당 장소 하나)
+  getPlace(boardId) {
+    return http.get(`/board/board-detail/place?boardId=${boardId}`, {
+      headers: LoginHeader(),
+    });
+  }
+
+  // 파일 조회
+  getFile(uuid) {
+    return http.get(`/file-download/${uuid}`, {
+      headers: LoginHeader(),
+    });
+  }
+
+
   // 글번호로 이미지 조회
   getImg(boardId) {
     return http.get(`/board/board-detail/board-img?boardId=${boardId}`);
@@ -72,15 +81,12 @@ class BoardDetailService {
       headers: LoginHeader(),
     });
   }
-    // 추천 데이터 삭제
-    deleteBoard(boardId) {
-      return http.delete(
-        `/board/board-detail/delete/${boardId}`,
-        {
-          headers: LoginHeader(),
-        }
-      );
-    }
+  // 추천 데이터 삭제
+  deleteBoard(boardId) {
+    return http.delete(`/board/board-detail/delete/${boardId}`, {
+      headers: LoginHeader(),
+    });
+  }
 }
 
 export default new BoardDetailService();

@@ -35,7 +35,8 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
             "        R.RE_REPLY AS reReplyId,\n" +
             "        R.REPLY AS reply,\n" +
             "        R.ADD_DATE AS addDate,\n" +
-            "        F.FILE_URL AS fileUrl\n" +
+            "        F.FILE_URL AS fileUrl,\n" +
+            "        F.FILE_NAME AS fileName\n" +
             "FROM TB_REPLY R, TB_FILE F, TB_REPLY_FILE RF, TB_MEMBER M\n" +
             "WHERE R.REPLY_ID = RF.REPLY_ID(+)\n" +
             "AND F.UUID(+) = RF.UUID\n" +

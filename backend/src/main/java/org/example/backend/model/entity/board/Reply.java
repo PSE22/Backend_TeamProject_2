@@ -29,6 +29,6 @@ public class Reply extends BaseTimeEntity2 {
     private Long replyId;       // 댓글 pk
     private Long boardId;       // 글번호 fk
     private String memberId;    // 댓글작성자 fk
-    private Integer reReply;    // 대댓글 fk
+    private Long reReply;    // 대댓글 fk
     private String reply;       // 내용
 }
