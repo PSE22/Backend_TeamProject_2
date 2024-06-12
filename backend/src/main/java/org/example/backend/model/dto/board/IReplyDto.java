@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.Query;
 
 /**
  * packageName : org.example.backend.model.dto.board
- * fileName : IReplyDto
+ * fileName : IMyReplyDto
  * author : SAMSUNG
  * date : 2024-05-30
  * description :

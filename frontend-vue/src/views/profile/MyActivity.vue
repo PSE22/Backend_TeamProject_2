@@ -4,19 +4,23 @@
       <h1 class="sidebar-title">{{ member.memberName }}님</h1>
       <hr class="sidebar-divider" />
       <ul class="sidebar-list">
-        <router-link to="/profile" class="profile-link"><li class="sidebar-menu mb-5">내 프로필</li></router-link>
-        <router-link to="/profile-edit/password" class="profile-link"><li class="sidebar-menu mb-5">비밀번호변경</li></router-link>
-        <router-link to="/profile-edit/nickname" class="profile-link"><li class="sidebar-menu mb-5">닉네임변경</li></router-link>
-        <router-link to="/profile-activity" class="profile-link"><li class="sidebar-menu">활동내역</li></router-link>
+        <router-link to="/profile" class="profile-link"
+          ><li class="sidebar-menu mb-5">회원정보</li></router-link
+        >
+        <router-link to="/profile-edit/password" class="profile-link"
+          ><li class="sidebar-menu mb-5">비밀번호변경</li></router-link
+        >
+        <router-link to="/profile-edit/nickname" class="profile-link"
+          ><li class="sidebar-menu mb-5">닉네임변경</li></router-link
+        >
+        <router-link to="/profile-activity" class="profile-link"
+          ><li class="sidebar-menu">활동내역</li></router-link
+        >
       </ul>
     </div>
     <div class="main-content">
-      <button class="activity-button" @click="showBoard">
-        내 작성글 보기
-      </button>
-      <button class="activity-button" @click="showComment">
-        내 작성댓글 보기
-      </button>
+      <button class="activity-button" @click="showBoard">내 작성글 보기</button>
+      <button class="activity-button" @click="showComment">내 작성댓글 보기</button>
 
       <div class="row" v-if="boardVisible">
         <table class="table">
@@ -30,7 +34,7 @@
           <tbody class="table-group-divider align-middle">
             <tr v-for="(data, index) in board" :key="index">
               <td class="col-1 text-center">{{ data.boardId }}</td>
-              <td class="col-7 text-center">{{ data.boardTitle }}</td>
+              <td class="col-7 text-center" @click="goBoardDetail(data.bocode, data.smcode, data.boardId)">{{ data.boardTitle }}</td>
               <td class="col-2 text-center">{{ data.addDate }}</td>
             </tr>
           </tbody>
@@ -40,7 +44,7 @@
           v-model="boardPage"
           :total-rows="boardCount"
           :per-page="boardPageSize"
-          @change="retrieveBoard"
+          @click="retrieveBoard"
         ></b-pagination>
       </div>
 
@@ -49,6 +53,7 @@
           <thead class="table-light text-center">
             <tr>
               <th scope="col">글번호</th>
+              <th scope="col">댓글번호</th>
               <th scope="col">내용</th>
               <th scope="col">등록일</th>
             </tr>
@@ -56,7 +61,8 @@
           <tbody class="table-group-divider align-middle">
             <tr v-for="(data, index) in reply" :key="index">
               <td class="col-1 text-center">{{ data.boardId }}</td>
-              <td class="col-7 text-center">{{ data.reply }}</td>
+              <td class="col-1 text-center">{{ data.replyId }}</td>
+              <td class="col-7 text-center" @click="goBoardDetail(data.bocode, data.smcode, data.boardId)">{{ data.reply }}</td>
               <td class="col-2 text-center">{{ data.addDate }}</td>
             </tr>
           </tbody>
@@ -66,7 +72,7 @@
           v-model="replyPage"
           :total-rows="replyCount"
           :per-page="replyPageSize"
-          @change="retrieveComment"
+          @click="retrieveComment"
         ></b-pagination>
       </div>
     </div>
@@ -136,7 +142,7 @@ export default {
         const { reply, totalItems } = response.data;
         this.reply = reply;
         this.replyCount = totalItems;
-        console.log(response.data);
+        console.log("ㅁㄴㅇ", response.data);
       } catch (e) {
         console.log(e);
       }
@@ -154,6 +160,26 @@ export default {
       this.replyVisible = true;
       this.replyPage = 1;
       this.retrieveComment();
+    },
+
+    goBoardDetail(bocode, smcode, boardId) {
+      if (bocode === "BO01") {
+        this.$router.push(`/board/dept/${smcode}/${boardId}`);
+      } else if (bocode === "BO0201") {
+        this.$router.push(`/board/club/BO0201/${smcode}/${boardId}`);
+      } else if (bocode === "BO0202") {
+        this.$router.push(`/board/club/BO0202/${smcode}/${boardId}`);
+      } else if (bocode === "BO0203") {
+        this.$router.push(`/board/club/BO0203/${smcode}/${boardId}`);
+      } else if (bocode === "BO0204") {
+        this.$router.push(`/board/club/BO0204/${smcode}/${boardId}`);
+      } else if (bocode === "BO03") {
+        this.$router.push(`/board/free/${smcode}/${boardId}`);
+      } else if (bocode === "BO04") {
+        this.$router.push(`/board/suggest/${smcode}/${boardId}`);
+      } else if (bocode === "BO05") {
+        this.$router.push(`/board/praise/${smcode}/${boardId}`);
+      }
     },
   },
   mounted() {
