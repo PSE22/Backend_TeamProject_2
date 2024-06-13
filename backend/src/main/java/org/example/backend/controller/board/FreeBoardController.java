@@ -2,15 +2,19 @@ package org.example.backend.controller.board;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.backend.model.dto.board.FileDto;
 import org.example.backend.model.dto.board.FreeBoardCreateRequest;
 import org.example.backend.model.dto.board.IFreeBoardDto;
 import org.example.backend.model.entity.board.Board;
+import org.example.backend.model.entity.board.File;
 import org.example.backend.service.board.FreeBoardService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -185,6 +189,29 @@ public class FreeBoardController {
 
         } catch (Exception e) {
 //            서버(DB) 에러
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+   @GetMapping("/file/upload/{fileUuid}")
+    ResponseEntity<Object> getImageData(@PathVariable String fileUuid) {
+        try {
+            int lastDotIdx = fileUuid.lastIndexOf(".");
+            String uuid = fileUuid.substring(0, lastDotIdx);
+            String extent = fileUuid.substring(lastDotIdx + 1);
+
+            File file = freeBoardService.findFileByUuid(uuid);
+            if (file != null) {
+                byte[] data = file.getData();
+                if (data != null) {
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.add("Content-type", "image/" + extent);
+                    return new ResponseEntity<>(data, headers, HttpStatus.OK);
+                }
+            }
+            return ResponseEntity.ok(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
