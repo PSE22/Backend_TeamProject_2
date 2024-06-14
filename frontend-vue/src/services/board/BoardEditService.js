@@ -24,7 +24,7 @@ class BoardEditService {
     }
     // 글번호로 투표 조회
     getVote(boardId) {
-        return http.get(`/board/board-detail/vote?boardId=${boardId}`, {
+        return http.get(`/board/board-votes?boardId=${boardId}`, {
             headers: LoginHeader(),
         });
     }

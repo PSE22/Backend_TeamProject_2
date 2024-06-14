@@ -15,11 +15,13 @@ package org.example.backend.model.dto;
  */
 public interface IReportDto {
     Long getBoardId();
+    Long getReportId();
     String getReMemberId();
     String getBoardTitle();
     String getReportReason();
     String getBoMemberId();
     String getBocode();
     String getSmcode();
+    String getStatus();
     String getAddDate();
 }

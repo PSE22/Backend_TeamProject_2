@@ -20,24 +20,6 @@ class FreeBoardService {
       headers: LoginHeader(),
     });
   }
-    // 상세조회
-    get(boardId) {
-        return http.get(`/board/free/${boardId}`, {
-            headers: LoginHeader()
-        });
-    }
-    // 게시글 수정함수
-    update(boardId, data) {
-        return http.put(`/board/free/${boardId}`, data, {
-            headers: LoginHeader()
-        });
-    }
-    // 게시글 삭제함수
-    delete(boardId) {
-        return http.delete(`/board/free/deletion/${boardId}`, {
-            headers: LoginHeader()
-        });
-    }
 }
 
 export default new FreeBoardService();

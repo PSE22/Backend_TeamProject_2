@@ -1,12 +1,21 @@
 <template>
-  <div class="w-80 p-3 board-detail-container">
-    <div class="row board-button">
-      <button class="col" @click="goClubEdit(bocode, smcode, boardId)">
+  <div class="container mt-3 board-detail-container">
+    <div class="row mb-3 board-button">
+      <button
+        class="col-1 btn btn-warning me-2"
+        @click="goClubEdit(bocode, smcode, boardId)"
+      >
         수정
       </button>
-      <button class="col" data-bs-toggle="modal" data-bs-target="#delete">삭제</button>
+      <button
+        class="col-1 btn btn-danger"
+        data-bs-toggle="modal"
+        data-bs-target="#delete"
+      >
+        삭제
+      </button>
     </div>
-    <!-- Modal -->
+    <!-- 삭제 경고 Modal -->
     <div
       class="modal fade"
       id="delete"
@@ -34,136 +43,333 @@
             >
               취소
             </button>
-            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="deleteBoard">확인</button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+              @click="deleteBoard"
+            >
+              확인
+            </button>
           </div>
         </div>
       </div>
     </div>
+    <!-- 삭제 경고 모달 끝 -->
     <!-- 게시글 -->
-    <div class="row board-content">
+    <div class="card mb-3">
       <!-- 글 제목 부분 -->
-      <div>동호회게시판 > {{ cmcd?.cmCdName }} > {{ smcmcd?.cmCdName }}</div>
-      <div>{{ board?.boardTitle }}</div>
-      <div>작성자 | {{ board?.memberName }}</div>
-      <div>작성일 | {{ board?.addDate }}</div>
-      <hr />
-      <!-- 글 내용 부분 -->
-      <div>투표</div>
-      <div>글내용 : {{ board?.boardContent }}</div>
-      <div v-if="address">
-        <div
-          id="map"
-          style="width: 400px; height: 400px"
-          ref="map"
-          class="col-7"
-        ></div>
+      <div class="card-header text-white">
+        동호회게시판 <i class="bi bi-caret-right"></i> {{ cmcd?.cmCdName }}
+        <i class="bi bi-caret-right"></i> {{ smcmcd?.cmCdName }}
       </div>
-      <div v-for="(data, index) in boardImage" :key="index">
-        <img :src="data.fileUrl" alt="이미지" />
+      <div class="card-body">
+        <h5 class="card-title">{{ board?.boardTitle }}</h5>
+        <p class="card-text-name">{{ board?.memberName }}</p>
+        <p class="card-text-date">{{ board?.addDate }}</p>
+        <hr />
+        <!-- 투표 -->
+        <div class="card mb-3" style="width: 25rem" v-if="vote">
+          <h5 class="card-header vote-card-header">
+            {{ vote[0]?.voteName }}
+          </h5>
+          <div class="card-body">
+            <div class="form-check" v-for="(data, index) in vote" :key="index">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="exampleRadios"
+                id="voteRadios"
+                value="option1"
+                checked
+              />
+              <label class="form-check-label" for="voteRadios">
+                {{ data.voteList }}
+              </label>
+              <hr />
+            </div>
+            <p class="card-text-date">{{ vote[0]?.delDate }} 까지</p>
+            <div class="d-md-flex justify-content-md-end">
+              <button type="button" class="btn btn-secondary">투표하기</button>
+            </div>
+          </div>
+        </div>
+        <!-- 내용 -->
+        <p class="card-text-content">{{ board?.boardContent }}</p>
+        <!-- 장소 -->
+        <div v-if="address">
+          <div
+            id="map"
+            style="width: 600px; height: 400px"
+            ref="map"
+            class="img-thumbnail"
+          ></div>
+        </div>
+        <div class="board-images mb-3">
+          <div v-for="(data, index) in boardImage" :key="index" class="mb-2">
+            <img :src="data.fileUrl" class="img-fluid" alt="이미지" />
+          </div>
+        </div>
+        <hr />
+        <div class="d-flex justify-content-start">
+          <!-- 추천 아이콘 -->
+          <div
+            v-if="recommendIcon"
+            @click="toggleRecommend"
+            class="me-3"
+            type="button"
+          >
+            <i class="bi bi-hand-thumbs-up"></i> {{ recommendCnt }}
+          </div>
+          <div v-else class="me-3" type="button">
+            <i class="bi bi-hand-thumbs-up-fill"></i> {{ recommendCnt }}
+          </div>
+          <!-- 댓글 아이콘 -->
+          <div class="me-3" type="button">
+            <i class="bi bi-chat-text"></i> {{ replyCount }}
+          </div>
+          <!-- 신고 아이콘 -->
+          <div
+            class="me-3"
+            type="button"
+            data-bs-toggle="modal"
+            data-bs-target="#reportModal"
+          >
+            <i class="bi bi-exclamation-triangle"></i>신고
+          </div>
+        </div>
       </div>
-      <hr />
-      <div class="row">
-        <div
-          v-if="recommendIcon"
-          @click="toggleRecommend"
-          class="col-1"
-          type="button"
-        >
-          <i class="bi bi-hand-thumbs-up"></i> {{ recommendCnt }}
-        </div>
-        <div v-else @click="toggleRecommend" class="col-1" type="button">
-          <i class="bi bi-hand-thumbs-up-fill"></i> {{ recommendCnt }}
-        </div>
-        <div class="col-1" type="button">
-          <i class="bi bi-chat-text"></i> {{ replyCount }}
-        </div>
-        <div class="col-1" type="button">
-          <i class="bi bi-exclamation-triangle"></i> 신고
+    </div>
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="reportModal"
+      tabindex="-1"
+      aria-labelledby="reportModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="reportModalLabel">게시글 신고</h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-2 row">
+              <label for="staticWriter" class="col-sm-2 col-form-label"
+                >작성자</label
+              >
+              <div class="col-sm-10">
+                <input
+                  type="text"
+                  readonly
+                  class="form-control-plaintext"
+                  id="staticWriter"
+                  v-model="board.memberName"
+                />
+              </div>
+            </div>
+            <div class="mb-2 row">
+              <label for="staticTitle" class="col-sm-2 col-form-label"
+                >내용</label
+              >
+              <div class="col-sm-10">
+                <input
+                  type="text"
+                  readonly
+                  class="form-control-plaintext"
+                  id="staticTitle"
+                  v-model="board.boardTitle"
+                />
+              </div>
+            </div>
+            <div class="mb-2">
+              <hr />
+              <form class="was-validated">
+                <textarea
+                  rows="10"
+                  class="form-control"
+                  placeholder="신고 사유를 입력하세요."
+                  required
+                  v-model="reportReason"
+                ></textarea>
+                <div class="invalid-feedback">
+                  신고 사유는 필수 입력값입니다.
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              닫기
+            </button>
+            <button type="button" class="btn btn-danger" @click="createReport">
+              신고
+            </button>
+          </div>
         </div>
       </div>
     </div>
     <!-- 댓글 목록 -->
-    <div class="row reply-content">
-      <ul v-for="(data, index) in reply" :key="index" class="list-group">
+    <div class="reply-content mb-3">
+      <ul v-for="(data, index) in reply" :key="index" class="list-group mb-3">
         <!-- 댓글 -->
-        <li class="list-group-item">
-          <div>{{ data.memberName }}</div>
-          <div>{{ data.reply }}</div>
+        <li v-if="replyUpdate" class="list-group-item">
+          <div class="reply-name">{{ data.memberName }}</div>
+          <div class="reply-content">{{ data.reply }}</div>
           <img
             v-if="data.fileUrl"
             :src="data.fileUrl"
-            height="200px"
-            width="300px"
+            class="img-fluid"
             alt="이미지"
           />
-          <div>
-            <span> {{ data.addDate }} </span>
-            <button>수정</button>
-            <button>삭제</button>
-            <button>신고</button>
-          </div>
-          <button @click="openReReply(data.replyId)">대댓글쓰기</button>
-          <!-- 대댓글 작성 폼 -->
-          <div v-if="parentId === data.replyId" class="row reply-write">
+          <div class="d-flex justify-content-between mt-2">
+            <div class="reply-date">{{ data.addDate }}</div>
             <div>
+              <button
+                class="btn btn-secondary me-3"
+                @click="openReplyUpdate(data.replyId)"
+              >
+                수정
+              </button>
+              <button class="btn btn-secondary me-3">삭제</button>
+              <button
+                class="btn btn-secondary"
+                data-bs-toggle="modal"
+                data-bs-target="#reportReplyModal"
+                @click="openReplyReport(data)"
+              >
+                <i class="bi bi-exclamation-triangle"></i>신고
+              </button>
+            </div>
+          </div>
+          <button
+            class="btn btn-secondary mt-2"
+            @click="openReReply(data.replyId)"
+          >
+            대댓글쓰기
+          </button>
+          <!-- 대댓글 작성 폼 -->
+          <div v-if="parentId === data.replyId" class="mt- reReply-container">
+            <div class="reply-name">
               {{ memberInfo.memberName }} (익명게시판은 별명으로 변경하세요)
             </div>
             <textarea
-              v-model="replyTextarea"
+              v-model="reReplyTextarea"
               placeholder="대댓글을 남겨보세요"
+              class="form-control mb-2"
             ></textarea>
-            <div class="row">
-              <i class="col bi bi-camera" type="button">파일선택</i>
-              <p class="col">파일명</p>
-              <button class="col" @click="createReReply(data.replyId)">
+            <div class="d-flex justify-content-between">
+              <!-- 파일첨부 -->
+              <div class="input-group mb-3">
+                <input
+                  type="file"
+                  ref="file"
+                  @change="selectImage"
+                  class="form-control"
+                />
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  @click="createReplyFile"
+                >
+                  Upload
+                </button>
+              </div>
+
+              <button
+                class="btn btn-secondary"
+                @click="createReReply(data.replyId)"
+              >
                 대댓글등록버튼
               </button>
             </div>
           </div>
         </li>
+        <!-- 댓글 수정 버튼 클릭 시 보일 부분 -->
+        <li v-if="!replyUpdate" class="list-group-item">
+          <div>{{ data.memberName }}</div>
+          <textarea v-model="data.reply" class="form-control mb-2"></textarea>
+          <div class="d-flex justify-content-between">
+            <button class="btn btn-secondary" @click="replyUpdate = true">
+              취소
+            </button>
+            <button class="btn btn-secondary" @click="updateReply(data)">
+              등록
+            </button>
+          </div>
+        </li>
         <!-- 대댓글 -->
-        <div>
-          <li
-            v-for="(reReply, index) in data.reReplies"
-            :key="index"
-            class="list-group-item"
-            style="background-color: red"
-          >
-            <div>{{ reReply.memberName }}</div>
-            <div>{{ reReply.reply }}</div>
-            <img
-              v-if="reReply.fileUrl"
-              :src="reReply.fileUrl"
-              height="200px"
-              width="300px"
-              alt="이미지"
-            />
+        <li
+          v-for="(reReply, index) in data.reReplies"
+          :key="index"
+          class="list-group-item reReply-container"
+        >
+          <div class="reply-name">{{ reReply.memberName }}</div>
+          <div class="reply-content">{{ reReply.reply }}</div>
+          <img
+            v-if="reReply.fileUrl"
+            :src="reReply.fileUrl"
+            class="img-fluid"
+            alt="이미지"
+          />
+          <div class="d-flex justify-content-between mt-2">
+            <div class="reply-date">{{ reReply.addDate }}</div>
             <div>
-              <span> {{ reReply.addDate }} </span>
-              <button>수정</button>
-              <button>삭제</button>
-              <button>신고</button>
+              <button class="btn btn-secondary me-2">수정</button>
+              <button class="btn btn-secondary me-2">삭제</button>
+              <button
+                class="btn btn-secondary"
+                data-bs-toggle="modal"
+                data-bs-target="#reportReReplyModal"
+                @click="openReplyReport(reReply)"
+              >
+                <i class="bi bi-exclamation-triangle"></i>신고
+              </button>
             </div>
-          </li>
-        </div>
+          </div>
+        </li>
       </ul>
     </div>
+
     <!-- 댓글 작성 -->
-    <div class="row reply-write">
-      <div>{{ memberInfo.memberName }}</div>
-      <textarea
-        v-model="replyTextarea"
-        placeholder="댓글을 남겨보세요"
-      ></textarea>
-      <div class="row">
-        <i class="col bi bi-camera" type="button">파일선택</i>
-        <p class="col">파일명</p>
-        <button class="col" @click="createReply">댓글등록버튼</button>
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="reply-name">{{ memberInfo.memberName }}</div>
+        <textarea
+          v-model="replyTextarea"
+          placeholder="댓글을 남겨보세요"
+          class="form-control mb-2 reply-content"
+        ></textarea>
+        <div class="d-flex justify-content-between">
+          <!-- 파일첨부 -->
+          <input
+            class="form-control file-upload-input"
+            type="file"
+            ref="file"
+            @change="selectImage"
+          />
+          <button
+            class="btn btn-primary file-upload-button"
+            @click="createReply"
+          >
+            등록
+          </button>
+        </div>
       </div>
     </div>
     <!-- 목록으로 돌아가기 버튼 -->
-    <div class="row">
-      <button @click="goBack">목록</button>
+    <div class="d-grid">
+      <button class="col-1 btn btn-secondary" @click="goBack">목록</button>
     </div>
   </div>
 </template>
@@ -171,6 +377,7 @@
 <script>
 import BoardDetailService from "@/services/board/BoardDetailService";
 import ReplyService from "@/services/board/ReplyService";
+import BoardEditService from "@/services/board/BoardEditService";
 
 export default {
   data() {
@@ -189,7 +396,7 @@ export default {
       board: "", // 게시글
       cmcd: "", // 부서코드, 부서명
       smcmcd: "", // 부서코드, 부서명
-      vote: "", // 투표
+      vote: [],
       place: "", // 장소
       boardImage: "", // 글 첨부 이미지
       recommend: "", // 추천 존재 여부
@@ -251,8 +458,16 @@ export default {
       }
     },
     // 글번호로 투표 가져오기
-    async retrieveVote() {},
-
+    async retrieveVote() {
+      try {
+        let response = await BoardEditService.getVote(this.boardId);
+        this.vote = response.data;
+        console.log("투표 :", response);
+        console.log("투표 :", this.vote);
+      } catch (e) {
+        console.log("vote 에러", e);
+      }
+    },
     // 글번호로 장소 가져오기
     async retrievePlace() {
       try {
@@ -337,15 +552,6 @@ export default {
           })
           .catch((e) => {
             console.error("추천 저장 실패:", e);
-          });
-      } else {
-        this.deleteRecommend()
-          .then(() => {
-            // 추천 삭제 후, 추천 수 다시 불러오기
-            this.retrieveRecommendCnt();
-          })
-          .catch((e) => {
-            console.error("추천 삭제 실패: ", e);
           });
       }
     },
@@ -466,6 +672,7 @@ export default {
         query: { bocode: this.bocode },
       });
     },
+    // 게시글 삭제
     async deleteBoard() {
       try {
         let response = await BoardDetailService.deleteBoard(this.boardId);
@@ -518,24 +725,106 @@ export default {
 };
 </script>
 
-<style>
-/* 글 상세 컨테이너 */
+<style scoped>
+/* 전체 컨테이너 */
 .board-detail-container {
-  background-color: yellow;
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
 }
 
-/* 글 내용 */
-.board-content {
-  background-color: aqua;
+/* 게시글 수정/삭제 버튼 */
+.board-button .btn {
+  border-radius: 50px;
+  font-weight: bold;
 }
 
-/* 댓글 작성 */
-.reply-write {
-  background-color: bisque;
+/* 게시판 헤더 */
+.card-header {
+  background-color: #b3000f;
+  color: white;
+  font-size: 1.2em;
+}
+
+/* 투표 card-header */
+.vote-card-header {
+  background-color: #dddddd;
+  color: rgb(0, 0, 0);
+}
+
+/* 글 제목 */
+.card-title {
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+/* 게시판 작성자 부분 */
+.card-text-name {
+  font-size: 0.8em;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+/* 게시판 작성일 부분 */
+.card-text-date {
+  font-size: 0.8em;
+  margin-bottom: 10px;
 }
 
 /* 댓글 목록 */
+.reply-content .list-group-item {
+  padding: 20px 30px;
+  border: none;
+  border-bottom: 1px solid #e9ecef;
+}
+
+/* 댓글 작성자 */
+.reply-name {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+/* 댓글 내용 */
 .reply-content {
-  background-color: cadetblue;
+  margin-bottom: 10px;
+}
+
+/* 댓글 작성일 */
+.reply-date {
+  font-size: 0.9em;
+  margin-bottom: 10px;
+}
+
+/* 대댓글 */
+.reReply-container {
+  padding: 20px 30px;
+  background-color: rgb(218, 218, 218);
+}
+
+/* 모달창 */
+.modal-content {
+  border-radius: 10px;
+}
+
+/* 모달 헤더 */
+.modal-header {
+  background-color: #b3000f;
+  color: white;
+}
+
+/* 파일 업로드 input */
+.file-upload-input {
+  width: 700px;
+}
+
+/* 파일 업로드 버튼 */
+.file-upload-button {
+  width: 100px;
+  display: inline-block;
+}
+
+.btn-danger {
+  background-color: #b3000f;
+  border-color: #b3000f;
 }
 </style>

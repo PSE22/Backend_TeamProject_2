@@ -13,7 +13,7 @@
           <li class="sidebar-menu mb-5">회원정보변경</li>
         </router-link>
         <router-link to="/admin/report-mgmt" class="profile-link">
-          <li class="sidebar-menu mb-5">신고글관리</li>
+          <li class="sidebar-menu mb-5">신고관리</li>
         </router-link>
         <router-link to="/admin/board-mgmt" class="profile-link">
           <li class="sidebar-menu mb-5">게시판관리</li>
