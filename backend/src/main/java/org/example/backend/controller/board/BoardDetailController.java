@@ -330,7 +330,7 @@ public class BoardDetailController {
     }
 
 
-    @DeleteMapping("board-detail/delete/{boardId}")
+    @DeleteMapping("/board-detail/delete/{boardId}")
     public ResponseEntity<?> deleteBoard(@PathVariable Long boardId) {
         try {
             log.debug(":" + boardId);

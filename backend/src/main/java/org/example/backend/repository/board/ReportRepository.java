@@ -31,6 +31,7 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
             "R.MEMBER_ID AS ReMemberId,\n" +
             "B.BOARD_TITLE AS boardTitle,\n" +
             "R.REPORT_REASON AS reportReason,\n" +
+            "B.STATUS AS status, " +
             "B.MEMBER_ID AS BoMemberId,\n" +
             "B.BOCODE AS bocode, " +
             "B.SMCODE AS smcode, " +

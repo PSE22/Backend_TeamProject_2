@@ -16,10 +16,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -134,27 +131,22 @@ public class BoardDetailService {
     public void deleteBoard(Long boardId) {
         List<DelBoardDto> delData = boardDetailRepository.findByBoardId(boardId);
 
-        // 댓글 파일 삭제
+        // 댓글 파일 삭제 및 게시글 파일 삭제
+        List<String> uuidsToDelete = new ArrayList<>(); // 삭제할 UUID 목록
         for (DelBoardDto item : delData) {
             String uuid = item.getUuid();
             if (uuid != null) {
                 replyFileRepository.deleteByUuid(uuid);
-            }
-        }
-
-        // 게시글 파일 삭제
-        for (DelBoardDto item : delData) {
-            String uuid = item.getUuid();
-            if (uuid != null) {
                 boardFileRepository.deleteByUuid(uuid);
+                uuidsToDelete.add(uuid); // UUID 목록에 추가
             }
         }
 
         // 파일 삭제
-        for (DelBoardDto item : delData) {
-            String uuid = item.getUuid();
-            if (uuid != null) {
-                boardFileRepository.deleteByUuid(uuid);
+        for (String uuid : uuidsToDelete) {
+            File file = fileRepository.findById(uuid).orElse(null);
+            if (file != null) {
+                fileRepository.delete(file);
             }
         }
 
