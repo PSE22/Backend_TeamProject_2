@@ -1,11 +1,13 @@
 package org.example.backend.service.board;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.board.BoardFileDto;
 import org.example.backend.model.dto.board.FileDto;
 import org.example.backend.model.dto.board.IFreeBoardDto;
 import org.example.backend.model.dto.board.VoteDto;
 import org.example.backend.model.entity.board.Board;
+import org.example.backend.model.entity.board.File;
 import org.example.backend.model.entity.board.Place;
 import org.example.backend.repository.board.FreeBoardRepository;
 import org.springframework.data.domain.Page;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FreeBoardService {
@@ -59,6 +62,12 @@ public class FreeBoardService {
         return optionalFreeBoard;
     }
 
+//    게시판 상세조회 파일(이미지)
+    public File findFileByUuid(String uuid) {
+        File imgFileData = fileService.getFile(uuid);
+        return imgFileData;
+    }
+    
     @Transactional(rollbackFor = Exception.class)
     //    TODO: 등록(insert),수정(update)
     public void save(Board board, List<VoteDto> voteDtos, Place place, List<FileDto> fileDtos, List<BoardFileDto> boardFileDtos) {

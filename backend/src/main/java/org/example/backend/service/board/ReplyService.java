@@ -65,7 +65,7 @@ public class ReplyService {
         return count;
     }
 
-    // 댓글 저장/수정
+    // 댓글 저장
     @Transactional
     public Reply saveReply(ReplyDto replyDto, MultipartFile file) {
         // DTO -> Entity 매핑
@@ -106,7 +106,39 @@ public class ReplyService {
         return reply;
     }
 
-    // 댓글 관리 테이블에 저장
+
+
+    // 댓글 수정
+    @Transactional
+    public Reply updateReply(ReplyDto replyDto, MultipartFile file) {
+
+        // replyId로 기존 댓글 찾기
+        Reply reply = replyRepository.findById(replyDto.getReplyId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다. replyId: " + replyDto.getReplyId()));
+
+        modelMapper.map(replyDto, reply);
+
+        // Reply 저장
+        reply.setBoardId(replyDto.getBoardId());
+        reply.setMemberId(replyDto.getMemberId());
+        reply.setReply(replyDto.getReply());
+        reply.setReReply(replyDto.getReReply());
+        replyRepository.save(reply);
+
+        // File, ReplyFile 저장
+        if (file != null && !file.isEmpty()) {
+            File file2 = saveReplyFile(null, file);
+
+            ReplyFile replyFile = modelMapper.map(replyDto, ReplyFile.class);
+
+            replyFile.setReplyId(reply.getReplyId());
+            replyFile.setUuid(file2.getUuid());
+            replyFileRepository.save(replyFile);
+        }
+
+        return reply;
+    }
+
 
 
     // 댓글 파일 첨부 저장
@@ -120,16 +152,16 @@ public class ReplyService {
                         .replace("-", "");
 
                 String fileDownload = ServletUriComponentsBuilder
-                        .fromCurrentContextPath()               // spring 기본주소 : http://localhost:8000
+                        .fromCurrentContextPath()               // spring 기본주소 : http://localhost:9000
                         .path("/api/board/file/upload/")        // 추가 경로 넣기
                         .path(tmpUuid)                          // uuid 넣기
                         .toUriString();                         // 합치기
                 // File 객체 생성(생성자, setter) + save()
                 File file1 = new File(
                         tmpUuid,                        // 기존 uuid
-                        fileDownload,                // 파일 다운로드 url
-                        file.getOriginalFilename(),  // 업로드 할때 파일명
-                        file.getBytes()              // 업로드 이미지
+                        fileDownload,                   // 파일 다운로드 url
+                        file.getOriginalFilename(),     // 업로드 할때 파일명
+                        file.getBytes()                 // 업로드 이미지
                 );
                 file2 = fileRepository.save(file1);  // DB 수정
 
@@ -137,8 +169,8 @@ public class ReplyService {
                 replyFile.setUuid(file2.getUuid());
             } else {
                 String fileDownload = ServletUriComponentsBuilder
-                        .fromCurrentContextPath()           // spring 기본주소 : http://localhost:8000
-                        .path("/api/board/file/upload/")           // 추가 경로 넣기
+                        .fromCurrentContextPath()           // spring 기본주소
+                        .path("/api/board/file/upload/")    // 추가 경로 넣기
                         .path(uuid)                         // uuid 넣기
                         .toUriString();                     // 합치기
                 // File 객체 생성(생성자, setter) + save()

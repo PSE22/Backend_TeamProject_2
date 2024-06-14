@@ -168,15 +168,16 @@ public class BoardDetailController {
     }
 
     // 첨부파일 다운로드
-    @GetMapping("/file-download/{uuid}")
+    // http://localhost:9000/api/board/file/upload/545bf1a1c15d44c5be214492693aab79
+    // <img src="http://localhost:9000/api/board/file/upload/545bf1a1c15d44c5be214492693aab79"
+    // <a href="http://localhost:9000/api/board/file/upload/545bf1a1c15d44c5be214492693aab79" >이미지</a>
+    @GetMapping("/file/upload/{uuid}")
     public ResponseEntity<byte[]> fileDownload(@PathVariable String uuid) {
         File file = boardDetailService.fileDownload(uuid).get();
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFileName() + "\"")
                 .body(file.getData()); // BLOB 데이터
     }
-
-
 
     // 글번호로 댓글 조회
     @GetMapping("/board-detail/reply")
@@ -229,12 +230,12 @@ public class BoardDetailController {
             @RequestParam(defaultValue = "") Long boardId,
             @RequestParam(defaultValue = "") String memberId,
             @RequestParam(defaultValue = "") String reply,
-            @RequestParam(defaultValue = "") Long reReply,
+            @RequestParam(required = false) Long reReply,
             @RequestPart(value = "file", required = false) MultipartFile file
     ) {
         try {
             ReplyDto replyDto = new ReplyDto(null, boardId, memberId, reply, reReply);
-            log.debug("ReplyDto :::: ", replyDto);
+            log.debug("ReplyDto :::: {}", replyDto);
             replyService.saveReply(replyDto, file);
             return new ResponseEntity<>("댓글 저장 성공", HttpStatus.OK);
         } catch (Exception e) {
@@ -243,15 +244,23 @@ public class BoardDetailController {
     }
 
     // 댓글 수정
-//    @PutMapping("/board-detail/reply")
-//    public ResponseEntity<Object> updateReply(@RequestParam Long replyId, @RequestBody Reply reply) {
-//        try {
-//            replyService.saveReplyFile(reply);
-//            return new ResponseEntity<>("댓글 수정 성공", HttpStatus.OK);
-//        } catch (Exception e) {
-//            return handleException(e);
-//        }
-//    }
+    @PutMapping("/board-detail/reply/{replyId}")
+    public ResponseEntity<Object> updateReply(
+            @PathVariable Long replyId,
+            @RequestParam(defaultValue = "") Long boardId,
+            @RequestParam(defaultValue = "") String memberId,
+            @RequestParam(defaultValue = "") String reply,
+            @RequestParam(required = false) Long reReply,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
+        try {
+            ReplyDto replyDto = new ReplyDto(replyId, boardId, memberId, reply, reReply);
+            log.debug("ReplyDto :::: {}", replyDto);
+            replyService.updateReply(replyDto, file);
+            return new ResponseEntity<>("댓글 수정 성공", HttpStatus.OK);
+        } catch (Exception e) {
+            return handleException(e);
+        }
+    }
 
     // 글 신고 데이터 저장
     @PostMapping("/board-detail/report")
@@ -324,7 +333,7 @@ public class BoardDetailController {
     @DeleteMapping("/board-detail/delete/{boardId}")
     public ResponseEntity<?> deleteBoard(@PathVariable Long boardId) {
         try {
-            log.debug(":"+ boardId);
+            log.debug(":" + boardId);
             boardDetailService.deleteBoard(boardId);
             return ResponseEntity.ok("게시글 삭제가 완료되었습니다.");
         } catch (Exception e) {

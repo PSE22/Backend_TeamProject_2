@@ -16,10 +16,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -136,22 +133,41 @@ public class BoardDetailService {
         List<DelBoardDto> delData = boardDetailRepository.findByBoardId(boardId);
 
 
+
         // 게시글 파일 삭제
+       // for (DelBoardDto item : delData) {
+       //     String uuid = item.getUuid();
+       //     if (uuid != null) {
+
+        // 댓글 파일 삭제 및 게시글 파일 삭제
+        List<String> uuidsToDelete = new ArrayList<>(); // 삭제할 UUID 목록
         for (DelBoardDto item : delData) {
             String uuid = item.getUuid();
             if (uuid != null) {
+                replyFileRepository.deleteByUuid(uuid);
+
                 boardFileRepository.deleteByUuid(uuid);
+                uuidsToDelete.add(uuid); // UUID 목록에 추가
             }
         }
 
         // 파일 삭제
-        for (DelBoardDto item : delData) {
-            String uuid = item.getUuid();
-            if (uuid != null) {
-                boardFileRepository.deleteByUuid(uuid);
+        for (String uuid : uuidsToDelete) {
+            File file = fileRepository.findById(uuid).orElse(null);
+            if (file != null) {
+                fileRepository.delete(file);
             }
         }
 
+              // 파일 삭제
+    //    for (DelBoardDto item : delData) {
+    //        String uuid = item.getUuid();
+    //        if (uuid != null) {
+    //            boardFileRepository.deleteByUuid(uuid);
+    //        }
+    //    }
+      
+      
         // 댓글 삭제
         for (DelBoardDto item : delData) {
             Long replyId = item.getReplyId();

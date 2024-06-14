@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -29,7 +29,17 @@ public class FileService {
         File file2 = fileRepository.save(file);
         return file2;
     }
-@Transactional
+    
+//    게시판 상세조회 파일(이미지) 조회
+    public File getFile(String uuid) {
+        Optional<File> file = fileRepository.findById(uuid);
+        if (file.isPresent()) {
+            return file.get();
+        }
+        return null;
+    }
+
+    @Transactional
     public void saveFiles(List<FileDto> fileDtos, Long boardId) {
         try {
 

@@ -40,43 +40,49 @@
         <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="reportModalLabel">게시글 신고</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-2 row">
-                            <label for="staticWriter" class="col-sm-2 col-form-label">작성자</label>
-                            <div class="col-sm-10">
-                                <input type="text" readonly class="form-control-plaintext" id="staticWriter"
-                                    v-model="board.memberName">
-                            </div>
+                    <form class="was-validated">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="reportModalLabel">게시글 신고</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="mb-2 row">
-                            <label for="staticTitle" class="col-sm-2 col-form-label">내용</label>
-                            <div class="col-sm-10">
-                                <input type="text" readonly class="form-control-plaintext" id="staticTitle"
-                                    v-model="board.boardTitle">
+                        <div class="modal-body">
+                            <div class="mb-2 row">
+                                <label for="staticWriter" class="col-sm-2 col-form-label">작성자</label>
+                                <div class="col-sm-10">
+                                    <input type="text" readonly class="form-control-plaintext" id="staticWriter"
+                                        v-model="board.memberName">
+                                </div>
                             </div>
-                        </div>
-                        <div class="mb-2">
-                            <hr />
-                            <form class="was-validated">
+                            <div class="mb-2 row">
+                                <label for="staticTitle" class="col-sm-2 col-form-label">내용</label>
+                                <div class="col-sm-10">
+                                    <input type="text" readonly class="form-control-plaintext" id="staticTitle"
+                                        v-model="board.boardTitle">
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <hr />
                                 <textarea rows="10" class="form-control" placeholder="신고 사유를 입력하세요." required
-                                    v-model="reportReason"></textarea>
+                                    v-model.lazy="reportReason"></textarea>
                                 <div class="invalid-feedback">
                                     신고 사유는 필수 입력값입니다.
                                 </div>
-                            </form>
+                            </div>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                        <button type="button" class="btn btn-danger" @click="createReport">신고</button>
-                    </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                            <button type="submit" class="btn btn-danger" @click="createReport">신고</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
+
+
+
+
+
+
 
 
 
@@ -87,10 +93,10 @@
         <div class="reply-content mb-3">
             <ul v-for="(data, index) in reply" :key="index" class="list-group mb-3">
                 <!-- 댓글 -->
-                <li v-if="replyUpdate" class="list-group-item">
+                <li v-if="data.replyId" class="list-group-item">
                     <div class="reply-name">{{ data.memberName }}</div>
                     <div class="reply-content">{{ data.reply }}</div>
-                    <img v-if="data.fileUrl" :src="data.fileUrl" class="img-fluid" alt="이미지" />
+                    <img v-if="data.fileUrl" :src="data.fileUrl" class="img-fluid img-thumbnail w-25" alt="이미지" />
                     <div class="d-flex justify-content-between mt-2">
                         <div class="reply-date">{{ data.addDate }}</div>
                         <div>
@@ -104,35 +110,32 @@
                     </div>
                     <button class="btn btn-secondary mt-2" @click="openReReply(data.replyId)">대댓글쓰기</button>
 
-
-
                     <!-- 대댓글 작성 폼 (대댓글쓰기 버튼 클릭 시 나타남) -->
                     <div v-if="showWriteReReply && parentId === data.replyId" class="card mb-3 mt-3">
                         <div class="card-body">
                             <div class="reply-name">{{ memberInfo.memberName }} (익명게시판은 별명으로 변경하세요)</div>
-                            <textarea v-model="reReplyTextarea" placeholder="대댓글을 남겨보세요"
+
+                            <textarea v-model.lazy="reReplyTextarea" placeholder="대댓글을 남겨보세요"
                                 class="form-control mb-2 reply-content"></textarea>
                             <div class="d-flex justify-content-between">
                                 <!-- 파일첨부 -->
-                                <input class="form-control file-upload-input" type="file" @change="selectReReplyFile($event)" />
+                                <input class="form-control file-upload-input w-auto" type="file"
+                                    @change="selectReReplyFile($event)" />
                                 <button class="btn btn-primary file-upload-button"
                                     @click="createReReply(data.replyId)">등록</button>
                             </div>
                         </div>
                     </div>
-
-
-
                 </li>
                 <!-- 댓글 수정 버튼 클릭 시 보일 부분 -->
-                <li v-if="!replyUpdate" class="list-group-item">
+                <li v-if="replyUpdate && replyUpdateId === data.replyId" class="list-group-item">
                     <div class="reply-name">{{ data.memberName }} </div>
-                    <textarea v-model="data.reply" placeholder="댓글을 남겨보세요"
+                    <textarea v-model.lazy="data.reply" placeholder="댓글을 남겨보세요"
                         class="form-control mb-2 reply-content"></textarea>
-                    <div v-if="data.fileUrl" class="d-flex">
+                    <div class="d-flex">
                         <!-- 파일첨부 -->
-                        <input class="form-control file-upload-input mb-2" type="file" ref="replyFile"
-                            @change="selectReplyFile" /> {{ data.fileUrl }}
+                        <input class="form-control file-upload-input w-auto mb-2" type="file" ref="replyFile"
+                            @change="selectReplyFile" />
                     </div>
                     <div class="d-flex justify-content-between">
                         <button class="btn btn-secondary" @click="replyUpdate = true">취소</button>
@@ -144,7 +147,7 @@
                 <li v-for="(reReply, index) in data.reReplies" :key="index" class="list-group-item reReply-container">
                     <div class="reply-name"><i class="bi bi-arrow-return-right"></i> {{ reReply.memberName }} </div>
                     <div class="reply-content">{{ reReply.reply }}</div>
-                    <img v-if="reReply.fileUrl" :src="reReply.fileUrl" class="img-fluid" alt="이미지" />
+                    <img v-if="reReply.fileUrl" :src="reReply.fileUrl" class="img-fluid img-thumbnail w-25" alt="이미지" />
                     <div class="d-flex justify-content-between mt-2">
                         <div class="reply-date">{{ reReply.addDate }}</div>
                         <div>
@@ -163,15 +166,25 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
         <!-- 댓글 작성 -->
         <div class="card mb-3">
             <div class="card-body">
                 <div class="reply-name">{{ memberInfo.memberName }} (익명게시판은 별명으로 변경하세요)</div>
-                <textarea v-model="replyTextarea" placeholder="댓글을 남겨보세요"
+                <textarea v-model.lazy="replyTextarea" placeholder="댓글을 남겨보세요"
                     class="form-control mb-2 reply-content"></textarea>
                 <div class="d-flex justify-content-between">
                     <!-- 파일첨부 -->
-                    <input class="form-control file-upload-input" type="file" ref="replyFile"
+                    <input class="form-control file-upload-input w-auto" type="file" ref="replyFile"
                         @change="selectReplyFile" />
                     <button class="btn btn-primary file-upload-button" @click="createReply">등록</button>
                 </div>
@@ -196,16 +209,17 @@ export default {
             boardId: this.$route.params.boardId,    // 현재 글 ID 가져오기
             smcode: this.$route.params.smcode,      // 현재 소메뉴 코드 가져오기
 
-            auth: '', // 로그인 사용자 권한 체크
+            auth: "",                     // 로그인 사용자 권한 체크
             replyTextarea: "",
             reReplyTextarea: "",
-            parentId: "",               // 현재 대댓글의 상위 댓글의 replyId
-            recommendIcon: true,        // 추천 아이콘 (true는 빈 아이콘)
-            reportReason: "",           // 신고사유 입력
-            replyUpdate: true,          // false일 경우 수정란 뜸
-            currentFile: undefined,         // 댓글파일선택
+            parentId: "",                 // 현재 대댓글의 상위 댓글의 replyId
+            replyUpdateId: null,          // 현재 수정 중인 댓글 ID
+            recommendIcon: true,          // 추천 아이콘 (true는 빈 아이콘)
+            reportReason: "",             // 신고사유 입력
+            replyUpdate: false,            // true 이면 댓글 수정란 보이게
+            currentFile: undefined,       // 댓글파일선택
             currentReFile: undefined,     // 대댓글파일선택
-            showWriteReReply: false,
+            showWriteReReply: false,      // 대댓글쓰기
 
             // retrieve 
             memberInfo: "", // 회원정보
@@ -223,12 +237,14 @@ export default {
     methods: {
         // 회원 권한 체크
         async checkAuth() {
-            if (this.member.memberCode === "AT01") {
+            if (this.member?.memberCode === "AT01") {
                 // 관리자 로그인
                 this.auth = "A";
-            } else if (this.member.memberId === this.board.memberId) {
-                // 글쓴이 로그인
-                this.auth = "B";
+            } else if (this.member?.memberCode === "AT02") {
+                if (this.member?.memberId === this.board?.memberId) {
+                    // 글쓴이 로그인
+                    this.auth = "B";
+                }
             } else {
                 // 기타 회원
                 this.auth = "C";
@@ -240,6 +256,7 @@ export default {
                 let response = await BoardDetailService.getMember(this.member.memberId);
                 this.memberInfo = response.data;
                 console.log("memberInfo 데이터 : ", response.data);
+                this.checkAuth();
             } catch (e) {
                 console.log("retrieveMember 에러", e);
             }
@@ -264,11 +281,11 @@ export default {
                 console.log("retrieveCode 에러", e);
             }
         },
-        // 글번호로 투표 가져오기
+        // ❎ 글번호로 투표 가져오기
         async retrieveVote() {
 
         },
-        // 글번호로 장소 가져오기
+        // ❎ 글번호로 장소 가져오기
         async retrievePlace() {
 
         },
@@ -409,9 +426,6 @@ export default {
         },
 
 
-
-
-
         // 댓글 파일 선택상자에서 파일 선택
         selectReplyFile() {
             this.currentFile = this.$refs.replyFile.files[0];
@@ -424,6 +438,7 @@ export default {
                     boardId: this.boardId,
                     memberId: this.member.memberId,
                     reply: this.replyTextarea,
+                    reReply: ""
                 }
                 let response = await ReplyService.createReply(temp, this.currentFile);
                 console.log("댓글 전송 : ", response);
@@ -437,11 +452,6 @@ export default {
                 console.log(e);
             }
         },
-
-
-
-
-
         // 대댓글 쓰기 버튼 클릭 시 호출
         openReReply(replyId) {
             this.parentId = replyId;     // 현재 댓글ID를 저장
@@ -479,20 +489,17 @@ export default {
 
 
         // ❎ 댓글 수정 버튼 클릭 시 호출
-        openReplyUpdate() {
-            this.replyUpdate = !this.replyUpdate;
+        openReplyUpdate(replyId) {
+            this.replyUpdate = true;
+            this.replyUpdateId = replyId;
         },
         // ❎ 댓글 수정 후 등록
         async updateReply(data) {
             try {
                 let temp = {
-                    replyId: data.replyId,
-                    boardId: data.boardId,
-                    memberId: data.memberId,
-                    reReply: data.reReply,
                     reply: data.reply
                 }
-                let response = await ReplyService.updateReply(data.replyId, temp);
+                let response = await ReplyService.updateReply(temp, this.currentFile);
                 alert("댓글이 수정되었습니다.");
                 console.log("댓글 수정 : ", response.data);
                 this.retrieveReply();
@@ -501,7 +508,6 @@ export default {
                 console.log("updateReply 에러", e);
             }
         },
-
 
         // 글 수정 페이지로 이동
         moveToDeptEdit() {
@@ -616,7 +622,7 @@ export default {
 
 /* 파일 업로드 input */
 .file-upload-input {
-    width: 600px;
+    /* width: 600px; */
 }
 
 /* 파일 업로드 버튼 */
