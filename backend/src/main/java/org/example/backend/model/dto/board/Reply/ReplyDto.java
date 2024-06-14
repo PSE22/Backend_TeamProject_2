@@ -7,7 +7,7 @@ import java.util.UUID;
 
 /**
  * packageName : org.example.backend.model.dto.board.Reply
- * fileName : ReplyUploadDto
+ * fileName : ReplyDto
  * author : SAMSUNG
  * date : 2024-06-10
  * description :
