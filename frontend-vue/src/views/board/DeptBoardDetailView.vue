@@ -64,9 +64,50 @@
                 </form>
               </div>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-              <button type="button" class="btn btn-danger" @click="createReport">신고</button>
+
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form class="was-validated">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="reportModalLabel">게시글 신고</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-2 row">
+                            <label for="staticWriter" class="col-sm-2 col-form-label">작성자</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly class="form-control-plaintext" id="staticWriter"
+                                    v-model="board.memberName">
+                            </div>
+                        </div>
+                        <div class="mb-2 row">
+                            <label for="staticTitle" class="col-sm-2 col-form-label">내용</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly class="form-control-plaintext" id="staticTitle"
+                                    v-model="board.boardTitle">
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <hr />
+                            
+                                <textarea rows="10" class="form-control" placeholder="신고 사유를 입력하세요." required
+                                    v-model="reportReason"></textarea>
+                                <div class="invalid-feedback">
+                                    신고 사유는 필수 입력값입니다.
+                                </div>
+                            
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                        <button type="submit" class="btn btn-danger" @click="createReport">신고</button>
+                    </div>
+                </form>
+                </div>
+
             </div>
           </div>
         </div>
