@@ -51,6 +51,7 @@ public class BoardDetailService {
     private final PlaceRepository placeRepository;
     private final VoteMemberRepository voteMemberRepository;
     private final VoteRepository voteRepository;
+    private final ReplyService replyService;
 
     // 로그인된 회원 정보 조회
     public Optional<IUserDto> findMember(String memberId) {
@@ -134,13 +135,6 @@ public class BoardDetailService {
     public void deleteBoard(Long boardId) {
         List<DelBoardDto> delData = boardDetailRepository.findByBoardId(boardId);
 
-        // 댓글 파일 삭제
-        for (DelBoardDto item : delData) {
-            String uuid = item.getUuid();
-            if (uuid != null) {
-                replyFileRepository.deleteByUuid(uuid);
-            }
-        }
 
         // 게시글 파일 삭제
         for (DelBoardDto item : delData) {
@@ -162,7 +156,7 @@ public class BoardDetailService {
         for (DelBoardDto item : delData) {
             Long replyId = item.getReplyId();
             if (replyId != null) {
-                replyRepository.deleteById(replyId);
+                replyService.removeReply(replyId);
             }
         }
 
@@ -177,7 +171,6 @@ public class BoardDetailService {
         // 게시물 삭제
         boardDetailRepository.deleteById(boardId);
     }
-
 
     public void updateBoard(Long boardId, IBoardDto boardDto) {
         Board board2 = boardDetailRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));

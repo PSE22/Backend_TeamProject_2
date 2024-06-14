@@ -108,8 +108,7 @@ public interface BoardDetailRepository extends JpaRepository<Board, Long> {
             "FROM TB_BOARD B\n" +
             "LEFT JOIN TB_BOARD_FILE BF ON B.BOARD_ID = BF.BOARD_ID\n" +
             "LEFT JOIN TB_REPLY R ON B.BOARD_ID = R.BOARD_ID\n" +
-            "LEFT JOIN TB_REPLY_FILE RF ON R.REPLY_ID = RF.REPLY_ID\n" +
-            "LEFT JOIN TB_FILE F ON RF.UUID = F.UUID OR BF.UUID = F.UUID\n" +
+            "RIGHT JOIN TB_FILE F ON BF.UUID = F.UUID\n" +
             "LEFT JOIN TB_PLACE P ON B.BOARD_ID = P.BOARD_ID\n" +
             "LEFT JOIN TB_VOTE V ON B.BOARD_ID = V.BOARD_ID\n" +
             "LEFT JOIN TB_VOTE_MEMBER VM ON B.BOARD_ID = VM.BOARD_ID\n" +

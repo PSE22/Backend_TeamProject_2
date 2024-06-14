@@ -2,6 +2,7 @@ package org.example.backend.controller.admin;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.backend.model.dto.IReplyReportDto;
 import org.example.backend.model.dto.IReportDto;
 import org.example.backend.model.entity.board.Report;
 import org.example.backend.repository.board.ReportRepository;
@@ -59,7 +60,31 @@ public class ReportController {
 
     //  hard delete
     @DeleteMapping("/report-deletion/{reportId}")
-    public void delMember(@PathVariable Long reportId) {
+    public void delReport(@PathVariable Long reportId) {
         reportService.delReport(reportId);
+    }
+
+    @GetMapping("/reply-report")
+//    sort = reportId : 정렬 기준 컬럼, direction 정렬 순서
+    public ResponseEntity<Object> findAllReplyReport(@PageableDefault(sort = "addDate", direction = Sort.Direction.DESC) Pageable pageable) {
+        try {
+            Page<IReplyReportDto> list = reportService.findByReplyReport(pageable);
+
+            if (list.isEmpty() == false) {
+//                조회 성공
+                return new ResponseEntity<>(list, HttpStatus.OK);
+            } else {
+//                데이터 없음
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //  hard delete
+    @DeleteMapping("/reply-deletion/{reportId}")
+    public void delReplyReport(@PathVariable Long reportId) {
+        reportService.delReplyReport(reportId);
     }
 }

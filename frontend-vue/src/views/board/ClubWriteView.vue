@@ -163,7 +163,7 @@
                   <button
                     type="button"
                     class="btn btn-primary"
-                    data-bs-dismiss="modal"
+                    v-if="submitVote" data-bs-dismiss="modal"
                     @click="submitVote"
                   >
                     등록

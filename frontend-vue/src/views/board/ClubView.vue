@@ -53,6 +53,7 @@
       </tr>
     </tbody>
   </table>
+  <p class="text-center" v-if="!club && !clubNotice">게시물이 없습니다.</p>
   <!-- {/* paging 시작 */} -->
   <div class="row justify-content-between">
     <div class="col-4 w-25 mb-3">

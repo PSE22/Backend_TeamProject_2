@@ -57,13 +57,6 @@ class AdminService {
             headers: LoginHeader(),
           });
     }
-
-    // 신고 삭제(하드)
-    deleteReport(reportId) {
-        return http.delete(`/admin/report-deletion/${reportId}`, {
-            headers: LoginHeader(),
-          });
-    }
 }
 
 export default new AdminService();
