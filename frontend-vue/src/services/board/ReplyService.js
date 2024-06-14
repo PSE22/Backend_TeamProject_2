@@ -10,25 +10,16 @@ class ReplyService {
   }
   // 대댓글 조회
   getReReply(boardId, replyId) {
-    return http.get(`/board/board-detail/re-reply?boardId=${boardId}&replyId=${replyId}`, {
+    return http.get(
+      `/board/board-detail/re-reply?boardId=${boardId}&replyId=${replyId}`,
+      {
         headers: LoginHeader(),
-      });
+      }
+    );
   }
   // 댓글 수 조회
   getReplyCount(boardId) {
     return http.get(`/board/board-detail/reply/count?boardId=${boardId}`, {
-      headers: LoginHeader(),
-    });
-  }
-  // 댓글 등록
-  // createReply(data) {
-  //   return http.post(`/board/board-detail/reply`, data, {
-  //     headers: LoginHeader(),
-  //   });
-  // }
-  // 댓글 수정
-  updateReply(replyId, data) {
-    return http.put(`/board/board-detail/reply?replyId=${replyId}`, data, {
       headers: LoginHeader(),
     });
   }
@@ -39,7 +30,7 @@ class ReplyService {
     });
   }
 
-  // 댓글 + 파일 저장
+  // 댓글(대댓글) + 파일 저장
   createReply(temp, file) {
     let formData = new FormData(); // form 객체
     // formData.append("replyDto", JSON.stringify(temp));
@@ -61,6 +52,24 @@ class ReplyService {
     });
   }
 
+  // 댓글 수정
+  updateReply(temp, file) {
+    let formData = new FormData(); // form 객체
+    // formData.append("boardId", temp.boardId);
+    // formData.append("memberId", temp.memberId);
+    formData.append("reply", temp.reply);
+    // formData.append("reReply", temp.reReply);
+    formData.append("file", file);
+
+    //formData 로그
+    for (const x of formData) {
+      console.log("formData ::: ", x);
+    }
+
+    return http.put(`/board/board-detail/reply/${temp.replyId}`, formData, {
+      headers: LoginHeader(),
+    });
+  }
 }
 
 export default new ReplyService();
