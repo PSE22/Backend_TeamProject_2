@@ -62,9 +62,12 @@ public class BoardEditService {
         boardRepository.save(board);
 
         // 파일, 투표, 장소 등의 저장 로직 추가
-        if (boardWriteDto.getFileDtos() != null) {
-            fileService.saveFiles(boardWriteDto.getFileDtos(), board.getBoardId());
+        List<FileDto> fileDtos = boardWriteDto.getFileDtos();
+        log.info("@@File DTO = {}", fileDtos);
+        if (fileDtos != null) {
+            fileService.saveFiles(fileDtos, board.getBoardId());
         }
+
         if (boardWriteDto.getVoteDtos() != null) {
             voteService.saveVote(board.getBoardId(), boardWriteDto.getVoteDtos());
         }

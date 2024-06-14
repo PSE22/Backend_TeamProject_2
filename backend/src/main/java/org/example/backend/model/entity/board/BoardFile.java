@@ -24,7 +24,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Where(clause = "STATUS = 'Y'")
-@SQLDelete(sql = "UPDATE TB_BOARD_FILE SET STATUS = 'N', DEL_DATE = TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI:SS') WHERE UUID = ?")
+@SQLDelete(sql = "UPDATE TB_BOARD_FILE SET STATUS = 'N', DEL_DATE = TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI:SS') WHERE FILE_BID = ?")
 public class BoardFile extends BaseTimeEntity3 {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE

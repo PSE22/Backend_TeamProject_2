@@ -21,7 +21,7 @@
       <tr
         v-for="(data, index) in freeNotice"
         :key="index"
-        @click="goFreeDetail"
+        @click="goFreeDetail(data.boardId)"
       >
         <td class="text-center col-1">{{ data.boardId }}</td>
         <td class="col-6">
@@ -33,7 +33,7 @@
       </tr>
     </tbody>
     <tbody>
-      <tr v-for="(data, index) in board" :key="index" @click="goFreeDetail">
+      <tr v-for="(data, index) in board" :key="index" @click="goFreeDetail(data.boardId)">
         <td class="text-center">{{ data.boardId }}</td>
         <td>
           {{ data.boardTitle }}
