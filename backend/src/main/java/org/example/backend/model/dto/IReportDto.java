@@ -22,5 +22,6 @@ public interface IReportDto {
     String getBoMemberId();
     String getBocode();
     String getSmcode();
+    String getStatus();
     String getAddDate();
 }

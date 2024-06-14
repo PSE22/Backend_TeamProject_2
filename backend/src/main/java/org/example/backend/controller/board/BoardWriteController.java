@@ -47,17 +47,4 @@ public class BoardWriteController {
             return ResponseEntity.badRequest().body("게시글 등록에 실패했습니다." + e);
         }
     }
-
-    @PutMapping("/board-edit/{boardId}")
-    public ResponseEntity<Object> update(
-            @RequestBody BoardWriteDto boardWriteDto
-    ) {
-        log.debug("Received BoardWriteDto: {}", boardWriteDto);
-        try {
-            boardWriteService.save(boardWriteDto);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("게시글 등록에 실패했습니다." + e);
-        }
-    }
 }

@@ -22,6 +22,7 @@
         <th scope="col">작성일</th>
       </tr>
     </thead>
+    <!-- 공지사항 -->
     <tbody>
       <tr
         v-for="(data, index) in clubNotice"
@@ -29,7 +30,7 @@
         @click="goBoardDetail(data.bocode, data.smcode, data.boardId)"
       >
         <td class="text-center col-1">{{ data.boardId }}</td>
-        <td class="col-1" style="color: lightgray">
+        <td class="text-center col-1" style="color: lightgray">
           {{ data.cmCdName }}
         </td>
         <td class="col-6">
@@ -39,10 +40,11 @@
         <td class="text-center col-2">{{ data.addDate }}</td>
       </tr>
     </tbody>
+    <!-- 일반 게시글 -->
     <tbody>
       <tr v-for="(data, index) in club" :key="index" @click="goBoardDetail(data.bocode, data.smcode, data.boardId)">
         <td class="text-center col-1">{{ data.boardId }}</td>
-        <td class="col-1" style="color: lightgray">{{ data.cmCdName }}</td>
+        <td class="text-center col-1" style="color: lightgray">{{ data.cmCdName }}</td>
         <td class="col-6">
           {{ data.boardTitle }}
         </td>
