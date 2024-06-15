@@ -168,10 +168,9 @@ public class BoardDetailController {
     }
 
     // 첨부파일 다운로드
-    // http://localhost:9000/api/board/file/upload/545bf1a1c15d44c5be214492693aab79
     // <img src="http://localhost:9000/api/board/file/upload/545bf1a1c15d44c5be214492693aab79"
-    // <a href="http://localhost:9000/api/board/file/upload/545bf1a1c15d44c5be214492693aab79" >이미지</a>
-    @GetMapping("/file/upload/{uuid}")
+    // <a href="http://localhost:9000/api/board/file/upload/545bf1a1c15d44c5be214492693aab79">이미지</a>
+    @GetMapping("/file/upload2/{uuid}")
     public ResponseEntity<byte[]> fileDownload(@PathVariable String uuid) {
         File file = boardDetailService.fileDownload(uuid).get();
         return ResponseEntity.ok()
@@ -235,7 +234,7 @@ public class BoardDetailController {
     ) {
         try {
             ReplyDto replyDto = new ReplyDto(null, boardId, memberId, reply, reReply);
-            log.debug("ReplyDto :::: {}", replyDto);
+            log.debug("댓글 저장 ReplyDto :::: {}", replyDto);
             replyService.saveReply(replyDto, file);
             return new ResponseEntity<>("댓글 저장 성공", HttpStatus.OK);
         } catch (Exception e) {
@@ -243,10 +242,10 @@ public class BoardDetailController {
         }
     }
 
-    // 댓글 수정
-    @PutMapping("/board-detail/reply/{replyId}")
+    // ❎ 댓글 수정
+    @PutMapping("/board-detail/reply")
     public ResponseEntity<Object> updateReply(
-            @PathVariable Long replyId,
+            @RequestParam(defaultValue = "") Long replyId,
             @RequestParam(defaultValue = "") Long boardId,
             @RequestParam(defaultValue = "") String memberId,
             @RequestParam(defaultValue = "") String reply,
@@ -254,7 +253,7 @@ public class BoardDetailController {
             @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
             ReplyDto replyDto = new ReplyDto(replyId, boardId, memberId, reply, reReply);
-            log.debug("ReplyDto :::: {}", replyDto);
+            log.debug("댓글 수정 ReplyDto :::: {}", replyDto);
             replyService.updateReply(replyDto, file);
             return new ResponseEntity<>("댓글 수정 성공", HttpStatus.OK);
         } catch (Exception e) {

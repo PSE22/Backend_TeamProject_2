@@ -55,7 +55,7 @@ public class FileService {
                             .replace("-", ""));
                     fileDto.setFileUrl(ServletUriComponentsBuilder
                             .fromCurrentContextPath()   // spring 기본주소 : http://localhost:8000
-                            .path("/api/board/file/upload/")   // 추가 경로 넣기
+                            .path("/api/board/file/upload2/")   // 추가 경로 넣기
                             .path(fileDto.getUuid()) // uuid 넣기 : xxxxxx...
 //                            .path(fileExtension)
                             .toUriString()); // 합치기 함수 : http://localhost:8000/board/file/upload/xxxxxx);
@@ -68,7 +68,7 @@ public class FileService {
                 } else {
                     fileDto.setFileUrl(ServletUriComponentsBuilder
                             .fromCurrentContextPath()   // spring 기본주소 : http://localhost:8000
-                            .path("/api/board/file/upload/")   // 추가 경로 넣기 : /advanced/gallery/
+                            .path("/api/board/file/upload2/")   // 추가 경로 넣기 : /advanced/gallery/
                             .path(fileDto.getUuid())  // uuid 넣기 : xxxxxx...
                             .toUriString()); // 합치기 함수 : http://localhost:8000/advanced/fileDb/xxxxxx);
                     File file = modelMapper.map(fileDto, File.class);
