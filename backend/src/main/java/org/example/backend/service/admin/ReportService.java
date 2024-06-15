@@ -1,8 +1,10 @@
 package org.example.backend.service.admin;
 
 import lombok.RequiredArgsConstructor;
+import org.example.backend.model.dto.IReplyReportDto;
 import org.example.backend.model.dto.IReportDto;
 import org.example.backend.model.entity.board.Report;
+import org.example.backend.repository.board.ReplyReportRepository;
 import org.example.backend.repository.board.ReportRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +29,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReportService {
     private final ReportRepository reportRepository;
+    private final ReplyReportRepository replyReportRepository;
 
 //    신고 목록 불러오기
     public Page<IReportDto> findByBoard(Pageable pageable) {
@@ -34,8 +37,19 @@ public class ReportService {
         return list;
     }
 
-    //  10) 회원 삭제 (hard delete)
+    //  신고 삭제 (hard delete)
     public void delReport(Long reportId) {
         reportRepository.deleteReport(reportId);
+    }
+
+    //    댓글신고 목록 불러오기
+    public Page<IReplyReportDto> findByReplyReport(Pageable pageable) {
+        Page<IReplyReportDto> list = replyReportRepository.findByReplyReport(pageable);
+        return list;
+    }
+
+    //  댓글신고 삭제 (hard delete)
+    public void delReplyReport(Long reportId) {
+        replyReportRepository.deleteReplyReport(reportId);
     }
 }

@@ -111,6 +111,7 @@
 
 
 
+
         <!-- 댓글 목록 -->
         <div class="reply-content mb-3">
             <ul v-for="(data, index) in reply" :key="index" class="list-group mb-3">
@@ -131,10 +132,12 @@
                         </div>
                     </div>
                     <button class="btn btn-secondary mt-2" @click="openReReply(data.replyId)">대댓글쓰기</button>
+
                     <!-- 대댓글 작성 폼 (대댓글쓰기 버튼 클릭 시 나타남) -->
                     <div v-if="showWriteReReply && parentId === data.replyId" class="card mb-3 mt-3">
                         <div class="card-body">
                             <div class="reply-name">{{ memberInfo.memberName }} (익명게시판은 별명으로 변경하세요)</div>
+
                             <textarea v-model.lazy="reReplyTextarea" placeholder="대댓글을 남겨보세요"
                                 class="form-control mb-2 reply-content"></textarea>
                             <div class="d-flex justify-content-between">
@@ -164,6 +167,7 @@
                         <button class="btn btn-secondary" @click="updateReply(data.replyId)">등록</button>
                     </div>
                 </li>
+
                 <!-- 대댓글 -->
                 <div v-for="(reReply, index) in data.reReplies" :key="index">
                     <li v-if="!reReply.isReReplyEditing" class="list-group-item reReply-container">
@@ -204,6 +208,7 @@
                 </div>
             </ul>
         </div>
+
 
 
 

@@ -48,6 +48,7 @@ public class BoardDetailService {
     private final PlaceRepository placeRepository;
     private final VoteMemberRepository voteMemberRepository;
     private final VoteRepository voteRepository;
+    private final ReplyService replyService;
 
     // 로그인된 회원 정보 조회
     public Optional<IUserDto> findMember(String memberId) {
@@ -131,12 +132,20 @@ public class BoardDetailService {
     public void deleteBoard(Long boardId) {
         List<DelBoardDto> delData = boardDetailRepository.findByBoardId(boardId);
 
+
+
+        // 게시글 파일 삭제
+       // for (DelBoardDto item : delData) {
+       //     String uuid = item.getUuid();
+       //     if (uuid != null) {
+
         // 댓글 파일 삭제 및 게시글 파일 삭제
         List<String> uuidsToDelete = new ArrayList<>(); // 삭제할 UUID 목록
         for (DelBoardDto item : delData) {
             String uuid = item.getUuid();
             if (uuid != null) {
                 replyFileRepository.deleteByUuid(uuid);
+
                 boardFileRepository.deleteByUuid(uuid);
                 uuidsToDelete.add(uuid); // UUID 목록에 추가
             }
@@ -150,11 +159,20 @@ public class BoardDetailService {
             }
         }
 
+              // 파일 삭제
+    //    for (DelBoardDto item : delData) {
+    //        String uuid = item.getUuid();
+    //        if (uuid != null) {
+    //            boardFileRepository.deleteByUuid(uuid);
+    //        }
+    //    }
+      
+      
         // 댓글 삭제
         for (DelBoardDto item : delData) {
             Long replyId = item.getReplyId();
             if (replyId != null) {
-                replyRepository.deleteById(replyId);
+                replyService.removeReply(replyId);
             }
         }
 
@@ -169,7 +187,6 @@ public class BoardDetailService {
         // 게시물 삭제
         boardDetailRepository.deleteById(boardId);
     }
-
 
     public void updateBoard(Long boardId, IBoardDto boardDto) {
         Board board2 = boardDetailRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));

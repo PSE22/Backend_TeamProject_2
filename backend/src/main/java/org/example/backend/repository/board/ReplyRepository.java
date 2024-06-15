@@ -1,6 +1,7 @@
 package org.example.backend.repository.board;
 
 import org.example.backend.model.dto.board.IReplyDto;
+import org.example.backend.model.dto.board.Reply.IDelReplyDto;
 import org.example.backend.model.entity.board.Reply;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -77,4 +78,16 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
             "AND STATUS = 'Y'"
             , nativeQuery = true)
     Integer countReply(@Param("boardId") Long boardId);
+
+    @Query(value = "SELECT DISTINCT R.REPLY_ID AS replyId, F.UUID AS uuid\n" +
+            "FROM TB_REPLY R\n" +
+            "LEFT JOIN TB_REPLY_FILE RF ON  R.REPLY_ID = RF.REPLY_ID\n" +
+            "LEFT JOIN TB_FILE F ON RF.UUID = F.UUID\n" +
+            "WHERE R.RE_REPLY = :replyId\n" +
+            "OR R.REPLY_ID = :replyId", nativeQuery = true)
+    List<IDelReplyDto> findByReplyId (@Param("replyId") Long replyId);
+
+    boolean existsByMemberId(String memberId);
+
+    List<Reply> findByMemberId(String memberId);
 }

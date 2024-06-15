@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.board.BoardDto;
 import org.example.backend.model.dto.NotifyDto;
 import org.example.backend.model.dto.board.IReplyDto;
+import org.example.backend.model.dto.board.Reply.IDelReplyDto;
 import org.example.backend.model.dto.board.Reply.ReplyDto;
 import org.example.backend.model.entity.board.*;
 import org.example.backend.repository.board.FileRepository;
@@ -208,5 +209,18 @@ public class ReplyService {
     public ReplyReport saveReplyReport(ReplyReport replyReport) {
         ReplyReport replyReport2 = replyReportRepository.save(replyReport);
         return replyReport2;
+    }
+
+//    댓글 삭제
+    @Transactional
+    public void removeReply(Long replyId) {
+        List<IDelReplyDto> delReply = replyRepository.findByReplyId(replyId);
+        for (IDelReplyDto replyDto : delReply) {
+            if (replyDto.getUuid() != null) {
+                replyFileRepository.deleteByUuid(replyDto.getUuid());
+                fileRepository.deleteById(replyDto.getUuid());
+            }
+            replyRepository.deleteById(replyDto.getReplyId());
+        }
     }
 }

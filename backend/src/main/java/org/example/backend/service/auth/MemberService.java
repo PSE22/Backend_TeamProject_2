@@ -1,12 +1,19 @@
 package org.example.backend.service.auth;
 
 import org.example.backend.model.entity.auth.Member;
+import org.example.backend.model.entity.board.Board;
+import org.example.backend.model.entity.board.Reply;
 import org.example.backend.repository.auth.MemberRepository;
+import org.example.backend.repository.board.BoardRepository;
+import org.example.backend.repository.board.ReplyRepository;
+import org.example.backend.service.board.BoardDetailService;
+import org.example.backend.service.board.ReplyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,10 +34,22 @@ import java.util.Optional;
 @Service
 public class MemberService {
     @Autowired
+    BoardRepository boardRepository;
+
+    @Autowired
     MemberRepository memberRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    @Autowired
+    BoardDetailService boardDetailService;
+
+    @Autowired
+    ReplyService replyService;
+
+    @Autowired
+    ReplyRepository replyRepository;
 
     //  1) 회원 유무 확인 함수 : 회원가입
     public boolean existById(String memberId) {
@@ -82,9 +101,23 @@ public class MemberService {
         return memberList;
     }
 
-    //  9) 회원 삭제 (soft delete)
+    //  9) 회원 삭제 (soft delete) + 게시글 삭제
+    @Transactional
     public boolean removeById(String memberId) {
         if (memberRepository.existsById(memberId) == true) {
+            if (boardRepository.findByMemberId(memberId) != null) {
+                List<Board> deletelist = boardRepository.findByMemberId(memberId);
+                for (Board board : deletelist) {
+                    boardDetailService.deleteBoard(board.getBoardId());
+                }
+            }
+//            댓글 삭제
+            if (replyRepository.existsByMemberId(memberId) == true){
+                List<Reply> replyList = replyRepository.findByMemberId(memberId);
+                for (Reply reply : replyList) {
+                    replyService.removeReply(reply.getReplyId());
+                }
+            }
             memberRepository.deleteById(memberId);
             return true;
         } else {
