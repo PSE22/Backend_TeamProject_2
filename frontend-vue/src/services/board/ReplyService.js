@@ -53,21 +53,24 @@ class ReplyService {
   }
 
   // 댓글 수정
-  updateReply(temp, file) {
+  updateReply(reply, file) {
     let formData = new FormData(); // form 객체
-    // formData.append("boardId", temp.boardId);
-    // formData.append("memberId", temp.memberId);
-    formData.append("reply", temp.reply);
-    // formData.append("reReply", temp.reReply);
+    formData.append("replyId", reply.replyId);
+    formData.append("boardId", reply.boardId);
+    formData.append("memberId", reply.memberId);
+    formData.append("reply", reply.reply);
+    formData.append("reReply", reply.reReply);
     formData.append("file", file);
 
     //formData 로그
     for (const x of formData) {
       console.log("formData ::: ", x);
     }
-
-    return http.put(`/board/board-detail/reply/${temp.replyId}`, formData, {
-      headers: LoginHeader(),
+    
+    return http.put(`/board/board-detail/reply`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
   }
 }

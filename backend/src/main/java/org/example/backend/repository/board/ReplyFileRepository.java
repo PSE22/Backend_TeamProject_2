@@ -4,6 +4,8 @@ import org.example.backend.model.entity.board.ReplyFile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * packageName : org.example.backend.repository.board
  * fileName : ReplyFileRepository
@@ -20,4 +22,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReplyFileRepository extends JpaRepository<ReplyFile, Long> {
     void deleteByUuid(String uuid);
+    List<ReplyFile> findByReplyId(Long replyId);
 }
