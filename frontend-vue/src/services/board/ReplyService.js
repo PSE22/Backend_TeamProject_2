@@ -2,9 +2,9 @@ import http from "@/utils/http-common";
 import LoginHeader from "../login/LoginHeader";
 
 class ReplyService {
-  // 글번호로 댓글 조회
-  getReply(boardId) {
-    return http.get(`/board/board-detail/reply?boardId=${boardId}`, {
+  // 글번호로 댓글 조회 + 페이징
+  getReply(boardId, page, size) {
+    return http.get(`/board/board-detail/reply?boardId=${boardId}&page=${page}&size=${size}`, {
       headers: LoginHeader(),
     });
   }
@@ -23,15 +23,13 @@ class ReplyService {
       headers: LoginHeader(),
     });
   }
-
-  // ❎ 신고 댓글 저장
+  // 신고 댓글 저장
   createReplyReport(report) {
     return http.post("/board/board-detail/reply-report", report, {
       headers: LoginHeader(),
     });
   }
-
-  // 댓글(대댓글) + 파일 저장
+  // 댓글(대댓글) 저장
   createReply(temp, file) {
     let formData = new FormData(); // form 객체
     // formData.append("replyDto", JSON.stringify(temp));
