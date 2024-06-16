@@ -23,7 +23,8 @@ class ReplyService {
       headers: LoginHeader(),
     });
   }
-  // 신고 댓글 저장
+
+  // ❎ 신고 댓글 저장
   createReplyReport(report) {
     return http.post("/board/board-detail/reply-report", report, {
       headers: LoginHeader(),
@@ -51,8 +52,7 @@ class ReplyService {
       },
     });
   }
-
-  // 댓글 수정
+  // 댓글(대댓글) 수정
   updateReply(reply, file) {
     let formData = new FormData(); // form 객체
     formData.append("replyId", reply.replyId);
@@ -71,6 +71,13 @@ class ReplyService {
       headers: {
         "Content-Type": "multipart/form-data",
       },
+    });
+  }
+
+  // 댓글(대댓글) 삭제
+  deleteReply(replyId) {
+    return http.delete(`/board/board-detail/reply/delete?replyId=${replyId}`, {
+      headers: LoginHeader(),
     });
   }
 }

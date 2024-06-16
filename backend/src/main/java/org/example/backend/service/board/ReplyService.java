@@ -92,8 +92,6 @@ public class ReplyService {
             replyFileRepository.save(replyFile);
         }
 
-
-
         // 댓글 알림
 //        Long boardId = replyDto.getBoardId();
 //        NotifyDto notifyDto = new NotifyDto();
@@ -128,10 +126,10 @@ public class ReplyService {
         // 기존 파일 삭제 로직
         List<ReplyFile> existingFiles = replyFileRepository.findByReplyId(reply.getReplyId());
         for (ReplyFile existingFile : existingFiles) {
-            // File 에서 삭제
-            deleteFile(existingFile.getUuid());
             // ReplyFile 에서 파일 정보 삭제
             replyFileRepository.delete(existingFile);
+            // File 에서 삭제
+            deleteFile(existingFile.getUuid());
         }
 
         replyRepository.save(reply);
@@ -149,7 +147,7 @@ public class ReplyService {
         return reply;
     }
 
-    // File 테이블에서 파일 삭제
+    // File 테이블에서 파일 삭제 (hard delete)
     public void deleteFile(String uuid) {
         if(fileRepository.existsById(uuid) == true) {
             // hard delete
@@ -204,7 +202,6 @@ public class ReplyService {
         return file2;
     }
 
-
     // 댓글 신고 데이터 저장
     public ReplyReport saveReplyReport(ReplyReport replyReport) {
         ReplyReport replyReport2 = replyReportRepository.save(replyReport);
@@ -215,10 +212,13 @@ public class ReplyService {
     @Transactional
     public void removeReply(Long replyId) {
         List<IDelReplyDto> delReply = replyRepository.findByReplyId(replyId);
+        log.debug("댓글 삭제 디버깅 111");
         for (IDelReplyDto replyDto : delReply) {
             if (replyDto.getUuid() != null) {
                 replyFileRepository.deleteByUuid(replyDto.getUuid());
+                log.debug("댓글 삭제 디버깅 222");
                 fileRepository.deleteById(replyDto.getUuid());
+                log.debug("댓글 삭제 디버깅 333");
             }
             replyRepository.deleteById(replyDto.getReplyId());
         }

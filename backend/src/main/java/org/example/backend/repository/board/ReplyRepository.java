@@ -33,7 +33,7 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
             "        R.MEMBER_ID AS memberId,\n" +
             "        M.MEMBER_NAME AS memberName,\n" +
             "        M.NICKNAME AS nickname,\n" +
-            "        R.RE_REPLY AS reReplyId,\n" +
+            "        R.RE_REPLY AS reReply,\n" +
             "        R.REPLY AS reply,\n" +
             "        R.ADD_DATE AS addDate,\n" +
             "        F.FILE_URL AS fileUrl,\n" +
@@ -55,7 +55,7 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
             "        R.MEMBER_ID AS memberId,\n" +
             "        M.MEMBER_NAME AS memberName,\n" +
             "        M.NICKNAME AS nickname,\n" +
-            "        R.RE_REPLY AS reReplyId,\n" +
+            "        R.RE_REPLY AS reReply,\n" +
             "        R.REPLY AS reply,\n" +
             "        R.ADD_DATE AS addDate,\n" +
             "        F.FILE_URL AS fileUrl,\n" +

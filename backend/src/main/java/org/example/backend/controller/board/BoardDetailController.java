@@ -223,7 +223,7 @@ public class BoardDetailController {
         }
     }
 
-    // 댓글 저장
+    // 댓글 및 대댓글 저장
     @PostMapping("/board-detail/reply")
     public ResponseEntity<Object> createReply(
             @RequestParam(defaultValue = "") Long boardId,
@@ -242,7 +242,7 @@ public class BoardDetailController {
         }
     }
 
-    // ❎ 댓글 수정
+    // 댓글 및 대댓글 수정
     @PutMapping("/board-detail/reply")
     public ResponseEntity<Object> updateReply(
             @RequestParam(defaultValue = "") Long replyId,
@@ -256,6 +256,19 @@ public class BoardDetailController {
             log.debug("댓글 수정 ReplyDto :::: {}", replyDto);
             replyService.updateReply(replyDto, file);
             return new ResponseEntity<>("댓글 수정 성공", HttpStatus.OK);
+        } catch (Exception e) {
+            return handleException(e);
+        }
+    }
+
+    // 댓글 및 대댓글 삭제
+    @DeleteMapping("/board-detail/reply/delete")
+    public ResponseEntity<Object> deleteReply(@RequestParam Long replyId) {
+        try {
+            // DB 삭제 서비스 실행
+            log.debug("컨트롤러 실행 ::: ", replyId);
+            replyService.removeReply(replyId);
+            return new ResponseEntity<>("댓글 삭제 성공", HttpStatus.OK);
         } catch (Exception e) {
             return handleException(e);
         }
@@ -312,7 +325,7 @@ public class BoardDetailController {
         }
     }
 
-    // 게시글, 작성자 정보 상세 조회 / 수정 / 삭제
+    // 게시글, 작성자 정보 상세 조회
     @GetMapping("/board-detail/edit")
     public ResponseEntity<Object> findByBoardAndMember(@RequestParam Long boardId) {
         log.debug("Received boardId: {}", boardId);
@@ -328,7 +341,6 @@ public class BoardDetailController {
         }
     }
 
-
     @DeleteMapping("/board-detail/delete/{boardId}")
     public ResponseEntity<?> deleteBoard(@PathVariable Long boardId) {
         try {
@@ -340,7 +352,7 @@ public class BoardDetailController {
         }
     }
 
-    @PutMapping("board-detail/update/{boardId}")
+    @PutMapping("/board-detail/update/{boardId}")
     public ResponseEntity<?> updateBoard(@RequestParam Long boardId, @RequestBody IBoardDto boardDto) {
         try {
             boardDetailService.updateBoard(boardId, boardDto);
