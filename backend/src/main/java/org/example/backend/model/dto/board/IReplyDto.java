@@ -21,7 +21,7 @@ public interface IReplyDto {
     String getMemberId();   // 회원 ID
     String getMemberName();   // 이름
     String getNickname();   // 닉네임
-    Long getReReplyId();    // 대댓글 ID
+    Long getReReply();    // 대댓글 ID
     String getReply();      // 댓글내용
     String getAddDate();    // 작성일
     String getFileUrl();    // 파일 URL

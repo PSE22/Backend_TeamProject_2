@@ -23,4 +23,5 @@ import java.util.List;
 public interface ReplyFileRepository extends JpaRepository<ReplyFile, Long> {
     void deleteByUuid(String uuid);
     List<ReplyFile> findByReplyId(Long replyId);
+
 }

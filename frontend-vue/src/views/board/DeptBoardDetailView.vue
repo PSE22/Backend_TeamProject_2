@@ -103,15 +103,6 @@
                 </div>
             </div>
         </div>
-
-
-
-
-
-
-
-
-
         <!-- 댓글 목록 -->
         <div class="reply-content mb-3">
             <ul v-for="(data, index) in reply" :key="index" class="list-group mb-3">
@@ -124,7 +115,7 @@
                         <div class="reply-date">{{ data.addDate }}</div>
                         <div>
                             <button class="btn btn-secondary me-3" @click="openReplyUpdate(data.replyId)">수정</button>
-                            <button class="btn btn-secondary me-3">삭제</button>
+                            <button class="btn btn-secondary me-3" @click="deleteReply(data)">삭제</button>
                             <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#reportReplyModal"
                                 @click="openReplyReport(data)">
                                 <i class="bi bi-exclamation-triangle"></i>신고
@@ -167,7 +158,6 @@
                         <button class="btn btn-secondary" @click="updateReply(data.replyId)">등록</button>
                     </div>
                 </li>
-
                 <!-- 대댓글 -->
                 <div v-for="(reReply, index) in data.reReplies" :key="index">
                     <li v-if="!reReply.isReReplyEditing" class="list-group-item reReply-container">
@@ -180,7 +170,7 @@
                             <div>
                                 <button class="btn btn-secondary me-2"
                                     @click="openReReplyUpdate(reReply.replyId)">수정</button>
-                                <button class="btn btn-secondary me-2">삭제</button>
+                                <button class="btn btn-secondary me-2" @click="deleteReply(reReply)">삭제</button>
                                 <button class="btn btn-secondary" data-bs-toggle="modal"
                                     data-bs-target="#reportReReplyModal" @click="openReplyReport(reReply)">
                                     <i class="bi bi-exclamation-triangle"></i>신고
@@ -202,23 +192,12 @@
                         </div>
                         <div class="d-flex justify-content-between">
                             <button class="btn btn-secondary" @click="closeReReplyUpdate(reReply.replyId)">취소</button>
-                            <button class="btn btn-secondary" @click="updateReReply(reReply.replyId)">등록</button>
+                            <button class="btn btn-secondary" @click="updateReReply(reReply)">등록</button>
                         </div>
                     </li>
                 </div>
             </ul>
         </div>
-
-
-
-
-
-
-
-
-
-
-
         <!-- 댓글 작성 -->
         <div class="card mb-3">
             <div class="card-body">
@@ -273,7 +252,7 @@ export default {
             reply: [], // 댓글 목록
             replyCount: "", // 댓글수
 
-
+            // 장소 
             map: null,
             infowindow: null,
             markers: [],
@@ -525,13 +504,13 @@ export default {
                 console.log("createReplyReport 에러", e);
             }
         },
+
+        // ------------------------ 댓글 CUD 관련 함수 ------------------------
         // 새 댓글 작성 시 파일 선택
         selectReplyFile() {
             this.currentFile = this.$refs.replyFile.files[0];
             console.log("댓글 파일 선택 :::", this.currentFile);
         },
-
-
         // 댓글 수정 시 파일 선택상자
         selectReplyFile2(event, data) {
             data.fileName = null;
@@ -542,6 +521,9 @@ export default {
         removeFile(data) {
             data.fileName = null;
             data.fileUrl = null;
+            this.currentFile = null;
+            this.currentReFile = null;
+            console.log("파일데이터", data);
         },
         // 댓글 + 파일 저장
         async createReply() {
@@ -564,9 +546,55 @@ export default {
                 console.log(e);
             }
         },
+        // 댓글 수정 버튼 클릭 시 호출
+        openReplyUpdate(replyId) {
+            const reply = this.reply.find(r => r.replyId === replyId);
+            if (reply) {
+                reply.isEditing = true;
+            }
+            console.log("수정클릭시 data : ", reply);
+        },
+        closeReplyUpdate(replyId) {
+            const reply = this.reply.find(r => r.replyId === replyId);
+            if (reply) {
+                reply.isEditing = false;
+            }
+            this.retrieveReply();
+        },
+        // 댓글 수정 후 등록
+        async updateReply(replyId) {
+            const reply = this.reply.find(r => r.replyId === replyId);
+            reply.reReply = "";    // reReply에는 빈문자열 전달 (undefined 에러 방지)
+            try {
+                let response = await ReplyService.updateReply(reply, this.currentFile);
+                console.log("댓글 수정 : ", response.data);
+                this.retrieveReply();
+                this.retrieveReplyCount();
+            } catch (e) {
+                console.log("updateReply 에러", e);
+            }
+        },
+        // 댓글 삭제
+        async deleteReply(data) {
+            console.log("삭제할 댓글: ", data);
+            try {
+                if (data.reReply === null) {
+                    if (data.reReplies) {
+                        // 댓글의 대댓글이 있을 경우
+                        alert("대댓글이 있는 댓글은 삭제할 수 없습니다."); 
+                        return;
+                    }
+                }
+                await ReplyService.deleteReply(data.replyId);
+                this.retrieveReply();
+                this.retrieveReplyCount();
+                console.log("댓글 삭제 성공");
+            } catch (e) {
+                console.log("deleteReply 에러 : ", e);
+            }
+        },
 
-
-
+        // ------------------------ 대댓글 CUD 관련 함수 ------------------------
         // 대댓글 쓰기 버튼 클릭 시 호출
         openReReply(replyId) {
             this.parentId = replyId;     // 현재 댓글ID를 저장
@@ -599,43 +627,13 @@ export default {
                 this.retrieveReplyCount();
                 this.replyTextarea = "";
                 this.currentReFile = undefined;
+                this.showWriteReReply = !this.showWriteReReply;     // 대댓글쓰기창 토글
             } catch (e) {
                 this.currentReFile = undefined;
+                this.showWriteReReply = !this.showWriteReReply;     // 대댓글쓰기창 토글
                 console.log(e);
             }
         },
-
-
-        // 댓글 수정 버튼 클릭 시 호출
-        openReplyUpdate(replyId) {
-            const reply = this.reply.find(r => r.replyId === replyId);
-            if (reply) {
-                reply.isEditing = true;
-            }
-            console.log("수정클릭시 data : ", reply);
-        },
-        closeReplyUpdate(replyId) {
-            const reply = this.reply.find(r => r.replyId === replyId);
-            if (reply) {
-                reply.isEditing = false;
-            }
-            this.retrieveReply();
-        },
-        // 댓글 수정 후 등록
-        async updateReply(replyId) {
-            const reply = this.reply.find(r => r.replyId === replyId);
-            reply.reReply = "";    // reReply에는 빈문자열 전달
-            try {
-                let response = await ReplyService.updateReply(reply, this.currentFile);
-                console.log("댓글 수정 : ", response.data);
-                this.retrieveReply();
-                this.retrieveReplyCount();
-            } catch (e) {
-                console.log("updateReply 에러", e);
-            }
-        },
-
-
         // 대댓글 수정 버튼 클릭 시 호출
         openReReplyUpdate(replyId) {
             this.reply.forEach(reply => {
@@ -657,20 +655,16 @@ export default {
             });
             this.retrieveReply();
         },
-        // ✅ 대댓글 수정 후 등록
-        async updateReReply(replyId) {
-            // this.reply.forEach(reply => {
-            //     const reReplies = Array.isArray(reply.reReplies) ? reply.reReplies : [];
-            //     const reReply = reReplies.find(r => r.replyId === replyId);
-            //     try {
-            //         let response = await ReplyService.updateReply(reReply, this.currentFile);
-            //         console.log("대댓글 수정 : ", response.data);
-            //         this.retrieveReply();
-            //         this.retrieveReplyCount();
-            //     } catch (e) {
-            //         console.log("updateReReply 에러", e);
-            //     }
-            // });
+        // 대댓글 수정 후 등록
+        async updateReReply(reReply) {
+            try {
+                let response = await ReplyService.updateReply(reReply, this.currentReFile);
+                console.log("대댓글 수정 : ", response.data);
+                this.retrieveReply();
+                this.retrieveReplyCount();
+            } catch (e) {
+                console.log("updateReReply 에러", e);
+            }
         },
 
 
