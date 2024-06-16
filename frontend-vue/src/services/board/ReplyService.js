@@ -73,7 +73,6 @@ class ReplyService {
       },
     });
   }
-
   // 댓글(대댓글) 삭제
   deleteReply(replyId) {
     return http.delete(`/board/board-detail/reply/delete?replyId=${replyId}`, {

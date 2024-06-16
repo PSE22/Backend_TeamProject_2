@@ -107,8 +107,6 @@ public class ReplyService {
         return reply;
     }
 
-
-
     // 댓글 수정
     @Transactional
     public Reply updateReply(ReplyDto replyDto, MultipartFile file) {
@@ -149,7 +147,7 @@ public class ReplyService {
 
     // File 테이블에서 파일 삭제 (hard delete)
     public void deleteFile(String uuid) {
-        if(fileRepository.existsById(uuid) == true) {
+        if (fileRepository.existsById(uuid) == true) {
             // hard delete
             fileRepository.deleteById2(uuid);
         }
@@ -160,7 +158,7 @@ public class ReplyService {
         File file2 = null;
 
         try {
-            if(uuid == null) {
+            if (uuid == null) {
                 String tmpUuid = UUID.randomUUID()
                         .toString()
                         .replace("-", "");
@@ -203,12 +201,11 @@ public class ReplyService {
     }
 
     // 댓글 신고 데이터 저장
-    public ReplyReport saveReplyReport(ReplyReport replyReport) {
-        ReplyReport replyReport2 = replyReportRepository.save(replyReport);
-        return replyReport2;
+    public void saveReplyReport(ReplyReport replyReport) {
+        replyReportRepository.save(replyReport);
     }
 
-//    댓글 삭제
+    //    댓글 삭제
     @Transactional
     public void removeReply(Long replyId) {
         List<IDelReplyDto> delReply = replyRepository.findByReplyId(replyId);
