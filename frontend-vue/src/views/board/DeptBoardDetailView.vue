@@ -62,7 +62,7 @@
                 </div>
             </div>
         </div>
-        <!-- Modal -->
+        <!-- 글 신고 Modal -->
         <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -89,7 +89,7 @@
                             <div class="mb-2">
                                 <hr />
                                 <textarea rows="10" class="form-control" placeholder="신고 사유를 입력하세요." required
-                                    v-model.lazy="reportReason"></textarea>
+                                    v-model="reportReason"></textarea>
                                 <div class="invalid-feedback">
                                     신고 사유는 필수 입력값입니다.
                                 </div>
@@ -172,7 +172,7 @@
                                     @click="openReReplyUpdate(reReply.replyId)">수정</button>
                                 <button class="btn btn-secondary me-2" @click="deleteReply(reReply)">삭제</button>
                                 <button class="btn btn-secondary" data-bs-toggle="modal"
-                                    data-bs-target="#reportReReplyModal" @click="openReplyReport(reReply)">
+                                    data-bs-target="#reportReplyModal" @click="openReplyReport(reReply)">
                                     <i class="bi bi-exclamation-triangle"></i>신고
                                 </button>
                             </div>
@@ -197,6 +197,48 @@
                     </li>
                 </div>
             </ul>
+        </div>
+        <!-- 댓글 신고 Modal -->
+        <div class="modal fade" id="reportReplyModal" tabindex="-1" aria-labelledby="reportReplyModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form class="was-validated">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="reportReplyModalLabel">댓글 신고</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-2 row">
+                                <label for="staticWriter" class="col-sm-2 col-form-label">작성자</label>
+                                <div class="col-sm-10">
+                                    <input type="text" readonly class="form-control-plaintext" id="staticWriter"
+                                        v-model="report.memberName">
+                                </div>
+                            </div>
+                            <div class="mb-2 row">
+                                <label for="staticTitle" class="col-sm-2 col-form-label">내용</label>
+                                <div class="col-sm-10">
+                                    <input type="text" readonly class="form-control-plaintext" id="staticTitle"
+                                        v-model="report.reply">
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <hr />
+                                <textarea rows="10" class="form-control" placeholder="신고 사유를 입력하세요." required
+                                    v-model="report.reportReason"></textarea>
+                                <div class="invalid-feedback">
+                                    신고 사유는 필수 입력값입니다.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                            <button type="submit" class="btn btn-danger" @click="createReplyReport">신고</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
         <!-- 댓글 작성 -->
         <div class="card mb-3">
@@ -236,21 +278,27 @@ export default {
             reReplyTextarea: "",
             parentId: "",                 // 현재 대댓글의 상위 댓글의 replyId
             recommendIcon: true,          // 추천 아이콘 (true는 빈 아이콘)
-            reportReason: "",             // 신고사유 입력
+            reportReason: "",             // 글 신고 사유
+            report: {                    // 댓글 신고 객체
+                replyId: "",
+                memberName: "",           // 댓글 작성자명
+                reply: "",                // 댓글 내용
+                reportReason: ""          // 신고 사유
+            },
             currentFile: undefined,       // 댓글파일선택
             currentReFile: undefined,     // 대댓글파일선택
             showWriteReReply: false,      // 대댓글쓰기
 
             // retrieve 
-            memberInfo: "", // 회원정보
-            board: "", // 게시글
-            cmcd: "", // 부서코드, 부서명
-            vote: [], // 투표
-            boardImage: [], // 글 첨부 이미지
-            recommend: "", // 추천 존재 여부
-            recommendCnt: "", // 추천 수
-            reply: [], // 댓글 목록
-            replyCount: "", // 댓글수
+            memberInfo: "",     // 회원정보
+            board: "",          // 게시글
+            cmcd: "",           // 부서코드, 부서명
+            vote: [],           // 투표
+            boardImage: [],     // 글 첨부 이미지
+            recommend: "",      // 추천 존재 여부
+            recommendCnt: "",   // 추천 수
+            reply: [],          // 댓글 목록
+            replyCount: "",     // 댓글수
 
             // 장소 
             map: null,
@@ -268,7 +316,7 @@ export default {
         };
     },
     methods: {
-        // 회원 권한 체크
+        // ❎ 회원 권한 체크
         async checkAuth() {
             if (this.member?.memberCode === "AT01") {
                 // 관리자 로그인
@@ -283,6 +331,12 @@ export default {
                 this.auth = "C";
             }
         },
+        // 글 수정 페이지로 이동
+        moveToDeptEdit() {
+            this.$router.push(`/board/dept-edit/${this.smcode}/${this.boardId}`);
+        },
+
+        // ------------------------ retrieve 함수 ------------------------
         // 로그인된 회원 정보 가져오기
         async retrieveMember() {
             try {
@@ -394,31 +448,6 @@ export default {
                 console.log("retrieveRecommend 에러", e);
             }
         },
-        // 추천 버튼 클릭 시 호출 
-        toggleRecommend() {
-            this.recommendIcon = !this.recommendIcon;
-            if (this.recommendIcon == false) {
-                this.saveRecommend().then(() => {
-                    // 추천 저장 후, 추천 수 다시 불러오기
-                    this.retrieveRecommendCnt();
-                }).catch(e => {
-                    console.error("추천 저장 실패:", e);
-                });
-            }
-        },
-        // 추천 저장함수
-        async saveRecommend() {
-            try {
-                let recommend = {
-                    boardId: this.boardId,
-                    memberId: this.member.memberId
-                };
-                let response = await BoardDetailService.createRecommend(recommend);
-                console.log(response.data);
-            } catch (e) {
-                console.log("saveRecommend 에러", e);
-            }
-        },
         // 추천 수 가져오기
         async retrieveRecommendCnt() {
             try {
@@ -427,26 +456,6 @@ export default {
                 console.log("추천 수 : ", response.data);
             } catch (e) {
                 console.log("retrieveRecommendCnt 에러", e)
-            }
-        },
-        // 글 신고 저장
-        async createReport() {
-            try {
-                if (!this.reportReason) {
-                    alert("신고 사유를 입력해주세요.");
-                } else {
-                    let report = {
-                        memberId: this.member.memberId,
-                        boardId: this.boardId,
-                        reportReason: this.reportReason,
-                    }
-                    let response = await BoardDetailService.createReport(report);
-                    console.log(response.data);
-                    alert("신고가 완료되었습니다.");
-                    this.reportReason = "";
-                }
-            } catch (e) {
-                console.log("createReport 에러", e);
             }
         },
         // 글번호로 댓글 가져오기
@@ -478,31 +487,77 @@ export default {
                 console.log("retrieveReplyCount 에러", e);
             }
         },
-        // 반복문의 현재 댓글 정보(작성자, 댓글ID, 댓글내용)를 저장
-        openReplyReport(reReply) {
-            this.reply.memberName = reReply.memberName;
-            this.reply.replyId = reReply.replyId;
-            this.reply.reply = reReply.reply;
+
+
+        // 추천 버튼 클릭 시 호출 
+        toggleRecommend() {
+            this.recommendIcon = !this.recommendIcon;
+            if (this.recommendIcon == false) {
+                this.saveRecommend().then(() => {
+                    // 추천 저장 후, 추천 수 다시 불러오기
+                    this.retrieveRecommendCnt();
+                }).catch(e => {
+                    console.error("추천 저장 실패:", e);
+                });
+            }
         },
-        // 댓글 신고 저장
-        async createReplyReport() {
+        // 추천 저장함수
+        async saveRecommend() {
+            try {
+                let recommend = {
+                    boardId: this.boardId,
+                    memberId: this.member.memberId
+                };
+                let response = await BoardDetailService.createRecommend(recommend);
+                console.log(response.data);
+            } catch (e) {
+                console.log("saveRecommend 에러", e);
+            }
+        },
+        // 글 신고 저장
+        async createReport() {
             try {
                 if (!this.reportReason) {
                     alert("신고 사유를 입력해주세요.");
                 } else {
                     let report = {
                         memberId: this.member.memberId,
-                        replyId: this.reply.replyId,
+                        boardId: this.boardId,
                         reportReason: this.reportReason,
                     }
-                    let response = await ReplyService.createReplyReport(report);
-                    console.log(response.data);
+                    await BoardDetailService.createReport(report);
                     alert("신고가 완료되었습니다.");
                     this.reportReason = "";
                 }
             } catch (e) {
+                console.log("createReport 에러", e);
+            }
+        },
+        // 댓글 신고 저장
+        async createReplyReport() {
+            try {
+                if (!this.report.reportReason) {
+                    alert("신고 사유를 입력해주세요.");
+                } else {
+                    let report = {
+                        memberId: this.member.memberId,
+                        replyId: this.report.replyId,
+                        reportReason: this.report.reportReason,
+                    }
+                    await ReplyService.createReplyReport(report);
+                    alert("신고가 완료되었습니다.");
+                    this.report.reportReason = "";
+                }
+            } catch (e) {
                 console.log("createReplyReport 에러", e);
             }
+        },
+        // 댓글 신고 모달 열기
+        openReplyReport(data) {
+            // 반복문의 현재 댓글 정보(댓글Id, 작성자명, 댓글내용) 저장
+            this.report.replyId = data.replyId;
+            this.report.memberName = data.memberName;
+            this.report.reply = data.reply;
         },
 
         // ------------------------ 댓글 CUD 관련 함수 ------------------------
@@ -517,7 +572,7 @@ export default {
             data.fileUrl = null;
             this.currentFile = event.target.files[0];
         },
-        // 댓글/대댓글 수정시 파일 삭제 버튼
+        // 댓글(대댓글) 수정시 파일 삭제 버튼
         removeFile(data) {
             data.fileName = null;
             data.fileUrl = null;
@@ -574,14 +629,14 @@ export default {
                 console.log("updateReply 에러", e);
             }
         },
-        // 댓글 삭제
+        // 댓글(대댓글) 삭제
         async deleteReply(data) {
             console.log("삭제할 댓글: ", data);
             try {
                 if (data.reReply === null) {
                     if (data.reReplies) {
                         // 댓글의 대댓글이 있을 경우
-                        alert("대댓글이 있는 댓글은 삭제할 수 없습니다."); 
+                        alert("대댓글이 있는 댓글은 삭제할 수 없습니다.");
                         return;
                     }
                 }
@@ -665,12 +720,6 @@ export default {
             } catch (e) {
                 console.log("updateReReply 에러", e);
             }
-        },
-
-
-        // 글 수정 페이지로 이동
-        moveToDeptEdit() {
-            this.$router.push(`/board/dept-edit/${this.smcode}/${this.boardId}`);
         },
     },
     mounted() {
