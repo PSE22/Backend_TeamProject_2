@@ -15,6 +15,8 @@ import org.example.backend.repository.board.ReplyReportRepository;
 import org.example.backend.repository.board.ReplyRepository;
 import org.example.backend.service.auth.NotifyService;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -51,8 +53,8 @@ public class ReplyService {
     ModelMapper modelMapper = new ModelMapper();
 
     // 글번호로 댓글 조회
-    public List<IReplyDto> findReply(Long boardId) {
-        List<IReplyDto> list = replyRepository.findReply(boardId);
+    public Page<IReplyDto> findReply(Long boardId, Pageable pageable) {
+        Page<IReplyDto> list = replyRepository.findReply(boardId, pageable);
         return list;
     }
 

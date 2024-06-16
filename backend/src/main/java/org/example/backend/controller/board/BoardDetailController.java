@@ -12,6 +12,9 @@ import org.example.backend.model.dto.board.Reply.ReplyDto;
 import org.example.backend.model.entity.board.*;
 import org.example.backend.service.board.BoardDetailService;
 import org.example.backend.service.board.ReplyService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -168,8 +171,6 @@ public class BoardDetailController {
     }
 
     // 첨부파일 다운로드
-    // <img src="http://localhost:9000/api/board/file/upload/545bf1a1c15d44c5be214492693aab79"
-    // <a href="http://localhost:9000/api/board/file/upload/545bf1a1c15d44c5be214492693aab79">이미지</a>
     @GetMapping("/file/upload2/{uuid}")
     public ResponseEntity<byte[]> fileDownload(@PathVariable String uuid) {
         File file = boardDetailService.fileDownload(uuid).get();
@@ -180,9 +181,11 @@ public class BoardDetailController {
 
     // 글번호로 댓글 조회
     @GetMapping("/board-detail/reply")
-    public ResponseEntity<Object> findReplyCount(@RequestParam Long boardId) {
+    public ResponseEntity<Object> findReplyCount(
+            @RequestParam Long boardId,
+            @PageableDefault(size = 5) Pageable pageable) {
         try {
-            List<IReplyDto> list = replyService.findReply(boardId);
+            Page<IReplyDto> list = replyService.findReply(boardId, pageable);
             if (list.isEmpty() == true) {
                 return new ResponseEntity<>("데이터 없음", HttpStatus.NO_CONTENT);
             } else {
@@ -195,7 +198,7 @@ public class BoardDetailController {
 
     // 대댓글 조회
     @GetMapping("/board-detail/re-reply")
-    public ResponseEntity<Object> findReplyCount(@RequestParam Long boardId, @RequestParam Long replyId) {
+    public ResponseEntity<Object> findReReplyCount(@RequestParam Long boardId, @RequestParam Long replyId) {
         try {
             List<IReplyDto> list = replyService.findReReply(boardId, replyId);
             if (list.isEmpty() == true) {

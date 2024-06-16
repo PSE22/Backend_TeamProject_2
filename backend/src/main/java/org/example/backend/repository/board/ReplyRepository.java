@@ -3,6 +3,8 @@ package org.example.backend.repository.board;
 import org.example.backend.model.dto.board.IReplyDto;
 import org.example.backend.model.dto.board.Reply.IDelReplyDto;
 import org.example.backend.model.entity.board.Reply;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -47,7 +49,7 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
             "AND R.STATUS = 'Y'\n" +
             "ORDER BY R.ADD_DATE ASC"
             , nativeQuery = true)
-    List<IReplyDto> findReply(@Param("boardId") Long boardId);
+    Page<IReplyDto> findReply(@Param("boardId") Long boardId, Pageable pageable);
 
     // 대댓글 조회
     @Query(value = "SELECT R.BOARD_ID AS boardId,\n" +
