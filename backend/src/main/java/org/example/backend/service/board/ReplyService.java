@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.board.BoardDto;
 import org.example.backend.model.dto.NotifyDto;
 import org.example.backend.model.dto.board.IReplyDto;
+import org.example.backend.model.dto.board.Reply.IDelReplyDto;
 import org.example.backend.model.dto.board.Reply.ReplyDto;
 import org.example.backend.model.entity.board.*;
 import org.example.backend.repository.board.FileRepository;
@@ -14,12 +15,15 @@ import org.example.backend.repository.board.ReplyReportRepository;
 import org.example.backend.repository.board.ReplyRepository;
 import org.example.backend.service.auth.NotifyService;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -113,23 +117,30 @@ public class ReplyService {
 
         // replyId로 기존 댓글 찾기
         Reply reply = replyRepository.findById(replyDto.getReplyId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다. replyId: " + replyDto.getReplyId()));
-
-        modelMapper.map(replyDto, reply);
+                .orElseThrow(() -> new RuntimeException("댓글을 찾을 수 없습니다."));
 
         // Reply 저장
         reply.setBoardId(replyDto.getBoardId());
         reply.setMemberId(replyDto.getMemberId());
         reply.setReply(replyDto.getReply());
         reply.setReReply(replyDto.getReReply());
+
+        // 기존 파일 삭제 로직
+        List<ReplyFile> existingFiles = replyFileRepository.findByReplyId(reply.getReplyId());
+        for (ReplyFile existingFile : existingFiles) {
+            // File 에서 삭제
+            deleteFile(existingFile.getUuid());
+            // ReplyFile 에서 파일 정보 삭제
+            replyFileRepository.delete(existingFile);
+        }
+
         replyRepository.save(reply);
 
         // File, ReplyFile 저장
         if (file != null && !file.isEmpty()) {
             File file2 = saveReplyFile(null, file);
 
-            ReplyFile replyFile = modelMapper.map(replyDto, ReplyFile.class);
-
+            ReplyFile replyFile = new ReplyFile();
             replyFile.setReplyId(reply.getReplyId());
             replyFile.setUuid(file2.getUuid());
             replyFileRepository.save(replyFile);
@@ -138,7 +149,13 @@ public class ReplyService {
         return reply;
     }
 
-
+    // File 테이블에서 파일 삭제
+    public void deleteFile(String uuid) {
+        if(fileRepository.existsById(uuid) == true) {
+            // hard delete
+            fileRepository.deleteById2(uuid);
+        }
+    }
 
     // 댓글 파일 첨부 저장
     public File saveReplyFile(String uuid, MultipartFile file) {
@@ -152,7 +169,7 @@ public class ReplyService {
 
                 String fileDownload = ServletUriComponentsBuilder
                         .fromCurrentContextPath()               // spring 기본주소 : http://localhost:9000
-                        .path("/api/board/file/upload/")        // 추가 경로 넣기
+                        .path("/api/board/file/upload2/")        // 추가 경로 넣기
                         .path(tmpUuid)                          // uuid 넣기
                         .toUriString();                         // 합치기
                 // File 객체 생성(생성자, setter) + save()
@@ -169,7 +186,7 @@ public class ReplyService {
             } else {
                 String fileDownload = ServletUriComponentsBuilder
                         .fromCurrentContextPath()           // spring 기본주소
-                        .path("/api/board/file/upload/")    // 추가 경로 넣기
+                        .path("/api/board/file/upload2/")    // 추가 경로 넣기
                         .path(uuid)                         // uuid 넣기
                         .toUriString();                     // 합치기
                 // File 객체 생성(생성자, setter) + save()
@@ -192,5 +209,18 @@ public class ReplyService {
     public ReplyReport saveReplyReport(ReplyReport replyReport) {
         ReplyReport replyReport2 = replyReportRepository.save(replyReport);
         return replyReport2;
+    }
+
+//    댓글 삭제
+    @Transactional
+    public void removeReply(Long replyId) {
+        List<IDelReplyDto> delReply = replyRepository.findByReplyId(replyId);
+        for (IDelReplyDto replyDto : delReply) {
+            if (replyDto.getUuid() != null) {
+                replyFileRepository.deleteByUuid(replyDto.getUuid());
+                fileRepository.deleteById(replyDto.getUuid());
+            }
+            replyRepository.deleteById(replyDto.getReplyId());
+        }
     }
 }

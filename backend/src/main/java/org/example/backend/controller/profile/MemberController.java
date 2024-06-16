@@ -80,25 +80,4 @@ public class MemberController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    //  soft delete
-    @DeleteMapping("/profile/deletion/{memberId}")
-    public ResponseEntity<Object> delete(
-            @PathVariable String memberId
-    ) {
-        try {
-//            DB 서비스 삭제 함수 실행
-            boolean success = memberService.removeById(memberId);
-
-            if (success == true) {
-                return new ResponseEntity<>(HttpStatus.OK);
-            } else {
-//                삭제 실행 : 0건 삭제
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-        } catch (Exception e) {
-//            서버(DB) 에러
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 }

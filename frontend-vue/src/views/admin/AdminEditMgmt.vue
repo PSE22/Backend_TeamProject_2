@@ -149,6 +149,7 @@
           </tbody>
         </table>
       </div>
+      <p class="text-center" v-if="!member || !allMember">조회된 목록이 없습니다.</p>
       <b-pagination
         class="col-12 mb-3 justify-content-center"
         v-model="page"
@@ -178,6 +179,7 @@ export default {
       page: 1,
       count: 0,
       pageSize: 10,
+      boardId: this.$route.params.boardId,
     };
   },
   methods: {
@@ -217,7 +219,7 @@ export default {
       let response = await AdminService.deleteProfile(data.memberId);
       console.log(response.data);
       alert("회원 삭제 처리되었습니다.");
-      this.getAllProfile();
+      this.getAllProfileOfDept();
     },
     pageSizeChange(dept) {
       this.page = 1;

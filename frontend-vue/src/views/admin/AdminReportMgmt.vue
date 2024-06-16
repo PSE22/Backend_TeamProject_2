@@ -5,10 +5,30 @@
       <div class="header">
         <h2>신고관리</h2>
       </div>
-      <button class="dept-button" @click="retrieveReport">게시글</button>
-      <button class="dept-button">신고</button>
+      <div class="mt-2 mb-2">
+        <input
+          type="radio"
+          class="btn-check me-2"
+          name="options-outlined"
+          id="board"
+          autocomplete="off"
+          @click="showReport('board')"
+          checked
+        />
+        <label class="btn btn-outline-dark me-2" for="board">게시글</label>
+
+        <input
+          type="radio"
+          class="btn-check"
+          name="options-outlined"
+          id="reply"
+          autocomplete="off"
+          @click="showReport('reply')"
+        />
+        <label class="btn btn-outline-dark" for="reply">댓글</label>
+      </div>
       <!-- 게시글 관리 -->
-      <div class="row">
+      <div class="row" v-if="activeTab === 'board'">
         <table class="table">
           <thead class="table-light text-center">
             <tr>
@@ -64,16 +84,18 @@
             </tr>
           </tbody>
         </table>
+        <div class="text-center" v-if="!report">조회된 목록이 없습니다.</div>
+
         <b-pagination
           class="col-12 mb-3 justify-content-center"
-          v-model="page"
-          :total-rows="count"
+          v-model="boardPage"
+          :total-rows="boardCount"
           :per-page="pageSize"
-          @click="retrieveReport"
+          @click="retrieveReport()"
         ></b-pagination>
       </div>
       <!-- 댓글 관리 -->
-      <div class="row">
+      <div class="row" v-if="activeTab === 'reply'">
         <table class="table">
           <thead class="table-light text-center">
             <tr>
@@ -86,27 +108,27 @@
             </tr>
           </thead>
           <tbody class="table-group-divider align-middle">
-            <tr v-for="(data, index) in report" :key="index">
-              <td class="text-center">{{ data.reMemberId }}</td>
+            <tr v-for="(data, index) in replyReport" :key="index">
+              <td class="text-center">{{ data.reportMemberId }}</td>
               <td class="text-center">{{ data.boardId }}</td>
               <td
                 @click="goBoardDetail(data.bocode, data.smcode, data.boardId)"
               >
-                {{ data.boardTitle }}
+                {{ data.reply }}
               </td>
               <td class="text-center">{{ data.reportReason }}</td>
               <td class="text-center" v-if="data.status === 'Y'">
                 신고 확정 시 확인
               </td>
               <td class="text-center" v-if="data.status === 'N'">
-                {{ data.boMemberId }}
+                {{ data.replyMemberId }}
               </td>
               <td class="text-center">
                 <div v-if="data.status === 'Y'">
                   <button
                     type="button"
                     class="btn btn-primary"
-                    @click="confirmReDelete(data.reportId)"
+                    @click="confirmReReplyDelete(data.reportId)"
                   >
                     확인
                   </button>
@@ -129,12 +151,16 @@
             </tr>
           </tbody>
         </table>
+        <div class="text-center" v-if="!replyReport">
+          조회된 목록이 없습니다.
+        </div>
+
         <b-pagination
           class="col-12 mb-3 justify-content-center"
-          v-model="page"
-          :total-rows="count"
+          v-model="replyPage"
+          :total-rows="replyCount"
           :per-page="pageSize"
-          @click="retrieveReport"
+          @click="retrieveReplyReport()"
         ></b-pagination>
       </div>
     </div>
@@ -145,7 +171,6 @@
 import BoardDetailService from "@/services/board/BoardDetailService";
 import ReportService from "@/services/admin/ReportService";
 import AdminSidebar from "@/components/common/AdminSidebar.vue";
-import AdminService from "@/services/admin/AdminService";
 
 export default {
   components: {
@@ -155,6 +180,7 @@ export default {
     return {
       loginMember: {},
       report: [],
+      replyReport: [],
       boardId: this.$route.params.boardId, // 현재 글 ID 가져오기
       bocode: this.$route.params.bocode,
       smcode: this.$route.params.smcode,
@@ -162,20 +188,57 @@ export default {
       page: 1, // 현재 페이지 번호
       count: 0, // 전체 데이터 개수
       pageSize: 10, // 화면에 보여질 개수
+
+      boardPage: 1, // 게시글 현재 페이지 번호
+      boardCount: 0, // 게시글 전체 데이터 개수
+      replyPage: 1, // 댓글 현재 페이지 번호
+      replyCount: 0, // 댓글 전체 데이터 개수
+
+      activeTab: "board", // 현재 활성화된 탭 ('board' 또는 'reply')
     };
   },
   methods: {
-    // 신고 목록 가져오기
+    // 신고글 목록 가져오기
     async retrieveReport() {
       try {
-        let response = await ReportService.getAll(this.page - 1, this.pageSize);
+        let response = await ReportService.getAll(
+          this.boardPage - 1,
+          this.pageSize
+        );
         this.report = response.data.content;
-        this.count = response.data.totalElements;
+        this.boardCount = response.data.totalElements;
+        this.replyPage = 1;
         // 로깅
         console.log("report data:", this.report); // 데이터 출력
         console.log("글 목록", response.data);
       } catch (e) {
         console.log(e); // 웹브라우저 콘솔탭에 에러표시
+      }
+    },
+    // 신고댓글 목록 가져오기
+    async retrieveReplyReport() {
+      try {
+        let response = await ReportService.getReplyAll(
+          this.replyPage - 1,
+          this.pageSize
+        );
+        this.replyReport = response.data.content;
+        this.replyCount = response.data.totalElements;
+        this.boardPage = 1;
+        // 로깅
+        console.log("report data:", this.report); // 데이터 출력
+        console.log("글 목록", response.data);
+      } catch (e) {
+        console.log(e); // 웹브라우저 콘솔탭에 에러표시
+      }
+    },
+    // 탭 전환
+    showReport(type) {
+      this.activeTab = type;
+      if (type === "board") {
+        this.retrieveReport();
+      } else if (type === "reply") {
+        this.retrieveReplyReport();
       }
     },
     // 게시글 삭제
@@ -200,7 +263,7 @@ export default {
     // 신고 삭제
     async deleteReport(reportId) {
       try {
-        let response = await AdminService.deleteReport(reportId);
+        let response = await ReportService.deleteReport(reportId);
         console.log(response);
         console.log("신고 아이디", reportId);
         alert("신고가 삭제되었습니다.");
@@ -210,10 +273,29 @@ export default {
         alert("신고 삭제가 실패하였습니다.");
       }
     },
+    // 댓글신고 삭제
+    async deleteReplyReport(reportId) {
+      try {
+        let response = await ReportService.deleteReplyReport(reportId);
+        console.log(response);
+        console.log("댓글신고 아이디", reportId);
+        alert("댓글신고가 삭제되었습니다.");
+        this.retrieveReplyReport(); // 댓글신고 목록을 다시 가져옴
+      } catch (e) {
+        console.log("에러", e);
+        alert("댓글신고 삭제가 실패하였습니다.");
+      }
+    },
     // 게시글 삭제 확인
     confirmReDelete(reportId) {
       if (confirm("신고를 삭제 하시겠습니까?")) {
         this.deleteReport(reportId);
+      }
+    },
+    // 게시글 삭제 확인
+    confirmReReplyDelete(reportId) {
+      if (confirm("댓글신고를 삭제 하시겠습니까?")) {
+        this.deleteReplyReport(reportId);
       }
     },
     // 게시글로 이동
@@ -230,7 +312,6 @@ export default {
 <style scoped>
 .container {
   display: flex;
-  height: 100vh;
   font-family: "Arial, sans-serif";
 }
 

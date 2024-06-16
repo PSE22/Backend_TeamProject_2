@@ -2,6 +2,9 @@
   <div class="container">
     <AdminSidebar/>
     <div class="main-content">
+      <div class="header">
+        <h2>회원가입승인</h2>
+      </div>
       <div class="row">
         <table class="table">
           <thead class="table-light text-center">
@@ -38,6 +41,7 @@
             </tr>
           </tbody>
         </table>
+        <p class="text-center" v-if="!member">조회된 목록이 없습니다.</p>
       </div>
     </div>
   </div>
@@ -129,7 +133,13 @@ export default {
   height: 100vh;
   font-family: "Arial, sans-serif";
 }
-
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  background-color: #f4f4f9;
+}
 .profile-link {
   color: white;
   text-decoration: none;
