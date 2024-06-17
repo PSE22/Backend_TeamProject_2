@@ -15,6 +15,8 @@ import org.example.backend.repository.board.ReplyReportRepository;
 import org.example.backend.repository.board.ReplyRepository;
 import org.example.backend.service.auth.NotifyService;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -51,8 +53,8 @@ public class ReplyService {
     ModelMapper modelMapper = new ModelMapper();
 
     // 글번호로 댓글 조회
-    public List<IReplyDto> findReply(Long boardId) {
-        List<IReplyDto> list = replyRepository.findReply(boardId);
+    public Page<IReplyDto> findReply(Long boardId, Pageable pageable) {
+        Page<IReplyDto> list = replyRepository.findReply(boardId, pageable);
         return list;
     }
 
@@ -92,8 +94,6 @@ public class ReplyService {
             replyFileRepository.save(replyFile);
         }
 
-
-
         // 댓글 알림
 //        Long boardId = replyDto.getBoardId();
 //        NotifyDto notifyDto = new NotifyDto();
@@ -108,8 +108,6 @@ public class ReplyService {
 
         return reply;
     }
-
-
 
     // 댓글 수정
     @Transactional
@@ -128,10 +126,10 @@ public class ReplyService {
         // 기존 파일 삭제 로직
         List<ReplyFile> existingFiles = replyFileRepository.findByReplyId(reply.getReplyId());
         for (ReplyFile existingFile : existingFiles) {
-            // File 에서 삭제
-            deleteFile(existingFile.getUuid());
             // ReplyFile 에서 파일 정보 삭제
             replyFileRepository.delete(existingFile);
+            // File 에서 삭제
+            deleteFile(existingFile.getUuid());
         }
 
         replyRepository.save(reply);
@@ -149,9 +147,9 @@ public class ReplyService {
         return reply;
     }
 
-    // File 테이블에서 파일 삭제
+    // File 테이블에서 파일 삭제 (hard delete)
     public void deleteFile(String uuid) {
-        if(fileRepository.existsById(uuid) == true) {
+        if (fileRepository.existsById(uuid) == true) {
             // hard delete
             fileRepository.deleteById2(uuid);
         }
@@ -162,7 +160,7 @@ public class ReplyService {
         File file2 = null;
 
         try {
-            if(uuid == null) {
+            if (uuid == null) {
                 String tmpUuid = UUID.randomUUID()
                         .toString()
                         .replace("-", "");
@@ -204,21 +202,22 @@ public class ReplyService {
         return file2;
     }
 
-
     // 댓글 신고 데이터 저장
-    public ReplyReport saveReplyReport(ReplyReport replyReport) {
-        ReplyReport replyReport2 = replyReportRepository.save(replyReport);
-        return replyReport2;
+    public void saveReplyReport(ReplyReport replyReport) {
+        replyReportRepository.save(replyReport);
     }
 
-//    댓글 삭제
+    //    댓글 삭제
     @Transactional
     public void removeReply(Long replyId) {
         List<IDelReplyDto> delReply = replyRepository.findByReplyId(replyId);
+        log.debug("댓글 삭제 디버깅 111");
         for (IDelReplyDto replyDto : delReply) {
             if (replyDto.getUuid() != null) {
                 replyFileRepository.deleteByUuid(replyDto.getUuid());
+                log.debug("댓글 삭제 디버깅 222");
                 fileRepository.deleteById(replyDto.getUuid());
+                log.debug("댓글 삭제 디버깅 333");
             }
             replyRepository.deleteById(replyDto.getReplyId());
         }

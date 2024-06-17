@@ -31,7 +31,7 @@
                         </div>
                         <p class="card-text-date">{{ vote[0]?.delDate }} 까지</p>
                         <div class="d-md-flex justify-content-md-end">
-                            <button type="button" class="btn btn-secondary">투표하기</button>
+                            <button type="button" class="btn btn-secondary" @click="vote">투표하기</button>
                         </div>
                     </div>
                 </div>
@@ -48,6 +48,7 @@
                     </div>
                 </div>
                 <hr>
+                <!-- 글 하단 아이콘 -->
                 <div class="d-flex justify-content-start">
                     <!-- 추천 아이콘 -->
                     <div v-if="recommendIcon" @click="toggleRecommend" class="me-3" type="button"><i
@@ -62,7 +63,7 @@
                 </div>
             </div>
         </div>
-        <!-- Modal -->
+        <!-- 글 신고 Modal -->
         <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -89,7 +90,7 @@
                             <div class="mb-2">
                                 <hr />
                                 <textarea rows="10" class="form-control" placeholder="신고 사유를 입력하세요." required
-                                    v-model.lazy="reportReason"></textarea>
+                                    v-model="reportReason"></textarea>
                                 <div class="invalid-feedback">
                                     신고 사유는 필수 입력값입니다.
                                 </div>
@@ -103,15 +104,6 @@
                 </div>
             </div>
         </div>
-
-
-
-
-
-
-
-
-
         <!-- 댓글 목록 -->
         <div class="reply-content mb-3">
             <ul v-for="(data, index) in reply" :key="index" class="list-group mb-3">
@@ -124,7 +116,7 @@
                         <div class="reply-date">{{ data.addDate }}</div>
                         <div>
                             <button class="btn btn-secondary me-3" @click="openReplyUpdate(data.replyId)">수정</button>
-                            <button class="btn btn-secondary me-3">삭제</button>
+                            <button class="btn btn-secondary me-3" @click="deleteReply(data)">삭제</button>
                             <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#reportReplyModal"
                                 @click="openReplyReport(data)">
                                 <i class="bi bi-exclamation-triangle"></i>신고
@@ -167,7 +159,6 @@
                         <button class="btn btn-secondary" @click="updateReply(data.replyId)">등록</button>
                     </div>
                 </li>
-
                 <!-- 대댓글 -->
                 <div v-for="(reReply, index) in data.reReplies" :key="index">
                     <li v-if="!reReply.isReReplyEditing" class="list-group-item reReply-container">
@@ -180,9 +171,9 @@
                             <div>
                                 <button class="btn btn-secondary me-2"
                                     @click="openReReplyUpdate(reReply.replyId)">수정</button>
-                                <button class="btn btn-secondary me-2">삭제</button>
+                                <button class="btn btn-secondary me-2" @click="deleteReply(reReply)">삭제</button>
                                 <button class="btn btn-secondary" data-bs-toggle="modal"
-                                    data-bs-target="#reportReReplyModal" @click="openReplyReport(reReply)">
+                                    data-bs-target="#reportReplyModal" @click="openReplyReport(reReply)">
                                     <i class="bi bi-exclamation-triangle"></i>신고
                                 </button>
                             </div>
@@ -202,23 +193,57 @@
                         </div>
                         <div class="d-flex justify-content-between">
                             <button class="btn btn-secondary" @click="closeReReplyUpdate(reReply.replyId)">취소</button>
-                            <button class="btn btn-secondary" @click="updateReReply(reReply.replyId)">등록</button>
+                            <button class="btn btn-secondary" @click="updateReReply(reReply)">등록</button>
                         </div>
                     </li>
                 </div>
             </ul>
         </div>
-
-
-
-
-
-
-
-
-
-
-
+        <!-- 페이징 -->
+        <b-pagination class="col-12 mb-3 justify-content-center" v-model="replyPage" :total-rows="replyPageCount"
+            :per-page="pageSize" @click="retrieveReply()"></b-pagination>
+        <!-- 댓글 신고 Modal -->
+        <div class="modal fade" id="reportReplyModal" tabindex="-1" aria-labelledby="reportReplyModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form class="was-validated">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="reportReplyModalLabel">댓글 신고</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-2 row">
+                                <label for="staticWriter" class="col-sm-2 col-form-label">작성자</label>
+                                <div class="col-sm-10">
+                                    <input type="text" readonly class="form-control-plaintext" id="staticWriter"
+                                        v-model="report.memberName">
+                                </div>
+                            </div>
+                            <div class="mb-2 row">
+                                <label for="staticTitle" class="col-sm-2 col-form-label">내용</label>
+                                <div class="col-sm-10">
+                                    <input type="text" readonly class="form-control-plaintext" id="staticTitle"
+                                        v-model="report.reply">
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <hr />
+                                <textarea rows="10" class="form-control" placeholder="신고 사유를 입력하세요." required
+                                    v-model="report.reportReason"></textarea>
+                                <div class="invalid-feedback">
+                                    신고 사유는 필수 입력값입니다.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                            <button type="submit" class="btn btn-danger" @click="createReplyReport">신고</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
         <!-- 댓글 작성 -->
         <div class="card mb-3">
             <div class="card-body">
@@ -257,23 +282,34 @@ export default {
             reReplyTextarea: "",
             parentId: "",                 // 현재 대댓글의 상위 댓글의 replyId
             recommendIcon: true,          // 추천 아이콘 (true는 빈 아이콘)
-            reportReason: "",             // 신고사유 입력
+            reportReason: "",             // 글 신고 사유
+            report: {                    // 댓글 신고 객체
+                replyId: "",
+                memberName: "",           // 댓글 작성자명
+                reply: "",                // 댓글 내용
+                reportReason: ""          // 신고 사유
+            },
             currentFile: undefined,       // 댓글파일선택
             currentReFile: undefined,     // 대댓글파일선택
             showWriteReReply: false,      // 대댓글쓰기
 
+            // 페이징
+            pageSize: 5,        // 화면에 보여질 개수
+            replyPage: 1,       // 현재 페이지 번호
+            replyPageCount: 0,  // 댓글 전체 데이터 개수
+
             // retrieve 
-            memberInfo: "", // 회원정보
-            board: "", // 게시글
-            cmcd: "", // 부서코드, 부서명
-            vote: [], // 투표
-            boardImage: [], // 글 첨부 이미지
-            recommend: "", // 추천 존재 여부
-            recommendCnt: "", // 추천 수
-            reply: [], // 댓글 목록
-            replyCount: "", // 댓글수
+            memberInfo: "",     // 회원정보
+            board: "",          // 게시글
+            cmcd: "",           // 부서코드, 부서명
+            vote: [],           // 투표
+            boardImage: [],     // 글 첨부 이미지
+            recommend: "",      // 추천 존재 여부
+            recommendCnt: "",   // 추천 수
+            reply: [],          // 댓글 목록
+            replyCount: "",     // 댓글수
 
-
+            // 장소 
             map: null,
             infowindow: null,
             markers: [],
@@ -289,7 +325,7 @@ export default {
         };
     },
     methods: {
-        // 회원 권한 체크
+        // ❎ 회원 권한 체크
         async checkAuth() {
             if (this.member?.memberCode === "AT01") {
                 // 관리자 로그인
@@ -304,12 +340,87 @@ export default {
                 this.auth = "C";
             }
         },
+        // 글 수정 페이지로 이동
+        moveToDeptEdit() {
+            this.$router.push(`/board/dept-edit/${this.smcode}/${this.boardId}`);
+        },
+        // 추천 버튼 클릭 시 호출 
+        toggleRecommend() {
+            this.recommendIcon = !this.recommendIcon;
+            if (this.recommendIcon == false) {
+                this.saveRecommend().then(() => {
+                    // 추천 저장 후, 추천 수 다시 불러오기
+                    this.retrieveRecommendCnt();
+                }).catch(e => {
+                    console.error("추천 저장 실패:", e);
+                });
+            }
+        },
+        // 추천 저장함수
+        async saveRecommend() {
+            try {
+                let recommend = {
+                    boardId: this.boardId,
+                    memberId: this.member.memberId
+                };
+                await BoardDetailService.createRecommend(recommend);
+            } catch (e) {
+                console.log("saveRecommend 에러", e);
+            }
+        },
+        // 글 신고 저장
+        async createReport() {
+            try {
+                if (!this.reportReason) {
+                    alert("신고 사유를 입력해주세요.");
+                } else {
+                    let report = {
+                        memberId: this.member.memberId,
+                        boardId: this.boardId,
+                        reportReason: this.reportReason,
+                    }
+                    await BoardDetailService.createReport(report);
+                    alert("신고가 완료되었습니다.");
+                    this.reportReason = "";
+                }
+            } catch (e) {
+                console.log("createReport 에러", e);
+            }
+        },
+        // 댓글 신고 저장
+        async createReplyReport() {
+            try {
+                if (!this.report.reportReason) {
+                    alert("신고 사유를 입력해주세요.");
+                } else {
+                    let report = {
+                        memberId: this.member.memberId,
+                        replyId: this.report.replyId,
+                        reportReason: this.report.reportReason,
+                    }
+                    await ReplyService.createReplyReport(report);
+                    alert("신고가 완료되었습니다.");
+                    this.report.reportReason = "";
+                }
+            } catch (e) {
+                console.log("createReplyReport 에러", e);
+            }
+        },
+        // 댓글 신고 모달 열기
+        openReplyReport(data) {
+            // 반복문의 현재 댓글 정보(댓글Id, 작성자명, 댓글내용) 저장
+            this.report.replyId = data.replyId;
+            this.report.memberName = data.memberName;
+            this.report.reply = data.reply;
+        },
+        
+        // ------------------------ retrieve 함수 ------------------------
         // 로그인된 회원 정보 가져오기
         async retrieveMember() {
             try {
                 let response = await BoardDetailService.getMember(this.member.memberId);
                 this.memberInfo = response.data;
-                console.log("memberInfo 데이터 : ", response.data);
+                console.log("memberInfo ::: ", response.data);
                 this.checkAuth();
             } catch (e) {
                 console.log("retrieveMember 에러", e);
@@ -320,7 +431,7 @@ export default {
             try {
                 let response = await BoardDetailService.getBoard(this.boardId);
                 this.board = response.data;
-                console.log("board 데이터 : ", response.data);
+                console.log("board ::: ", response.data);
             } catch (e) {
                 console.log("retrieveBoard 에러", e);
             }
@@ -330,7 +441,6 @@ export default {
             try {
                 let response = await BoardDetailService.getCmCd(this.smcode);
                 this.cmcd = response.data;
-                console.log("code 데이터 : ", response.data);
             } catch (e) {
                 console.log("retrieveCode 에러", e);
             }
@@ -340,9 +450,9 @@ export default {
             try {
                 let response = await BoardDetailService.getVote(this.boardId);
                 this.vote = response.data;
-                console.log("vote : ", response.data);
+                console.log("vote ::: ", response.data);
             } catch (e) {
-                console.log("vote 에러", e);
+                console.log("retrieveVote 에러", e);
             }
         },
         // ❎ 글번호로 장소 가져오기
@@ -405,7 +515,6 @@ export default {
             try {
                 let response = await BoardDetailService.getRecommend(this.boardId, this.member.memberId);
                 this.recommend = response.data;
-                console.log("recommend 데이터 : ", response.data);
                 if (response.data === 1) {
                     this.recommendIcon = false;
                 } else {
@@ -415,66 +524,21 @@ export default {
                 console.log("retrieveRecommend 에러", e);
             }
         },
-        // 추천 버튼 클릭 시 호출 
-        toggleRecommend() {
-            this.recommendIcon = !this.recommendIcon;
-            if (this.recommendIcon == false) {
-                this.saveRecommend().then(() => {
-                    // 추천 저장 후, 추천 수 다시 불러오기
-                    this.retrieveRecommendCnt();
-                }).catch(e => {
-                    console.error("추천 저장 실패:", e);
-                });
-            }
-        },
-        // 추천 저장함수
-        async saveRecommend() {
-            try {
-                let recommend = {
-                    boardId: this.boardId,
-                    memberId: this.member.memberId
-                };
-                let response = await BoardDetailService.createRecommend(recommend);
-                console.log(response.data);
-            } catch (e) {
-                console.log("saveRecommend 에러", e);
-            }
-        },
         // 추천 수 가져오기
         async retrieveRecommendCnt() {
             try {
                 let response = await BoardDetailService.getRecommendCnt(this.boardId);
                 this.recommendCnt = response.data;
-                console.log("추천 수 : ", response.data);
             } catch (e) {
                 console.log("retrieveRecommendCnt 에러", e)
-            }
-        },
-        // 글 신고 저장
-        async createReport() {
-            try {
-                if (!this.reportReason) {
-                    alert("신고 사유를 입력해주세요.");
-                } else {
-                    let report = {
-                        memberId: this.member.memberId,
-                        boardId: this.boardId,
-                        reportReason: this.reportReason,
-                    }
-                    let response = await BoardDetailService.createReport(report);
-                    console.log(response.data);
-                    alert("신고가 완료되었습니다.");
-                    this.reportReason = "";
-                }
-            } catch (e) {
-                console.log("createReport 에러", e);
             }
         },
         // 글번호로 댓글 가져오기
         async retrieveReply() {
             try {
-                let response = await ReplyService.getReply(this.boardId);
-                this.reply = response.data;
+                let response = await ReplyService.getReply(this.boardId, this.replyPage - 1, this.pageSize);
+                this.reply = response.data.content;
+                this.replyPageCount = response.data.totalElements;
 
                 // 각 댓글에 대한 대댓글 가져오기
                 for (let i = 0; i < this.reply.length; i++) {
@@ -494,54 +558,28 @@ export default {
             try {
                 let response = await ReplyService.getReplyCount(this.boardId);
                 this.replyCount = response.data;
-                console.log("replyCount 데이터 : ", response.data);
             } catch (e) {
                 console.log("retrieveReplyCount 에러", e);
             }
         },
-        // 반복문의 현재 댓글 정보(작성자, 댓글ID, 댓글내용)를 저장
-        openReplyReport(reReply) {
-            this.reply.memberName = reReply.memberName;
-            this.reply.replyId = reReply.replyId;
-            this.reply.reply = reReply.reply;
-        },
-        // 댓글 신고 저장
-        async createReplyReport() {
-            try {
-                if (!this.reportReason) {
-                    alert("신고 사유를 입력해주세요.");
-                } else {
-                    let report = {
-                        memberId: this.member.memberId,
-                        replyId: this.reply.replyId,
-                        reportReason: this.reportReason,
-                    }
-                    let response = await ReplyService.createReplyReport(report);
-                    console.log(response.data);
-                    alert("신고가 완료되었습니다.");
-                    this.reportReason = "";
-                }
-            } catch (e) {
-                console.log("createReplyReport 에러", e);
-            }
-        },
+
+        // ------------------------ 댓글 CUD 관련 함수 ------------------------
         // 새 댓글 작성 시 파일 선택
         selectReplyFile() {
             this.currentFile = this.$refs.replyFile.files[0];
-            console.log("댓글 파일 선택 :::", this.currentFile);
         },
-
-
         // 댓글 수정 시 파일 선택상자
         selectReplyFile2(event, data) {
             data.fileName = null;
             data.fileUrl = null;
             this.currentFile = event.target.files[0];
         },
-        // 댓글/대댓글 수정시 파일 삭제 버튼
+        // 댓글(대댓글) 수정시 파일 삭제 버튼
         removeFile(data) {
             data.fileName = null;
             data.fileUrl = null;
+            this.currentFile = null;
+            this.currentReFile = null;
         },
         // 댓글 + 파일 저장
         async createReply() {
@@ -559,14 +597,57 @@ export default {
                 this.replyTextarea = "";
                 this.currentFile = undefined;
             } catch (e) {
-                // 현재 선택된 이미지 변수 초기화
                 this.currentFile = undefined;
                 console.log(e);
             }
         },
+        // 댓글 수정 버튼 클릭 시 호출
+        openReplyUpdate(replyId) {
+            const reply = this.reply.find(r => r.replyId === replyId);
+            if (reply) {
+                reply.isEditing = true;
+            }
+        },
+        closeReplyUpdate(replyId) {
+            const reply = this.reply.find(r => r.replyId === replyId);
+            if (reply) {
+                reply.isEditing = false;
+            }
+            this.retrieveReply();
+        },
+        // 댓글 수정 후 등록
+        async updateReply(replyId) {
+            const reply = this.reply.find(r => r.replyId === replyId);
+            reply.reReply = "";    // reReply에는 빈문자열 전달 (undefined 에러 방지)
+            try {
+                let response = await ReplyService.updateReply(reply, this.currentFile);
+                console.log("댓글 수정 : ", response.data);
+                this.retrieveReply();
+                this.retrieveReplyCount();
+            } catch (e) {
+                console.log("updateReply 에러", e);
+            }
+        },
+        // 댓글(대댓글) 삭제
+        async deleteReply(data) {
+            try {
+                if (data.reReply === null) {
+                    if (data.reReplies) {
+                        // 댓글의 대댓글이 있을 경우
+                        alert("대댓글이 있는 댓글은 삭제할 수 없습니다.");
+                        return;
+                    }
+                }
+                await ReplyService.deleteReply(data.replyId);
+                this.retrieveReply();
+                this.retrieveReplyCount();
+                console.log("댓글 삭제 성공");
+            } catch (e) {
+                console.log("deleteReply 에러 : ", e);
+            }
+        },
 
-
-
+        // ------------------------ 대댓글 CUD 관련 함수 ------------------------
         // 대댓글 쓰기 버튼 클릭 시 호출
         openReReply(replyId) {
             this.parentId = replyId;     // 현재 댓글ID를 저장
@@ -575,14 +656,12 @@ export default {
         // 새 대댓글 작성 시 파일 선택
         selectReReplyFile(event) {
             this.currentReFile = event.target.files[0];
-            console.log("대댓글 파일 선택 ::: ", this.currentReFile);
         },
         // 대댓글 수정 시 파일 선택
         selectReReplyFile2(event, data) {
             data.fileName = null;
             data.fileUrl = null;
             this.currentReFile = event.target.files[0];
-            console.log("대댓글 수정 파일 선택 ::: ", this.currentReFile);
         },
         // 대댓글 + 파일 저장
         async createReReply(reReplyData) {
@@ -597,45 +676,15 @@ export default {
                 console.log("대댓글 전송 : ", response);
                 this.retrieveReply();
                 this.retrieveReplyCount();
-                this.replyTextarea = "";
+                this.reReplyTextarea = "";
                 this.currentReFile = undefined;
+                this.showWriteReReply = !this.showWriteReReply;     // 대댓글쓰기창 토글
             } catch (e) {
                 this.currentReFile = undefined;
+                this.showWriteReReply = !this.showWriteReReply;     // 대댓글쓰기창 토글
                 console.log(e);
             }
         },
-
-
-        // 댓글 수정 버튼 클릭 시 호출
-        openReplyUpdate(replyId) {
-            const reply = this.reply.find(r => r.replyId === replyId);
-            if (reply) {
-                reply.isEditing = true;
-            }
-            console.log("수정클릭시 data : ", reply);
-        },
-        closeReplyUpdate(replyId) {
-            const reply = this.reply.find(r => r.replyId === replyId);
-            if (reply) {
-                reply.isEditing = false;
-            }
-            this.retrieveReply();
-        },
-        // 댓글 수정 후 등록
-        async updateReply(replyId) {
-            const reply = this.reply.find(r => r.replyId === replyId);
-            reply.reReply = "";    // reReply에는 빈문자열 전달
-            try {
-                let response = await ReplyService.updateReply(reply, this.currentFile);
-                console.log("댓글 수정 : ", response.data);
-                this.retrieveReply();
-                this.retrieveReplyCount();
-            } catch (e) {
-                console.log("updateReply 에러", e);
-            }
-        },
-
-
         // 대댓글 수정 버튼 클릭 시 호출
         openReReplyUpdate(replyId) {
             this.reply.forEach(reply => {
@@ -643,7 +692,6 @@ export default {
                 const reReply = reReplies.find(r => r.replyId === replyId);
                 if (reReply) {
                     reReply.isReReplyEditing = true;
-                    console.log("대댓수정클릭시 data : ", reReply);
                 }
             });
         },
@@ -657,26 +705,16 @@ export default {
             });
             this.retrieveReply();
         },
-        // ✅ 대댓글 수정 후 등록
-        async updateReReply(replyId) {
-            // this.reply.forEach(reply => {
-            //     const reReplies = Array.isArray(reply.reReplies) ? reply.reReplies : [];
-            //     const reReply = reReplies.find(r => r.replyId === replyId);
-            //     try {
-            //         let response = await ReplyService.updateReply(reReply, this.currentFile);
-            //         console.log("대댓글 수정 : ", response.data);
-            //         this.retrieveReply();
-            //         this.retrieveReplyCount();
-            //     } catch (e) {
-            //         console.log("updateReReply 에러", e);
-            //     }
-            // });
-        },
-
-
-        // 글 수정 페이지로 이동
-        moveToDeptEdit() {
-            this.$router.push(`/board/dept-edit/${this.smcode}/${this.boardId}`);
+        // 대댓글 수정 후 등록
+        async updateReReply(reReply) {
+            try {
+                let response = await ReplyService.updateReply(reReply, this.currentReFile);
+                console.log("대댓글 수정 : ", response.data);
+                this.retrieveReply();
+                this.retrieveReplyCount();
+            } catch (e) {
+                console.log("updateReReply 에러", e);
+            }
         },
     },
     mounted() {
