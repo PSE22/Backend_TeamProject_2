@@ -60,7 +60,6 @@
 </template>
 
 <script>
-import MemberService from "@/services/member/MemberService";
 import LoginService from "@/services/login/LoginService";
 
 export default {
@@ -100,15 +99,15 @@ export default {
       }
     },
 
-    async findMember() {
-      try {
-        let response = await MemberService.get(this.memberId);
-        this.member = response.data;
-        console.log(response.data);
-      } catch (e) {
-        console.log(e);
-      }
-    },
+    // async findMember() {
+    //   try {
+    //     let response = await MemberService.get(this.memberId);
+    //     this.member = response.data;
+    //     console.log(response.data);
+    //   } catch (e) {
+    //     console.log(e);
+    //   }
+    // },
   },
   mounted() {},
 };
