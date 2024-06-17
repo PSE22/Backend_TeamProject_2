@@ -11,9 +11,9 @@ class BoardWrite {
   }
 
   // 게시물 수정
-  update(boardDto, voteDtos, fileDtos, placeDto) {
-    console.log("수정되나", boardDto, voteDtos, fileDtos, placeDto )
-    return http.post("/board/board-edit", { boardDto, voteDtos, fileDtos, placeDto }, {
+  update(data) {
+    console.log("수정되나", data )
+    return http.post("/board/board-edit", data, {
         headers: LoginHeader(),
     });
   }

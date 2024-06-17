@@ -7,55 +7,8 @@
       >
         수정
       </button>
-      <button
-        class="col-1 btn btn-danger"
-        data-bs-toggle="modal"
-        data-bs-target="#delete"
-      >
-        삭제
-      </button>
+      <button class="col-1 btn btn-danger" @click="confirmBoDelete">삭제</button>
     </div>
-    <!-- 삭제 경고 Modal -->
-    <div
-      class="modal fade"
-      id="delete"
-      tabindex="-1"
-      aria-labelledby="exampleModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">삭제</h1>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">삭제 하시겠습니까?</div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              취소
-            </button>
-            <button
-              type="button"
-              class="btn btn-primary"
-              data-bs-dismiss="modal"
-              @click="deleteBoard"
-            >
-              확인
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- 삭제 경고 모달 끝 -->
     <!-- 게시글 -->
     <div class="card mb-3">
       <!-- 글 제목 부분 -->
@@ -68,6 +21,8 @@
         <p class="card-text-name">{{ board?.memberName }}</p>
         <p class="card-text-date">{{ board?.addDate }}</p>
         <hr />
+
+
         <!-- 투표 -->
         <div class="card mb-3" style="width: 25rem" v-if="vote">
           <h5 class="card-header vote-card-header">
@@ -94,8 +49,12 @@
             </div>
           </div>
         </div>
+
+
         <!-- 내용 -->
         <p class="card-text-content">{{ board?.boardContent }}</p>
+
+
         <!-- 장소 -->
         <div v-if="address">
           <div
@@ -105,12 +64,18 @@
             class="img-thumbnail"
           ></div>
         </div>
+
+
+        <!-- 이미지 -->
         <div class="board-images mb-3">
           <div v-for="(data, index) in boardImage" :key="index" class="mb-2">
             <img :src="data.fileUrl" class="img-fluid" alt="이미지" />
           </div>
         </div>
         <hr />
+
+
+        
         <div class="d-flex justify-content-start">
           <!-- 추천 아이콘 -->
           <div
@@ -682,6 +647,12 @@ export default {
       } catch (error) {
         console.log("삭제 에러", error);
         alert("삭제에 실패했습니다.");
+      }
+    },
+        // 게시글 삭제 확인
+        confirmBoDelete() {
+      if (confirm("게시글을 삭제 하시겠습니까?")) {
+        this.deleteBoard();
       }
     },
   },

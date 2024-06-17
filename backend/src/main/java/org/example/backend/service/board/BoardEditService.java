@@ -3,11 +3,10 @@ package org.example.backend.service.board;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.board.*;
-import org.example.backend.model.entity.board.Board;
-import org.example.backend.model.entity.board.File;
-import org.example.backend.model.entity.board.Place;
-import org.example.backend.model.entity.board.Vote;
+import org.example.backend.model.entity.board.*;
+import org.example.backend.repository.board.BoardFileRepository;
 import org.example.backend.repository.board.BoardRepository;
+import org.example.backend.repository.board.FileRepository;
 import org.example.backend.repository.board.VoteRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +38,8 @@ public class BoardEditService {
     private final VoteService voteService;
     private final FileService fileService;
     private final PlaceService placeService;
+    private final BoardFileRepository boardFileRepository;
+    private final FileRepository fileRepository;
 
     @Transactional
     public void update(BoardWriteDto boardWriteDto) {
@@ -61,18 +62,21 @@ public class BoardEditService {
         // 저장
         boardRepository.save(board);
 
-        // 파일, 투표, 장소 등의 저장 로직 추가
+        // 파일, 장소 등의 저장 로직 추가
         List<FileDto> fileDtos = boardWriteDto.getFileDtos();
         log.info("@@File DTO = {}", fileDtos);
         if (fileDtos != null) {
             fileService.saveFiles(fileDtos, board.getBoardId());
-        }
+        } else {
+            List<BoardFile> boardFiles = boardFileRepository.findByBoardId(boardId);
+            for (BoardFile boardFile : boardFiles) {
+                boardFileRepository.deleteByUuid(boardFile.getUuid());
+                fileRepository.deleteById(boardFile.getUuid());
+            }
 
-        if (boardWriteDto.getVoteDtos() != null) {
-            voteService.saveVote(board.getBoardId(), boardWriteDto.getVoteDtos());
-        }
-        if (boardWriteDto.getPlaceDto() != null) {
-            placeService.savePlace(board.getBoardId(), boardWriteDto.getPlaceDto());
+            if (boardWriteDto.getPlaceDto() != null) {
+                placeService.savePlace(board.getBoardId(), boardWriteDto.getPlaceDto());
+            }
         }
     }
 

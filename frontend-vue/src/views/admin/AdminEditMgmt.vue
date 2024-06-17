@@ -2,6 +2,9 @@
   <div class="container">
     <AdminSidebar />
     <div class="main-content">
+      <div class="header">
+        <h2>회원정보변경</h2>
+      </div>
       <input
         type="text"
         class="search-input"
@@ -264,6 +267,14 @@ export default {
   display: flex;
   height: 100vh;
   font-family: "Arial, sans-serif";
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  background-color: #f4f4f9;
 }
 
 .profile-link {

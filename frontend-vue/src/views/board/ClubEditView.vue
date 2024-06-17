@@ -75,9 +75,7 @@
             <div class="modal-dialog modal-dialog-centered">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h1 class="modal-title fs-5" id="exampleModalLabel">
-                    투표
-                  </h1>
+                  <h1 class="modal-title fs-5" id="exampleModalLabel">투표</h1>
                   <button
                     type="button"
                     class="btn-close"
@@ -333,11 +331,7 @@
 
       <!-- 수정 버튼 -->
       <div class="fixed-button">
-        <button
-          type="button"
-          class="btn btn-danger me-md-2"
-          @click="editBoard"
-        >
+        <button type="button" class="btn btn-danger me-md-2" @click="editBoard">
           수정
         </button>
         <button type="button" class="btn btn-secondary" @click="deleteBoard">
@@ -638,68 +632,109 @@ export default {
       }
       this.$refs.mapContainer.style.display = "none";
     },
+    //   async editBoard() {
+    //     try {
+    //       // Prepare the data for update
+    //       const boardDto = this.board;
+    //       const voteDtos = this.voteExists ? [this.vote] : [];
+    //       const fileDtos = this.files.map((file) => file.data);
+    //       const placeDto = this.placeExists ? this.address : null;
+
+    //       // Call the update function
+    //       await BoardWrite.update(boardDto, voteDtos, fileDtos, placeDto);
+    //       alert("게시글이 수정되었습니다.");
+    //       this.$router.push({
+    //         path: "/board/club",
+    //         query: { bocode: this.bocode },
+    //       });
+    //     } catch (error) {
+    //       console.error("게시글 수정 중 에러 발생:", error);
+    //       alert("게시글 수정 중 에러가 발생했습니다.");
+    //     }
+    //   },
+    // },
     async editBoard() {
       try {
-        // Prepare the data for update
-        const boardDto = this.board;
-        const voteDtos = this.voteExists ? [this.vote] : [];
-        const fileDtos = this.files.map((file) => file.data);
-        const placeDto = this.placeExists ? this.address : null;
-
-        // Call the update function
-        await BoardWrite.update(boardDto, voteDtos, fileDtos, placeDto);
-        alert("게시글이 수정되었습니다.");
-        this.$router.push({
-          path: "/board/club",
-          query: { bocode: this.bocode },
+        // 임시 객체 변수
+        // Board 테이블
+        let boardDto = this.board;
+        // Place 테이블
+        let placeDto = this.address ? { address: this.address } : null;
+        // File 테이블
+        let fileDtos = await Promise.all(
+          this.files.map((file) => {
+            return new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => {
+                resolve({
+                  // uuid: file.name,
+                  fileUrl: file.fileUrl,
+                  fileName: file.name,
+                  data: reader.result.split(",")[1], // Base64 문자열만 추출
+                });
+              };
+              reader.onerror = reject;
+              reader.readAsDataURL(file.data); // Base64 인코딩
+            });
+          })
+        );
+        fileDtos = fileDtos.concat(this.existingFiles);
+        let response = await BoardWrite.update({
+          boardDto,
+          placeDto: placeDto,
+          fileDtos: fileDtos.length > 0 ? fileDtos : null,
         });
-      } catch (error) {
-        console.error("게시글 수정 중 에러 발생:", error);
-        alert("게시글 수정 중 에러가 발생했습니다.");
+        console.log(response);
+        this.submitted = true;
+        alert("게시글이 등록되었습니다.");
+        this.$router.push(`/board/club`);
+      } catch (e) {
+        console.log(e);
+        alert("내용을 입력해주세요.");
       }
     },
-  },
-  computed: {
-    isNoticeChecked: {
-      get() {
-        return this.board.noticeYn === "Y";
-      },
-      set(value) {
-        this.board.noticeYn = value ? "Y" : "N";
+    computed: {
+      isNoticeChecked: {
+        get() {
+          return this.board.noticeYn === "Y";
+        },
+        set(value) {
+          this.board.noticeYn = value ? "Y" : "N";
+        },
       },
     },
   },
-  mounted() {
-    console.log(
-      "부서코드 : ",
-      this.smcode,
-      "/ 글번호 : ",
-      this.boardId,
-      "/ 로그인ID : ",
-      this.member.memberId
-    );
-    this.retrieveMember();
-    this.retrieveBoard();
-    this.retrieveBocode();
-    this.retrieveSmcode();
-    this.retrieveVote();
-    this.retrieveImg();
-    this.loadDaumPostcodeScript();
-    this.loadKakaoMapScript();
+    mounted() {
+      console.log(
+        "부서코드 : ",
+        this.smcode,
+        "/ 글번호 : ",
+        this.boardId,
+        "/ 로그인ID : ",
+        this.member.memberId
+      );
+      this.retrieveMember();
+      this.retrieveBoard();
+      this.retrieveBocode();
+      this.retrieveSmcode();
+      this.retrieveVote();
+      this.retrieveImg();
+      this.loadDaumPostcodeScript();
+      this.loadKakaoMapScript();
 
-    if (window.kakao && window.kakao.maps) {
-      this.retrievePlace();
-    } else {
-      const script = document.createElement("script");
-      script.onload = () => {
+      if (window.kakao && window.kakao.maps) {
         this.retrievePlace();
-      };
-      script.src =
-        "//dapi.kakao.com/v2/maps/sdk.js?appkey=55b411073309a73c48d56caa594311c8"; // 발급받은 API 키로 변경
-      document.head.appendChild(script);
-    }
-  },
-};
+      } else {
+        const script = document.createElement("script");
+        script.onload = () => {
+          this.retrievePlace();
+        };
+        script.src =
+          "//dapi.kakao.com/v2/maps/sdk.js?appkey=55b411073309a73c48d56caa594311c8"; // 발급받은 API 키로 변경
+        document.head.appendChild(script);
+      }
+    },
+  }
 </script>
 
 <style>
