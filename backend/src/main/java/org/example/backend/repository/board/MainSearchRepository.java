@@ -35,6 +35,7 @@ public interface MainSearchRepository extends JpaRepository<Board, Long> {
             "B.BOARD_TITLE AS boardTitle, \n" +
             "B.ADD_DATE AS addDate, \n" +
             "B.BOCODE AS boCode, \n" +
+            "B.SMCODE AS smCode, \n" +
             "M.NICKNAME AS nickName, \n" +
             "C.CM_CD AS cmCode, \n" +
             "C.CM_CD_NAME AS cmCodeName,\n" +
