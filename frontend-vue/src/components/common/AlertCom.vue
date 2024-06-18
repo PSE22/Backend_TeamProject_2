@@ -88,6 +88,10 @@ export default {
       if (this.eventSource) {
         this.eventSource.close();
         this.eventSource = null;
+
+        localStorage.removeItem("member");
+        alert("장시간 연결로 로그아웃 되었습니다. 다시 로그인 해주세요.");
+        this.$router.push("/login");
       }
     },
     openNotificationLink() {
@@ -103,7 +107,7 @@ export default {
     },
   },
   beforeUnmount() {
-    window.removeEventListener('beforeunload', this.handleBeforeUnload);
+    window.removeEventListener("beforeunload", this.handleBeforeUnload);
   },
 };
 </script>
