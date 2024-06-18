@@ -26,7 +26,7 @@ class LoginService {
         let data = {
             memberId: memberId
         };
-        return http.get(`/auth/register/${memberId}?memberId=${memberId}`, data);
+        return http.get(`/auth/register/${memberId}`, data);
     }
 
     // TODO: 비밀번호 찾기 함수
