@@ -170,15 +170,6 @@
 
                     <div class="col-auto">
                       <input
-                        class="form-control"
-                        type="text"
-                        v-model.lazy="address"
-                        placeholder="주소"
-                        @keypress.enter="openPostcode"
-                      />
-                    </div>
-                    <div class="col-auto">
-                      <input
                         type="button"
                         @click="openPostcode"
                         value="주소 검색"
