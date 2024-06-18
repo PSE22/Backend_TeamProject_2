@@ -130,6 +130,9 @@
               <p v-if="message" class="alert alert-primary" role="alert">
                 {{ message }}
               </p>
+              <p v-if="errorMessage" class="alert alert-danger" role="alert">
+                {{ errorMessage }}
+              </p>
               <hr />
               <div class="text-center">
                 <a href="/login"> 로그인 </a>
@@ -160,6 +163,7 @@ export default {
         posCode: "PO01",
       },
       message: "",
+      errorMessage: ""
     };
   },
   // TODO: 함수 정의
@@ -204,9 +208,15 @@ export default {
         console.log(response.data);
       } catch (e) {
         // 공유 저장소의 register 실패 함수 실행
-        this.$store.commit("registerFailure");
-        this.message = "에러 : " + e;
+        // this.$store.commit("registerFailure");
+        this.message = "";
+        this.errorMessage = this.handleAxiosError(e);
         console.log(e); // 에러 출력
+      }
+    },
+    handleAxiosError(error) {
+      if (error.response) {
+        return error.response.data;
       }
     },
   },

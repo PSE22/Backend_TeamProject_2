@@ -1,5 +1,6 @@
 package org.example.backend.controller.auth;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.entity.auth.Member;
@@ -10,6 +11,7 @@ import org.example.backend.service.dto.LoginRequest;
 import org.example.backend.service.dto.LoginResponse;
 import org.example.backend.service.dto.SignUpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -73,7 +75,7 @@ public class AuthController {
                 return ResponseEntity.ok("사용 가능한 ID 입니다.");
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -94,13 +96,18 @@ public class AuthController {
                     signUpRequest.getMemberCode(),
                     signUpRequest.getDeptCode(),
                     signUpRequest.getPosCode()
-
             );
+//            if (member.getMemberEmail() != null) {
+//                return ResponseEntity.badRequest().body("이미 존재하는 이메일입니다.");
+//            }
             memberService.insert(member);
             return ResponseEntity.ok("회원가입이 완료되었습니다.");
 
+        } catch (DataIntegrityViolationException e) {
+            log.debug("확인" + e);
+            return ResponseEntity.badRequest().body("이메일 중복.");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.internalServerError().body("g");
         }
     }
 
