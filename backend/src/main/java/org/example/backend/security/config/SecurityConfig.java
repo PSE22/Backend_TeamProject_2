@@ -56,7 +56,7 @@ public class SecurityConfig {
         http.formLogin(req -> req.disable());
 
         http.authorizeHttpRequests(req -> req
-                .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
+//                .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
 //                .requestMatchers("/api/admin/**").hasAuthority("AT01")
 //                .requestMatchers("/api/member/**").hasAnyAuthority("AT01", "AT02")
 //                .requestMatchers("/api/board/BO01/DE01/**").hasAuthority("DE01")

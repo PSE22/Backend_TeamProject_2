@@ -159,11 +159,6 @@ const routes = [
     path: "/admin/register-mgmt",
     component: () => import("../views/admin/AdminRegisterMgmt.vue"),
   },
-  // 관리자 반려회원 관리
-  {
-    path: "/admin/register-deny-mgmt",
-    component: () => import("../views/admin/AdminRegisterDenyMgmt.vue"),
-  },
   // 관리자 회원정보 수정
   {
     path: "/admin/edit-mgmt",

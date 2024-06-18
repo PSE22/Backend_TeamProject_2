@@ -84,8 +84,8 @@ public class MemberService {
     }
 
     //  6) 신규 회원 전체 조회
-    public List<Member> findAllByMemberCode(String memberCode) {
-        List<Member> memberList = memberRepository.findAllByMemberCode(memberCode);
+    public Page<Member> findAllByMemberCode(String memberCode, Pageable pageable) {
+        Page<Member> memberList = memberRepository.findAllByMemberCode(memberCode, pageable);
         return memberList;
     }
 

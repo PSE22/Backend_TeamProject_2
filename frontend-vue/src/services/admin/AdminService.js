@@ -10,8 +10,8 @@ class AdminService {
     }
 
     // 신규 회원 전체 조회
-    getMember(memberCode) {
-        return http.get(`/admin/profile-all/${memberCode}`, {
+    getMember(memberCode, page, size) {
+        return http.get(`/admin/profile-all/${memberCode}?page=${page}&size=${size}`, {
             headers: LoginHeader(),
           });
     }

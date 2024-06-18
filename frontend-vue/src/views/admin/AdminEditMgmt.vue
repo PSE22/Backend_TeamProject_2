@@ -3,8 +3,9 @@
     <AdminSidebar />
     <div class="main-content">
       <div class="header">
-        <h2>회원정보변경</h2>
+        <h2>사원관리</h2>
       </div>
+      <br>
       <input
         type="text"
         class="search-input"
@@ -152,7 +153,7 @@
           </tbody>
         </table>
       </div>
-      <p class="text-center" v-if="!member || !allMember">조회된 목록이 없습니다.</p>
+      <p class="text-center" v-if="!member">조회된 목록이 없습니다.</p>
       <b-pagination
         class="col-12 mb-3 justify-content-center"
         v-model="page"
@@ -174,7 +175,6 @@ export default {
   },
   data() {
     return {
-      loginMember: {},
       member: [],
       allMember: [],
       searchMemberName: "",
@@ -264,9 +264,10 @@ export default {
 
 <style scoped>
 .container {
+  margin-top: 50px;
   display: flex;
-  height: 100vh;
   font-family: "Arial, sans-serif";
+  height: 130vh;
 }
 
 .header {
@@ -274,7 +275,6 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 10px 0;
-  background-color: #f4f4f9;
 }
 
 .profile-link {
@@ -287,55 +287,11 @@ export default {
   text-decoration: none;
 }
 
-.sidebar {
-  width: 220px;
-  background: #b3000f;
-  color: white;
-  padding: 30px 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border-radius: 15px;
-}
-
-.sidebar-title {
-  font-size: 26px;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
-
-.sidebar-divider {
-  border: 0;
-  height: 1px;
-  background: white;
-  margin: 20px 0;
-}
-
-.sidebar-list {
-  list-style: none;
-  padding: 0;
-  width: 100%;
-}
-
-.sidebar-menu {
-  font-size: 18px;
-  padding: 10px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.sidebar-menu:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-}
-
 .main-content {
   flex-grow: 1;
-  padding: 40px;
-  background-color: #f4f4f9;
+  padding: 0 40px;
   border-radius: 15px;
   margin: 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .search-input {
