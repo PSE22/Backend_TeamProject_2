@@ -1,7 +1,7 @@
 <template>
   <div class="container mt-3 board-detail-container">
     <!-- 글 수정/삭제 버튼 : 글쓴이만 보이게 -->
-    <div class="row mb-3 board-button">
+    <div class="mb-3 board-button d-flex justify-content-start">
       <button class="col-1 btn btn-warning me-2" @click="moveToFreeEdit">
         수정
       </button>
@@ -62,7 +62,43 @@
         <p class="card-text-name">{{ board?.nickName }}</p>
         <p class="card-text-date">{{ board?.addDate }}</p>
         <hr />
+        <!-- 투표 -->
+        <div class="card mb-3" style="width: 25rem" v-if="vote">
+          <h5 class="card-header vote-card-header">
+            {{ vote[0]?.voteName }}
+          </h5>
+          <div class="card-body">
+            <div class="form-check" v-for="(data, index) in vote" :key="index">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="exampleRadios"
+                id="voteRadios"
+                value="option1"
+                checked
+              />
+              <label class="form-check-label" for="voteRadios">
+                {{ data.voteList }}
+              </label>
+              <hr />
+            </div>
+            <p class="card-text-date">{{ vote[0]?.delDate }} 까지</p>
+            <div class="d-md-flex justify-content-md-end">
+              <button type="button" class="btn btn-secondary">투표하기</button>
+            </div>
+          </div>
+        </div>
+        <!-- 내용 -->
         <p class="card-text-content">{{ board?.boardContent }}</p>
+        <!-- 장소 -->
+        <div v-if="address">
+          <div
+            id="map"
+            style="width: 600px; height: 400px"
+            ref="map"
+            class="img-thumbnail"
+          ></div>
+        </div>
         <div class="board-images mb-3">
           <div v-for="(data, index) in boardImage" :key="index" class="mb-2">
             <img :src="data.fileUrl" class="img-fluid" alt="이미지" />
@@ -131,7 +167,7 @@
                     readonly
                     class="form-control-plaintext"
                     id="staticWriter"
-                    v-model="board.memberName"
+                    v-model="board.memberNickName"
                   />
                 </div>
               </div>
@@ -189,13 +225,13 @@
     <div class="reply-content mb-3">
       <ul v-for="(data, index) in reply" :key="index" class="list-group mb-3">
         <!-- 댓글 -->
-        <li v-if="replyUpdate" class="list-group-item">
+        <li v-if="!data.isEditing" class="list-group-item">
           <div class="reply-name">{{ data.memberNickName }}</div>
           <div class="reply-content">{{ data.reply }}</div>
           <img
             v-if="data.fileUrl"
             :src="data.fileUrl"
-            class="img-fluid"
+            class="img-fluid img-thumbnail w-25"
             alt="이미지"
           />
           <div class="d-flex justify-content-between mt-2">
@@ -207,11 +243,13 @@
               >
                 수정
               </button>
-              <button class="btn btn-secondary me-3">삭제</button>
+              <button class="btn btn-secondary me-3" @click="deleteReply(data)">
+                삭제
+              </button>
               <button
                 class="btn btn-secondary"
                 data-bs-toggle="modal"
-                data-bs-target="#reportReplyModal"
+                data-bs-target="#reportReplyModal-free"
                 @click="openReplyReport(data)"
               >
                 <i class="bi bi-exclamation-triangle"></i>신고
@@ -231,7 +269,10 @@
             class="card mb-3 mt-3"
           >
             <div class="card-body">
-              <div class="reply-name">{{ memberInfo.memberNickName }}</div>
+              <div class="reply-name">
+                {{ memberInfo.memberNickName }}
+              </div>
+
               <textarea
                 v-model="reReplyTextarea"
                 placeholder="대댓글을 남겨보세요"
@@ -240,7 +281,7 @@
               <div class="d-flex justify-content-between">
                 <!-- 파일첨부 -->
                 <input
-                  class="form-control file-upload-input"
+                  class="form-control file-upload-input w-auto"
                   type="file"
                   @change="selectReReplyFile($event)"
                 />
@@ -255,82 +296,240 @@
           </div>
         </li>
         <!-- 댓글 수정 버튼 클릭 시 보일 부분 -->
-        <li v-if="!replyUpdate" class="list-group-item">
+        <li v-if="data.isEditing" class="list-group-item">
           <div class="reply-name">{{ data.memberNickName }}</div>
           <textarea
-            v-model="data.reply"
+            v-model.lazy="data.reply"
             placeholder="댓글을 남겨보세요"
             class="form-control mb-2 reply-content"
           ></textarea>
-          <div v-if="data.fileUrl" class="d-flex">
+          <div class="d-flex">
             <!-- 파일첨부 -->
             <input
-              class="form-control file-upload-input mb-2"
+              class="form-control file-upload-input w-auto mb-2"
               type="file"
-              ref="replyFile"
-              @change="selectReplyFile"
+              @change="selectReplyFile2($event, data)"
             />
-            {{ data.fileUrl }}
+            <div v-if="data.fileUrl">
+              {{ data.fileName }}
+              <button
+                @click="removeFile(data)"
+                class="btn btn-sm text-danger ms-2"
+              >
+                x
+              </button>
+            </div>
           </div>
           <div class="d-flex justify-content-between">
-            <button class="btn btn-secondary" @click="replyUpdate = true">
+            <button
+              class="btn btn-secondary"
+              @click="closeReplyUpdate(data.replyId)"
+            >
               취소
             </button>
-            <button class="btn btn-secondary" @click="updateReply(data)">
+            <button
+              class="btn btn-secondary"
+              @click="updateReply(data.replyId)"
+            >
               등록
             </button>
           </div>
         </li>
-
         <!-- 대댓글 -->
-        <li
-          v-for="(reReply, index) in data.reReplies"
-          :key="index"
-          class="list-group-item reReply-container"
-        >
-          <div class="reply-name">
-            <i class="bi bi-arrow-return-right"></i>
-            {{ reReply.memberNickName }}
-          </div>
-          <div class="reply-content">{{ reReply.reply }}</div>
-          <img
-            v-if="reReply.fileUrl"
-            :src="reReply.fileUrl"
-            class="img-fluid"
-            alt="이미지"
-          />
-          <div class="d-flex justify-content-between mt-2">
-            <div class="reply-date">{{ reReply.addDate }}</div>
-            <div>
-              <button class="btn btn-secondary me-2">수정</button>
-              <button class="btn btn-secondary me-2">삭제</button>
+        <div v-for="(reReply, index) in data.reReplies" :key="index">
+          <li
+            v-if="!reReply.isReReplyEditing"
+            class="list-group-item reReply-container"
+          >
+            <div class="reply-name">
+              <i class="bi bi-arrow-return-right"></i>
+              {{ reReply.memberNickName }}
+            </div>
+            <div class="reply-content">{{ reReply.reply }}</div>
+            <img
+              v-if="reReply.fileUrl"
+              :src="reReply.fileUrl"
+              class="img-fluid img-thumbnail w-25"
+              alt="이미지"
+            />
+            <div class="d-flex justify-content-between mt-2">
+              <div class="reply-date">{{ reReply.addDate }}</div>
+              <div>
+                <button
+                  class="btn btn-secondary me-2"
+                  @click="openReReplyUpdate(reReply.replyId)"
+                >
+                  수정
+                </button>
+                <button
+                  class="btn btn-secondary me-2"
+                  @click="deleteReply(reReply)"
+                >
+                  삭제
+                </button>
+                <button
+                  class="btn btn-secondary"
+                  data-bs-toggle="modal"
+                  data-bs-target="#reportReplyModal-free"
+                  @click="openReplyReport(reReply)"
+                >
+                  <i class="bi bi-exclamation-triangle"></i>신고
+                </button>
+              </div>
+            </div>
+          </li>
+          <!-- 대댓글 수정 버튼 클릭 시 보일 부분 -->
+          <li v-if="reReply.isReReplyEditing" class="list-group-item">
+            <div class="reply-name">
+              <i class="bi bi-arrow-return-right"></i>
+              {{ reReply.memberNickName }}
+            </div>
+            <textarea
+              v-model.lazy="reReply.reply"
+              placeholder="댓글을 남겨보세요"
+              class="form-control mb-2 reply-content"
+            ></textarea>
+            <div class="d-flex">
+              <!-- 파일첨부 -->
+              <input
+                class="form-control file-upload-input w-auto mb-2"
+                type="file"
+                ref="replyFile"
+                @change="selectReReplyFile2($event, reReply)"
+              />
+              <div v-if="reReply.fileUrl">
+                {{ reReply.fileName }}
+                <button
+                  @click="removeFile(reReply)"
+                  class="btn btn-sm text-danger ms-2"
+                >
+                  x
+                </button>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between">
               <button
                 class="btn btn-secondary"
-                data-bs-toggle="modal"
-                data-bs-target="#reportReReplyModal"
-                @click="openReplyReport(reReply)"
+                @click="closeReReplyUpdate(reReply.replyId)"
               >
-                <i class="bi bi-exclamation-triangle"></i>신고
+                취소
+              </button>
+              <button class="btn btn-secondary" @click="updateReReply(reReply)">
+                등록
               </button>
             </div>
-          </div>
-        </li>
+          </li>
+        </div>
       </ul>
     </div>
-
+    <!-- 페이징 -->
+    <b-pagination
+      class="col-12 mb-3 justify-content-center"
+      v-model="replyPage"
+      :total-rows="replyPageCount"
+      :per-page="pageSize"
+      @click="retrieveReply()"
+    ></b-pagination>
+    <!-- 댓글 신고 Modal -->
+    <div
+      class="modal fade"
+      id="reportReplyModal-free"
+      tabindex="-1"
+      aria-labelledby="reportReplyModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form class="was-validated">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="reportReplyModalLabel">
+                댓글 신고
+              </h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-2 row">
+                <label for="staticWriter" class="col-sm-2 col-form-label"
+                  >작성자</label
+                >
+                <div class="col-sm-10">
+                  <input
+                    type="text"
+                    readonly
+                    class="form-control-plaintext"
+                    id="staticWriter"
+                    v-model="report.memberNickName"
+                  />
+                </div>
+              </div>
+              <div class="mb-2 row">
+                <label for="staticTitle" class="col-sm-2 col-form-label"
+                  >내용</label
+                >
+                <div class="col-sm-10">
+                  <input
+                    type="text"
+                    readonly
+                    class="form-control-plaintext"
+                    id="staticTitle"
+                    v-model="report.reply"
+                  />
+                </div>
+              </div>
+              <div class="mb-2">
+                <hr />
+                <textarea
+                  rows="10"
+                  class="form-control"
+                  placeholder="신고 사유를 입력하세요."
+                  required
+                  v-model="report.reportReason"
+                ></textarea>
+                <div class="invalid-feedback">
+                  신고 사유는 필수 입력값입니다.
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                닫기
+              </button>
+              <button
+                type="submit"
+                class="btn btn-danger"
+                @click="createReplyReport"
+              >
+                신고
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
     <!-- 댓글 작성 -->
     <div class="card mb-3">
       <div class="card-body">
-        <div class="reply-name">{{ memberInfo.memberNickName }}</div>
+        <div class="reply-name">
+          {{ memberInfo.memberNickName }}
+        </div>
         <textarea
-          v-model="replyTextarea"
+          v-model.lazy="replyTextarea"
           placeholder="댓글을 남겨보세요"
           class="form-control mb-2 reply-content"
         ></textarea>
         <div class="d-flex justify-content-between">
           <!-- 파일첨부 -->
           <input
-            class="form-control file-upload-input"
+            class="form-control file-upload-input w-auto"
             type="file"
             ref="replyFile"
             @change="selectReplyFile"
@@ -359,6 +558,7 @@
 <script>
 import BoardDetailService from "@/services/board/BoardDetailService";
 import ReplyService from "@/services/board/ReplyService";
+import BoardEditService from "@/services/board/BoardEditService";
 
 export default {
   data() {
@@ -372,32 +572,58 @@ export default {
       parentId: "", // 현재 대댓글의 상위 댓글의 replyId
       recommendIcon: true, // 추천 아이콘 (true는 빈 아이콘)
       reportReason: "", // 신고사유 입력
-      replyUpdate: true, // false일 경우 수정란 뜸
+      report: {
+        // 댓글 신고 객체
+        replyId: "",
+        memberNickName: "", // 댓글 작성자명
+        reply: "", // 댓글 내용
+        reportReason: "", // 신고 사유
+      },
       currentFile: undefined, // 댓글파일선택
       currentReFile: undefined, // 대댓글파일선택
       showWriteReReply: false,
 
+      // 페이징
+      pageSize: 5, // 화면에 보여질 개수
+      replyPage: 1, // 현재 페이지 번호
+      replyPageCount: 0, // 댓글 전체 데이터 개수
+
       // retrieve
       memberInfo: "", // 회원정보
       board: "", // 게시글
-      vote: "", // 투표
-      place: "", // 장소
-      boardImage: "", // 글 첨부 이미지
+      cmcd: "", // 부서코드, 부서명
+      vote: [], // 투표
+      boardImage: [], // 글 첨부 이미지
       recommend: "", // 추천 존재 여부
       recommendCnt: "", // 추천 수
       reply: [], // 댓글 목록
       replyCount: "", // 댓글수
+
+      map: null,
+      infowindow: null,
+      markers: [],
+      options: {
+        //지도를 생성할 때 필요한 기본 옵션
+        center: {
+          lat: 33.450701,
+          lng: 126.570667,
+        }, //지도의 중심좌표.
+        level: 4, //지도의 레벨(확대, 축소 정도)
+      },
+      address: "",
     };
   },
   methods: {
-    // 회원 권한 체크
+    // ❎ 회원 권한 체크
     async checkAuth() {
-      if (this.member.memberCode === "AT01") {
+      if (this.member?.memberCode === "AT01") {
         // 관리자 로그인
         this.auth = "A";
-      } else if (this.member.memberId === this.board.memberId) {
-        // 글쓴이 로그인
-        this.auth = "B";
+      } else if (this.member?.memberCode === "AT02") {
+        if (this.member?.memberId === this.board?.memberId) {
+          // 글쓴이 로그인
+          this.auth = "B";
+        }
       } else {
         // 기타 회원
         this.auth = "C";
@@ -408,7 +634,8 @@ export default {
       try {
         let response = await BoardDetailService.getMember(this.member.memberId);
         this.memberInfo = response.data;
-        console.log("memberInfo 데이터 : ", response.data);
+        console.log("memberInfo ::: ", response.data);
+        this.checkAuth();
       } catch (e) {
         console.log("retrieveMember 에러", e);
       }
@@ -418,25 +645,67 @@ export default {
       try {
         let response = await BoardDetailService.getBoard(this.boardId);
         this.board = response.data;
-        console.log("board 데이터 : ", response.data);
+        console.log("board ::: ", response.data);
       } catch (e) {
         console.log("retrieveBoard 에러", e);
       }
     },
-    // 코드번호로 코드명 가져오기
-    async retrieveCode() {
+    // 글번호로 투표 가져오기
+    async retrieveVote() {
       try {
-        let response = await BoardDetailService.getCmCd(this.smcode);
-        this.cmcd = response.data;
-        console.log("code 데이터 : ", response.data);
+        let response = await BoardEditService.getVote(this.boardId);
+        this.vote = response.data;
+        console.log("투표 :", response);
+        console.log("투표 :", this.vote);
       } catch (e) {
-        console.log("retrieveCode 에러", e);
+        console.log("vote 에러", e);
       }
     },
-    // 글번호로 투표 가져오기
-    async retrieveVote() {},
     // 글번호로 장소 가져오기
-    async retrievePlace() {},
+    async retrievePlace() {
+      try {
+        let response = await BoardDetailService.getPlace(this.boardId);
+        this.address = response.data.address;
+        if (!this.address) return;
+        let kakao = window.kakao;
+        var container = this.$refs.map;
+        const { center, level } = this.options;
+
+        let map = new kakao.maps.Map(container, {
+          center: new kakao.maps.LatLng(center.lat, center.lng),
+          level,
+        }); //지도 생성 및 객체 리턴
+        this.map = map;
+
+        // 주소-좌표 변환 객체를 생성합니다
+        var geocoder = new kakao.maps.services.Geocoder();
+        // 주소로 좌표를 검색합니다
+        geocoder.addressSearch(this.address, function (result, status) {
+          // 정상적으로 검색이 완료됐으면
+          if (status === kakao.maps.services.Status.OK) {
+            var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+            // 결과값으로 받은 위치를 마커로 표시합니다
+            var marker = new kakao.maps.Marker({
+              map: map,
+              position: coords,
+            });
+
+            // 인포윈도우로 장소에 대한 설명을 표시합니다
+            var infowindow = new kakao.maps.InfoWindow({
+              content:
+                '<div style="width:150px;text-align:center;padding:6px 0;">장소</div>',
+            });
+            infowindow.open(map, marker);
+
+            // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+            map.setCenter(coords);
+          }
+        });
+      } catch (e) {
+        console.log("장소를 표시할 수 없습니다.", e);
+      }
+    },
     // 글번호로 이미지 가져오기
     async retrieveImg() {
       try {
@@ -447,24 +716,7 @@ export default {
         console.log("retrieveImg 에러", e);
       }
     },
-    // 추천 데이터 존재 여부 가져오기
-    async retrieveRecommend() {
-      try {
-        let response = await BoardDetailService.getRecommend(
-          this.boardId,
-          this.member.memberId
-        );
-        this.recommend = response.data;
-        console.log("recommend 데이터 : ", response.data);
-        if (response.data === 1) {
-          this.recommendIcon = false;
-        } else {
-          this.recommendIcon = true;
-        }
-      } catch (e) {
-        console.log("retrieveRecommend 에러", e);
-      }
-    },
+
     // 추천 버튼 클릭 시 호출
     toggleRecommend() {
       this.recommendIcon = !this.recommendIcon;
@@ -486,20 +738,9 @@ export default {
           boardId: this.boardId,
           memberId: this.member.memberId,
         };
-        let response = await BoardDetailService.createRecommend(recommend);
-        console.log(response.data);
+        await BoardDetailService.createRecommend(recommend);
       } catch (e) {
         console.log("saveRecommend 에러", e);
-      }
-    },
-    // 추천 수 가져오기
-    async retrieveRecommendCnt() {
-      try {
-        let response = await BoardDetailService.getRecommendCnt(this.boardId);
-        this.recommendCnt = response.data;
-        console.log("추천 수 : ", response.data);
-      } catch (e) {
-        console.log("retrieveRecommendCnt 에러", e);
       }
     },
     // 글 신고 저장
@@ -513,8 +754,7 @@ export default {
             boardId: this.boardId,
             reportReason: this.reportReason,
           };
-          let response = await BoardDetailService.createReport(report);
-          console.log(response.data);
+          await BoardDetailService.createReport(report);
           alert("신고가 완료되었습니다.");
           this.reportReason = "";
         }
@@ -522,11 +762,69 @@ export default {
         console.log("createReport 에러", e);
       }
     },
+    // 댓글 신고 저장
+    async createReplyReport() {
+      try {
+        if (!this.report.reportReason) {
+          alert("신고 사유를 입력해주세요.");
+        } else {
+          let report = {
+            memberId: this.member.memberId,
+            replyId: this.report.replyId,
+            reportReason: this.report.reportReason,
+          };
+          await ReplyService.createReplyReport(report);
+          alert("신고가 완료되었습니다.");
+          this.report.reportReason = "";
+        }
+      } catch (e) {
+        console.log("createReplyReport 에러", e);
+      }
+    },
+    // 댓글 신고 모달 열기
+    openReplyReport(data) {
+      // 반복문의 현재 댓글 정보(댓글Id, 작성자명, 댓글내용) 저장
+      this.report.replyId = data.replyId;
+      this.report.memberName = data.memberName;
+      this.report.reply = data.reply;
+    },
+
+    // 추천 데이터 존재 여부 가져오기
+    async retrieveRecommend() {
+      try {
+        let response = await BoardDetailService.getRecommend(
+          this.boardId,
+          this.member.memberId
+        );
+        this.recommend = response.data;
+        if (response.data === 1) {
+          this.recommendIcon = false;
+        } else {
+          this.recommendIcon = true;
+        }
+      } catch (e) {
+        console.log("retrieveRecommend 에러", e);
+      }
+    },
+    // 추천 수 가져오기
+    async retrieveRecommendCnt() {
+      try {
+        let response = await BoardDetailService.getRecommendCnt(this.boardId);
+        this.recommendCnt = response.data;
+      } catch (e) {
+        console.log("retrieveRecommendCnt 에러", e);
+      }
+    },
     // 글번호로 댓글 가져오기
     async retrieveReply() {
       try {
-        let response = await ReplyService.getReply(this.boardId);
-        this.reply = response.data;
+        let response = await ReplyService.getReply(
+          this.boardId,
+          this.replyPage - 1,
+          this.pageSize
+        );
+        this.reply = response.data.content;
+        this.replyPageCount = response.data.totalElements;
 
         // 각 댓글에 대한 대댓글 가져오기
         for (let i = 0; i < this.reply.length; i++) {
@@ -549,42 +847,28 @@ export default {
       try {
         let response = await ReplyService.getReplyCount(this.boardId);
         this.replyCount = response.data;
-        console.log("replyCount 데이터 : ", response.data);
       } catch (e) {
         console.log("retrieveReplyCount 에러", e);
       }
     },
-    // 반복문의 현재 댓글 정보(작성자, 댓글ID, 댓글내용)를 저장
-    openReplyReport(reReply) {
-      this.reply.memberName = reReply.memberName;
-      this.reply.replyId = reReply.replyId;
-      this.reply.reply = reReply.reply;
-    },
-    // 댓글 신고 저장
-    async createReplyReport() {
-      try {
-        if (!this.reportReason) {
-          alert("신고 사유를 입력해주세요.");
-        } else {
-          let report = {
-            memberId: this.member.memberId,
-            replyId: this.reply.replyId,
-            reportReason: this.reportReason,
-          };
-          let response = await ReplyService.createReplyReport(report);
-          console.log(response.data);
-          alert("신고가 완료되었습니다.");
-          this.reportReason = "";
-        }
-      } catch (e) {
-        console.log("createReplyReport 에러", e);
-      }
-    },
 
-    // 댓글 파일 선택상자에서 파일 선택
+    // ------------------------ 댓글 CUD 관련 함수 ------------------------
+    // 새 댓글 작성 시 파일 선택
     selectReplyFile() {
       this.currentFile = this.$refs.replyFile.files[0];
-      console.log("댓글 파일 선택 :::", this.currentFile);
+    },
+    // 댓글 수정 시 파일 선택상자
+    selectReplyFile2(event, data) {
+      data.fileName = null;
+      data.fileUrl = null;
+      this.currentFile = event.target.files[0];
+    },
+    // 댓글(대댓글) 수정시 파일 삭제 버튼
+    removeFile(data) {
+      data.fileName = null;
+      data.fileUrl = null;
+      this.currentFile = null;
+      this.currentReFile = null;
     },
     // 댓글 + 파일 저장
     async createReply() {
@@ -593,6 +877,7 @@ export default {
           boardId: this.boardId,
           memberId: this.member.memberId,
           reply: this.replyTextarea,
+          reReply: "",
         };
         let response = await ReplyService.createReply(temp, this.currentFile);
         console.log("댓글 전송 : ", response);
@@ -601,21 +886,71 @@ export default {
         this.replyTextarea = "";
         this.currentFile = undefined;
       } catch (e) {
-        // 현재 선택된 이미지 변수 초기화
         this.currentFile = undefined;
         console.log(e);
       }
     },
+    // 댓글 수정 버튼 클릭 시 호출
+    openReplyUpdate(replyId) {
+      const reply = this.reply.find((r) => r.replyId === replyId);
+      if (reply) {
+        reply.isEditing = true;
+      }
+    },
+    closeReplyUpdate(replyId) {
+      const reply = this.reply.find((r) => r.replyId === replyId);
+      if (reply) {
+        reply.isEditing = false;
+      }
+      this.retrieveReply();
+    },
+    // 댓글 수정 후 등록
+    async updateReply(replyId) {
+      const reply = this.reply.find((r) => r.replyId === replyId);
+      reply.reReply = ""; // reReply에는 빈문자열 전달 (undefined 에러 방지)
+      try {
+        let response = await ReplyService.updateReply(reply, this.currentFile);
+        console.log("댓글 수정 : ", response.data);
+        this.retrieveReply();
+        this.retrieveReplyCount();
+      } catch (e) {
+        console.log("updateReply 에러", e);
+      }
+    },
+    // 댓글(대댓글) 삭제
+    async deleteReply(data) {
+      try {
+        if (data.reReply === null) {
+          if (data.reReplies) {
+            // 댓글의 대댓글이 있을 경우
+            alert("대댓글이 있는 댓글은 삭제할 수 없습니다.");
+            return;
+          }
+        }
+        await ReplyService.deleteReply(data.replyId);
+        this.retrieveReply();
+        this.retrieveReplyCount();
+        console.log("댓글 삭제 성공");
+      } catch (e) {
+        console.log("deleteReply 에러 : ", e);
+      }
+    },
 
+    // ------------------------ 대댓글 CUD 관련 함수 ------------------------
     // 대댓글 쓰기 버튼 클릭 시 호출
     openReReply(replyId) {
       this.parentId = replyId; // 현재 댓글ID를 저장
       this.showWriteReReply = !this.showWriteReReply; // 대댓글쓰기창 토글
     },
-    // 대댓글 파일 선택상자에서 파일 선택
-    selectReReplyFile() {
+    // 새 대댓글 작성 시 파일 선택
+    selectReReplyFile(event) {
       this.currentReFile = event.target.files[0];
-      console.log("대댓글 파일 선택 ::: ", this.currentReFile);
+    },
+    // 대댓글 수정 시 파일 선택
+    selectReReplyFile2(event, data) {
+      data.fileName = null;
+      data.fileUrl = null;
+      this.currentReFile = event.target.files[0];
     },
     // 대댓글 + 파일 저장
     async createReReply(reReplyData) {
@@ -630,35 +965,47 @@ export default {
         console.log("대댓글 전송 : ", response);
         this.retrieveReply();
         this.retrieveReplyCount();
-        this.replyTextarea = "";
+        this.reReplyTextarea = "";
         this.currentReFile = undefined;
+        this.showWriteReReply = !this.showWriteReReply; // 대댓글쓰기창 토글
       } catch (e) {
         this.currentReFile = undefined;
+        this.showWriteReReply = !this.showWriteReReply; // 대댓글쓰기창 토글
         console.log(e);
       }
     },
-
-    // ❎ 댓글 수정 버튼 클릭 시 호출
-    openReplyUpdate() {
-      this.replyUpdate = !this.replyUpdate;
+    // 대댓글 수정 버튼 클릭 시 호출
+    openReReplyUpdate(replyId) {
+      this.reply.forEach((reply) => {
+        const reReplies = Array.isArray(reply.reReplies) ? reply.reReplies : [];
+        const reReply = reReplies.find((r) => r.replyId === replyId);
+        if (reReply) {
+          reReply.isReReplyEditing = true;
+        }
+      });
     },
-    // ❎ 댓글 수정 후 등록
-    async updateReply(data) {
+    closeReReplyUpdate(replyId) {
+      this.reply.forEach((reply) => {
+        const reReplies = Array.isArray(reply.reReplies) ? reply.reReplies : [];
+        const reReply = reReplies.find((r) => r.replyId === replyId);
+        if (reReply) {
+          reReply.isReReplyEditing = false;
+        }
+      });
+      this.retrieveReply();
+    },
+    // 대댓글 수정 후 등록
+    async updateReReply(reReply) {
       try {
-        let temp = {
-          replyId: data.replyId,
-          boardId: data.boardId,
-          memberId: data.memberId,
-          reReply: data.reReply,
-          reply: data.reply,
-        };
-        let response = await ReplyService.updateReply(data.replyId, temp);
-        alert("댓글이 수정되었습니다.");
-        console.log("댓글 수정 : ", response.data);
+        let response = await ReplyService.updateReply(
+          reReply,
+          this.currentReFile
+        );
+        console.log("대댓글 수정 : ", response.data);
         this.retrieveReply();
         this.retrieveReplyCount();
       } catch (e) {
-        console.log("updateReply 에러", e);
+        console.log("updateReReply 에러", e);
       }
     },
 
@@ -666,6 +1013,7 @@ export default {
     moveToFreeEdit() {
       this.$router.push(`/board/free-edit/${this.boardId}`);
     },
+
     // 게시글 삭제
     async deleteBoard() {
       try {
@@ -679,7 +1027,7 @@ export default {
       }
     },
   },
-  mounted() {
+  async mounted() {
     console.log(
       "/ 글번호 : ",
       this.boardId,
@@ -690,7 +1038,6 @@ export default {
     this.retrieveMember();
     this.retrieveBoard();
     this.checkAuth();
-    this.retrieveCode();
     this.retrieveVote();
     this.retrievePlace();
     this.retrieveImg();
@@ -698,6 +1045,22 @@ export default {
     this.retrieveRecommendCnt();
     this.retrieveReply();
     this.retrieveReplyCount();
+
+    let placeResponse = await BoardDetailService.getPlace(this.boardId);
+    if (placeResponse.data.address) {
+      this.address = placeResponse.data.address;
+      if (window.kakao && window.kakao.maps) {
+        this.retrievePlace();
+      } else {
+        const script = document.createElement("script");
+        script.onload = () => {
+          this.retrievePlace();
+        };
+        script.src =
+          "//dapi.kakao.com/v2/maps/sdk.js?appkey=55b411073309a73c48d56caa594311c8"; // 발급받은 API 키로 변경
+        document.head.appendChild(script);
+      }
+    }
   },
 };
 </script>
@@ -710,10 +1073,17 @@ export default {
   border-radius: 10px;
 }
 
+.board-button {
+  width: 100%; /* 버튼 컨테이너 너비를 부모 요소 너비에 맞춤 */
+  border-radius: 50px;
+  font-weight: bold;
+}
+
 /* 게시글 수정/삭제 버튼 */
 .board-button .btn {
   border-radius: 50px;
   font-weight: bold;
+  white-space: nowrap; /* 버튼 내용이 줄바꿈되지 않도록 설정 */
 }
 
 /* 게시판 헤더 */
