@@ -7,6 +7,7 @@
           placeholder="검색어를 입력하세요"
           class="search-input"
           v-model="searchQuery"
+          @keydown.enter="executeSearch"
         />
         <button @click="executeSearch" class="search-button">검색</button>
       </div>

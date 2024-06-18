@@ -53,16 +53,31 @@ public class MemberService {
 
     //  1) 회원 유무 확인 함수 : 회원가입
     public boolean existById(String memberId) {
-        boolean result = memberRepository.existsById(memberId);
-
-        return result;
+        Optional<Member> member = memberRepository.findByMemberId(memberId);
+        if (member.isEmpty()) {
+            return false;
+        } else {
+            return true;
+        }
     }
+
+    //  이메일 중복 확인
+    public boolean existByEmail(String memberEmail) {
+        Optional<Member> member = memberRepository.findByMemberEmail(memberEmail);
+        if (member.isEmpty()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     //  2) 저장/수정 : 회원가입/회원정보 변경
     public Member insert(Member member) {
         Member member2 = memberRepository.save(member);
 
         return member2;
     }
+
     //  3) 수정 : 비밀번호 변경
     public Member update(Member member) {
         member.setMemberPw(passwordEncoder.encode(member.getMemberPw()));

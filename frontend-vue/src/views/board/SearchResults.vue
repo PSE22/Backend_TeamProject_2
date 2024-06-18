@@ -16,7 +16,7 @@
         <tr v-for="(board, index) in boards" :key="index">
           <td>{{ board.boardId }}</td>
           <td>
-            <router-link :to="`/board/${board.boardId}`" class="custom-link">
+            <router-link :to="generateDetailUrl(board)" class="custom-link">
               {{ board.boardTitle }} <span v-if="board.totalReplyCount">({{ board.totalReplyCount }})</span>
             </router-link>
           </td>
@@ -72,6 +72,20 @@ export default {
         this.totalItems = response.data.totalElements;
       } catch (error) {
         console.error("Error fetching search results:", error);
+      }
+    },
+    generateDetailUrl(board) {
+      switch (true) {
+        case board.boCode.startsWith('BO02'):
+          return `/board/club/${board.boCode}/${board.smCode}/${board.boardId}`;
+        case board.boCode === 'BO03':
+          return `/board/free/${board.boardId}`;
+        case board.boCode === 'BO04':
+          return `/board/suggest/${board.boardId}`;
+        case board.boCode === 'BO05':
+          return `/board/praise/${board.boardId}`;
+        default:
+          return `/board/${board.boardId}`;
       }
     }
   },
