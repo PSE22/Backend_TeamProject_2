@@ -146,7 +146,7 @@ public class FreeBoardController {
     @PostMapping("/free-write")
     public ResponseEntity<Object> create(
             @RequestBody FreeBoardCreateRequest request
-            ) {
+    ) {
         try {
             freeBoardService.save(request.getBoard(), request.getVoteDtos(), request.getPlace(), request.getFileDtos(), request.getBoardFileDtos());
             return ResponseEntity.status(HttpStatus.CREATED).body(request.getBoard().getBoardTitle() + " 게시글이 성공적으로 생성되었습니다.");
@@ -157,29 +157,8 @@ public class FreeBoardController {
         }
     }
 
-    //     TODO: 삭제 함수
-    @DeleteMapping("/free/deletion/{boardId}")
-    public ResponseEntity<Object> delete(
-            @PathVariable long boardId
-    ) {
-        try {
-            boolean success = freeBoardService.removeById(boardId);
-
-            if (success == true) {
-                return new ResponseEntity<>(HttpStatus.OK);
-            } else {
-                // 삭제 실행 : 0건 삭제(삭제할 데이터 없음)
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-
-        } catch (Exception e) {
-//            서버(DB) 에러
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-
-   @GetMapping("/file/upload/{fileUuid}")
+    //    TODO: 게시판 파일 조회 함수
+    @GetMapping("/file/upload/{fileUuid}")
     ResponseEntity<Object> getImageData(@PathVariable String fileUuid) {
         try {
             int lastDotIdx = fileUuid.lastIndexOf(".");
