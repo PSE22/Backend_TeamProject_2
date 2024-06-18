@@ -59,7 +59,7 @@
       <div class="card-header text-white">자유게시판 <i class="bi"></i></div>
       <div class="card-body">
         <h5 class="card-title">{{ board?.boardTitle }}</h5>
-        <p class="card-text-name">{{ board?.nickName }}</p>
+        <p class="card-text-name">{{ board?.nickname }}</p>
         <p class="card-text-date">{{ board?.addDate }}</p>
         <hr />
         <!-- 투표 -->
@@ -82,7 +82,7 @@
               </label>
               <hr />
             </div>
-            <p class="card-text-date">{{ vote[0]?.delDate }} 까지</p>
+            <p class="card-text-date">{{ vote[0]?.delDate }}</p>
             <div class="d-md-flex justify-content-md-end">
               <button type="button" class="btn btn-secondary">투표하기</button>
             </div>
@@ -167,7 +167,7 @@
                     readonly
                     class="form-control-plaintext"
                     id="staticWriter"
-                    v-model="board.memberNickName"
+                    v-model="memberInfo.nickname"
                   />
                 </div>
               </div>
@@ -226,7 +226,7 @@
       <ul v-for="(data, index) in reply" :key="index" class="list-group mb-3">
         <!-- 댓글 -->
         <li v-if="!data.isEditing" class="list-group-item">
-          <div class="reply-name">{{ data.memberNickName }}</div>
+          <div class="reply-name">{{ nickname }}</div>
           <div class="reply-content">{{ data.reply }}</div>
           <img
             v-if="data.fileUrl"
@@ -270,7 +270,7 @@
           >
             <div class="card-body">
               <div class="reply-name">
-                {{ memberInfo.memberNickName }}
+                {{ memberInfo?.nickname }}
               </div>
 
               <textarea
@@ -297,7 +297,7 @@
         </li>
         <!-- 댓글 수정 버튼 클릭 시 보일 부분 -->
         <li v-if="data.isEditing" class="list-group-item">
-          <div class="reply-name">{{ data.memberNickName }}</div>
+          <div class="reply-name">{{ memberInfo?.nickname }}</div>
           <textarea
             v-model.lazy="data.reply"
             placeholder="댓글을 남겨보세요"
@@ -343,7 +343,7 @@
           >
             <div class="reply-name">
               <i class="bi bi-arrow-return-right"></i>
-              {{ reReply.memberNickName }}
+              {{ nickname }}
             </div>
             <div class="reply-content">{{ reReply.reply }}</div>
             <img
@@ -382,7 +382,7 @@
           <li v-if="reReply.isReReplyEditing" class="list-group-item">
             <div class="reply-name">
               <i class="bi bi-arrow-return-right"></i>
-              {{ reReply.memberNickName }}
+              {{ memberInfo?.nickname }}
             </div>
             <textarea
               v-model.lazy="reReply.reply"
@@ -463,7 +463,7 @@
                     readonly
                     class="form-control-plaintext"
                     id="staticWriter"
-                    v-model="report.memberNickName"
+                    v-model="memberInfo.nickname"
                   />
                 </div>
               </div>
@@ -519,7 +519,7 @@
     <div class="card mb-3">
       <div class="card-body">
         <div class="reply-name">
-          {{ memberInfo.memberNickName }}
+          {{ memberInfo?.nickname }}
         </div>
         <textarea
           v-model.lazy="replyTextarea"
@@ -575,7 +575,7 @@ export default {
       report: {
         // 댓글 신고 객체
         replyId: "",
-        memberNickName: "", // 댓글 작성자명
+        memberName: "", // 댓글 작성자명
         reply: "", // 댓글 내용
         reportReason: "", // 신고 사유
       },
