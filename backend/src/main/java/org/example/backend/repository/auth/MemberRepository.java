@@ -46,7 +46,7 @@ public interface MemberRepository extends JpaRepository<Member, String> {
             "AND STATUS = 'Y'\n" +
             "ORDER BY ADD_DATE"
     , nativeQuery = true)
-    List<Member> findAllByMemberCode(@Param("memberCode") String memberCode);
+    Page<Member> findAllByMemberCode(@Param("memberCode") String memberCode, Pageable pageable);
 
     @Query(value = "SELECT *\n" +
             "FROM TB_MEMBER\n" +

@@ -4,13 +4,10 @@
       <hr class="sidebar-divider" />
       <ul class="sidebar-list">
         <router-link to="/admin/register-mgmt" class="profile-link">
-          <li class="sidebar-menu mb-5">회원가입승인</li>
-        </router-link>
-        <router-link to="/admin/register-deny-mgmt" class="profile-link">
-          <li class="sidebar-menu mb-5">반려회원관리</li>
+          <li class="sidebar-menu mb-5">회원가입관리</li>
         </router-link>
         <router-link to="/admin/edit-mgmt" class="profile-link">
-          <li class="sidebar-menu mb-5">회원정보변경</li>
+          <li class="sidebar-menu mb-5">사원관리</li>
         </router-link>
         <router-link to="/admin/report-mgmt" class="profile-link">
           <li class="sidebar-menu mb-5">신고관리</li>

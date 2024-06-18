@@ -2,6 +2,11 @@
   <header class="header">
     <div class="header-top">
       <div class="header-left">
+        <router-link to="/" class="custom-link">
+          <h1>SM Company</h1>
+        </router-link>
+      </div>
+      <div class="header-center">
         <input
           type="text"
           placeholder="검색어를 입력하세요"
@@ -10,11 +15,6 @@
           @keydown.enter="executeSearch"
         />
         <button @click="executeSearch" class="search-button">검색</button>
-      </div>
-      <div class="header-center">
-        <router-link to="/" class="custom-link">
-          <h1>서울쥐</h1>
-        </router-link>
       </div>
       <div class="header-right">
         <div
@@ -27,38 +27,28 @@
         <router-link to="/profile" v-if="isLoggedIn" class="profile-icon">
           <i class="bi bi-person-circle"></i>
         </router-link>
-        <a><router-link to="/login"                v-if="!isLoggedIn" >로그인</router-link></a>
-        <a><router-link to="/register"             v-if="!isLoggedIn" >회원가입</router-link></a>
-        <a href="/" @click.prevent="handleLogout"  v-if="isLoggedIn" >로그아웃</a>
+        <a><router-link to="/login" v-if="!isLoggedIn">로그인</router-link></a>
+        <a><router-link to="/register" v-if="!isLoggedIn">회원가입</router-link></a>
+        <a href="/" @click.prevent="handleLogout" v-if="isLoggedIn">로그아웃</a>
         <a v-if="isLoggedIn && memberCode === 'AT01'"><router-link to="/admin/register-mgmt">관리자 페이지</router-link></a>
       </div>
     </div>
     <nav class="header-nav">
       <ul>
         <li>
-          <a @click.prevent="checkLoginAndNavigate('/board/dept')" class="router-link nav-link"
-            >부서 게시판</a
-          >
+          <a @click.prevent="checkLoginAndNavigate('/board/dept')" class="router-link nav-link">부서 게시판</a>
         </li>
         <li>
-          <a @click.prevent="checkLoginAndNavigate('/board/club')" class="router-link nav-link"
-            >동호회 게시판</a
-          >
+          <a @click.prevent="checkLoginAndNavigate('/board/club')" class="router-link nav-link">동호회 게시판</a>
         </li>
         <li>
-          <a @click.prevent="checkLoginAndNavigate('/board/free')" class="router-link nav-link"
-            >자유 게시판</a
-          >
+          <a @click.prevent="checkLoginAndNavigate('/board/free')" class="router-link nav-link">자유 게시판</a>
         </li>
         <li>
-          <a @click.prevent="checkLoginAndNavigate('/board/suggest')" class="router-link nav-link"
-            >건의 게시판</a
-          >
+          <a @click.prevent="checkLoginAndNavigate('/board/suggest')" class="router-link nav-link">건의 게시판</a>
         </li>
         <li>
-          <a @click.prevent="checkLoginAndNavigate('/board/praise')" class="router-link nav-link"
-            >칭찬 게시판</a
-          >
+          <a @click.prevent="checkLoginAndNavigate('/board/praise')" class="router-link nav-link">칭찬 게시판</a>
         </li>
       </ul>
     </nav>
@@ -105,6 +95,7 @@
     </button>
   </header>
 </template>
+
 
 <script>
 import NotificationService from "@/services/board/NotificationService";

@@ -7,6 +7,8 @@ import org.example.backend.service.auth.MemberService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -56,9 +58,10 @@ public class AdminController {
 
     //  신규 회원 전체 조회
     @GetMapping("/profile-all/{memberCode}")
-    public ResponseEntity<Object> findAllByMemberCode(@PathVariable String memberCode) {
+    public ResponseEntity<Object> findAllByMemberCode(@PathVariable String memberCode,
+                                                      @PageableDefault(sort = "ADD_DATE", direction = Sort.Direction.DESC) Pageable pageable) {
         try {
-            List<Member> memberList = memberService.findAllByMemberCode(memberCode);
+            Page<Member> memberList = memberService.findAllByMemberCode(memberCode, pageable);
             if (memberList.isEmpty() == true) {
                 // 데이터 없음
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
