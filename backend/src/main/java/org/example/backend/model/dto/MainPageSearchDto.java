@@ -19,6 +19,7 @@ public interface MainPageSearchDto {
     String getNickName();
     String getAddDate();
     String getBoCode();
+    String getSmCode();
     String getMemberName();
     String getCmCode();
     String getCmCodeName();
