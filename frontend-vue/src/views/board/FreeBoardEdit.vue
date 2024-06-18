@@ -188,7 +188,7 @@
               <p class="d-inline">{{ existingFile.fileName }}</p>
               <button
                 type="button"
-                class="btn btn-danger btn-sm ms-2"
+                class="btn btn-danger"
                 @click="removeExistingFile(index)"
               >
                 x
@@ -278,7 +278,17 @@ export default {
         console.log("retrieveCode 에러", e);
       }
     },
-    async retrieveVote() {},
+    // 글번호로 투표 가져오기
+    async retrieveVote() {
+      try {
+        let response = await BoardEditService.getVote(this.boardId);
+        this.vote = response.data;
+        console.log("투표 :", response);
+        console.log("투표 :", this.vote);
+      } catch (e) {
+        console.log("vote 에러", e);
+      }
+    },
     async retrievePlace() {
       try {
         const response = await BoardEditService.getPlace(this.boardId);
@@ -376,23 +386,59 @@ export default {
       }
       this.$refs.mapContainer.style.display = "none";
     },
+    
     async editBoard() {
       try {
-        // Prepare the data for update
-        const boardDto = this.board;
-        const voteDtos = this.voteExists ? [this.vote] : [];
-        const fileDtos = this.files.map((file) => file.data);
-        const placeDto = this.placeExists ? this.address : null;
+        // 임시 객체 변수
+        let boardDto = this.board;
+        let placeDto = this.address ? { address: this.address } : null;
 
-        // Call the update function
-        await BoardWrite.update(boardDto, voteDtos, fileDtos, placeDto);
+        // 파일 배열 생성
+        let fileDtos = await Promise.all(
+          this.files.map((file) => {
+            return new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => {
+                resolve({
+                  fileName: file.name,
+                  data: reader.result.split(",")[1], // Base64 문자열만 추출
+                });
+              };
+              reader.onerror = reject;
+              reader.readAsDataURL(file.data);
+            });
+          })
+        );
+
+        // 기존 파일 포함
+        fileDtos = fileDtos.concat(this.existingFiles);
+
+        // 전송 데이터 상세 로그
+        console.log("보낼 데이터: ", {
+          boardDto,
+          placeDto,
+          fileDtos,
+        });
+        console.log("boardDto: ", boardDto);
+        console.log("placeDto: ", placeDto);
+        console.log("fileDtos: ", fileDtos);
+
+        // 서버로 데이터 전송
+        let response = await BoardWrite.update({
+          boardDto,
+          placeDto,
+          fileDtos: fileDtos.length > 0 ? fileDtos : null,
+        });
+
+        console.log("서버 응답: ", response);
         alert("게시글이 수정되었습니다.");
-        this.$router.push(`/board/free/${this.boardId}`); // Redirect to the board detail page
-      } catch (error) {
-        console.error("게시글 수정 중 에러 발생:", error);
-        alert("게시글 수정 중 에러가 발생했습니다.");
+        this.$router.push(`/board/club`);
+      } catch (e) {
+        console.error("에러 발생: ", e);
+        alert("내용을 입력해주세요.");
       }
     },
+
     deleteBoard() {
       this.$router.push(`/board/free/${this.boardId}`);
     },

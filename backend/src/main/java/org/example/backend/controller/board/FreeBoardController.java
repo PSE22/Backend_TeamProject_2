@@ -157,21 +157,6 @@ public class FreeBoardController {
         }
     }
 
-    //    TODO: 수정함수
-    @PutMapping("/free/{boardId}")
-    public ResponseEntity<Object> update(
-            @PathVariable long boardId,
-            @RequestBody Board board
-    ) {
-        try {
-            freeBoardService.update(board);
-            return ResponseEntity.ok("게시글이 수정되었습니다.");
-        } catch (Exception e) {
-//            DB 에러 (서버 에러) -> 500 신호(INTERNAL_SERVER_ERROR)
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     //     TODO: 삭제 함수
     @DeleteMapping("/free/deletion/{boardId}")
     public ResponseEntity<Object> delete(
