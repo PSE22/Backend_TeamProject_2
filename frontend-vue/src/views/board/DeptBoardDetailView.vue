@@ -1,9 +1,9 @@
 <template>
     <div class="container mt-3 board-detail-container">
-        <!-- 글 수정/삭제 버튼 : 글쓴이만 보이게 -->
+        <!-- 글 수정/삭제 버튼 -->
         <div class="row mb-3 board-button">
-            <button class="col-1 btn btn-warning me-2" @click="moveToDeptEdit">수정</button>
-            <button class="col-1 btn btn-danger">삭제</button>
+            <button v-if="auth === 'B'" class="col-1 btn btn-warning me-2" @click="moveToDeptEdit">수정</button>
+            <button v-if="auth === 'A' || auth === 'B'" class="col-1 btn btn-danger">삭제</button>
         </div>
         <!-- 게시글 -->
         <div class="card mb-3">
@@ -15,6 +15,8 @@
                 <p class="card-text-name">{{ board?.memberName }}</p>
                 <p class="card-text-date">{{ board?.addDate }}</p>
                 <hr>
+                <!-- 글 내용 -->
+                <p class="card-text-content">{{ board?.boardContent }}</p>
                 <!-- 투표 -->
                 <div class="card mb-3" style="width: 25rem" v-if="vote">
                     <h5 class="card-header vote-card-header">
@@ -39,12 +41,12 @@
                 <div v-if="address">
                     <div id="map" style="width: 600px; height: 400px" ref="map" class="img-thumbnail"></div>
                 </div>
-                <!-- 글 내용 -->
-                <p class="card-text-content">{{ board?.boardContent }}</p>
                 <!-- 글 이미지 -->
                 <div class="board-images mb-3">
-                    <div v-for="(data, index) in boardImage" :key="index" class="mb-2">
-                        <img :src="data.fileUrl" class="img-fluid" alt="이미지">
+                    <div v-for="(data, index) in boardFile" :key="index" class="mb-2">
+                        <img :src="data.fileUrl" class="img-fluid">
+                        <a :href="data.fileUrl" class="btn btn-outline-info btn-sm btn-outline-grey" download> <i
+                                class="bi bi-download"></i> {{ data.fileName }}</a>
                     </div>
                 </div>
                 <hr>
@@ -58,8 +60,8 @@
                     <!-- 댓글 아이콘 -->
                     <div class="me-3" type="button"><i class="bi bi-chat-text"></i> {{ replyCount }} </div>
                     <!-- 신고 아이콘 -->
-                    <div class="me-3" type="button" data-bs-toggle="modal" data-bs-target="#reportModal"><i
-                            class="bi bi-exclamation-triangle"></i>신고</div>
+                    <div v-if="auth === 'C'" class="me-3" type="button" data-bs-toggle="modal"
+                        data-bs-target="#reportModal"><i class="bi bi-exclamation-triangle"></i>신고</div>
                 </div>
             </div>
         </div>
@@ -115,11 +117,14 @@
                     <div class="d-flex justify-content-between mt-2">
                         <div class="reply-date">{{ data.addDate }}</div>
                         <div>
-                            <button class="btn btn-secondary me-3" @click="openReplyUpdate(data.replyId)">수정</button>
-                            <button class="btn btn-secondary me-3" @click="deleteReply(data)">삭제</button>
-                            <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#reportReplyModal"
+                            <button v-if="this.member.memberId === data.memberId" class="btn btn-secondary me-3"
+                                @click="openReplyUpdate(data.replyId)">수정</button>
+                            <button v-if="this.member.memberId === data.memberId || auth === 'A'"
+                                class="btn btn-danger me-3" @click="deleteReply(data)">삭제</button>
+                            <button v-if="this.member.memberId !== data.memberId && auth !== 'A'"
+                                class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#reportReplyModal"
                                 @click="openReplyReport(data)">
-                                <i class="bi bi-exclamation-triangle"></i>신고
+                                <i class="bi bi-exclamation-triangle"></i> 신고
                             </button>
                         </div>
                     </div>
@@ -169,12 +174,14 @@
                         <div class="d-flex justify-content-between mt-2">
                             <div class="reply-date">{{ reReply.addDate }}</div>
                             <div>
-                                <button class="btn btn-secondary me-2"
+                                <button v-if="this.member.memberId === data.memberId" class="btn btn-secondary me-2"
                                     @click="openReReplyUpdate(reReply.replyId)">수정</button>
-                                <button class="btn btn-secondary me-2" @click="deleteReply(reReply)">삭제</button>
-                                <button class="btn btn-secondary" data-bs-toggle="modal"
-                                    data-bs-target="#reportReplyModal" @click="openReplyReport(reReply)">
-                                    <i class="bi bi-exclamation-triangle"></i>신고
+                                <button v-if="this.member.memberId === data.memberId || auth === 'A'"
+                                    class="btn btn-danger me-2" @click="deleteReply(reReply)">삭제</button>
+                                <button v-if="this.member.memberId !== data.memberId && auth !== 'A'"
+                                    class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#reportReplyModal"
+                                    @click="openReplyReport(reReply)">
+                                    <i class="bi bi-exclamation-triangle"></i> 신고
                                 </button>
                             </div>
                         </div>
@@ -303,11 +310,20 @@ export default {
             board: "",          // 게시글
             cmcd: "",           // 부서코드, 부서명
             vote: [],           // 투표
-            boardImage: [],     // 글 첨부 이미지
+            boardFile: [],     // 글 첨부 이미지
             recommend: "",      // 추천 존재 여부
             recommendCnt: "",   // 추천 수
             reply: [],          // 댓글 목록
             replyCount: "",     // 댓글수
+            currentUrl: window.location,   // 현재 페이지 Url
+
+
+            arrFileUrl: [
+                {
+                    fileUrlPre: "",     // 파일 확장자 앞부분
+                    fileUrlExt: "",     // 파일 확장자
+                }
+            ],
 
             // 장소 
             map: null,
@@ -325,19 +341,25 @@ export default {
         };
     },
     methods: {
-        // ❎ 회원 권한 체크
+        // 회원 권한 체크
         async checkAuth() {
-            if (this.member?.memberCode === "AT01") {
+            if (this.member.memberCode === "AT01") {
                 // 관리자 로그인
                 this.auth = "A";
-            } else if (this.member?.memberCode === "AT02") {
-                if (this.member?.memberId === this.board?.memberId) {
-                    // 글쓴이 로그인
-                    this.auth = "B";
-                }
+            } else if (this.member.memberCode === "AT02" && this.member.memberId === this.board.memberId) {
+                // 글 작성자일경우
+                this.auth = "B";
             } else {
                 // 기타 회원
                 this.auth = "C";
+            }
+        },
+        // 댓글 삭제 확인
+        removeCheck() {
+            if (confirm("댓글을 삭제하시겠습니까?") == false) {
+                document.form.submit();
+            } else {
+                return true;
             }
         },
         // 글 수정 페이지로 이동
@@ -363,7 +385,8 @@ export default {
                     boardId: this.boardId,
                     memberId: this.member.memberId
                 };
-                await BoardDetailService.createRecommend(recommend);
+                await BoardDetailService.createRecommend(recommend, this.currentUrl);
+                console.log("추천 저장 완료")
             } catch (e) {
                 console.log("saveRecommend 에러", e);
             }
@@ -413,7 +436,11 @@ export default {
             this.report.memberName = data.memberName;
             this.report.reply = data.reply;
         },
-        
+        // 파일 타입 분류
+        classifyFilesByType() {
+            
+        },
+
         // ------------------------ retrieve 함수 ------------------------
         // 로그인된 회원 정보 가져오기
         async retrieveMember() {
@@ -455,7 +482,7 @@ export default {
                 console.log("retrieveVote 에러", e);
             }
         },
-        // ❎ 글번호로 장소 가져오기
+        // 글번호로 장소 가져오기
         async retrievePlace() {
             try {
                 let response = await BoardDetailService.getPlace(this.boardId);
@@ -473,6 +500,7 @@ export default {
 
                 // 주소-좌표 변환 객체를 생성합니다
                 var geocoder = new kakao.maps.services.Geocoder();
+
                 // 주소로 좌표를 검색합니다
                 geocoder.addressSearch(this.address, function (result, status) {
                     // 정상적으로 검색이 완료됐으면
@@ -488,14 +516,14 @@ export default {
                         // 인포윈도우로 장소에 대한 설명을 표시합니다
                         var infowindow = new kakao.maps.InfoWindow({
                             content:
-                                '<div style="width:150px;text-align:center;padding:6px 0;">장소</div>',
+                                `<div style="width:150px;text-align:center;padding:6px 0;">${this.address}</div>`,
                         });
                         infowindow.open(map, marker);
 
                         // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
                         map.setCenter(coords);
                     }
-                });
+                }.bind(this));
             } catch (e) {
                 console.log("장소를 표시할 수 없습니다.", e);
             }
@@ -504,7 +532,7 @@ export default {
         async retrieveImg() {
             try {
                 let response = await BoardDetailService.getImg(this.boardId);
-                this.boardImage = response.data;
+                this.boardFile = response.data;
                 console.log("image 데이터 : ", response.data);
             } catch (e) {
                 console.log("retrieveImg 에러", e);
@@ -588,9 +616,9 @@ export default {
                     boardId: this.boardId,
                     memberId: this.member.memberId,
                     reply: this.replyTextarea,
-                    reReply: ""
+                    reReply: "",
                 }
-                let response = await ReplyService.createReply(temp, this.currentFile);
+                let response = await ReplyService.createReply(temp, this.currentFile, this.currentUrl);
                 console.log("댓글 전송 : ", response);
                 this.retrieveReply();
                 this.retrieveReplyCount();
@@ -631,12 +659,15 @@ export default {
         // 댓글(대댓글) 삭제
         async deleteReply(data) {
             try {
-                if (data.reReply === null) {
-                    if (data.reReplies) {
-                        // 댓글의 대댓글이 있을 경우
+                if (data.reReply === null) {    // 댓글일 때
+                    if (data.reReplies) {   // 댓글의 대댓글이 있을 경우
                         alert("대댓글이 있는 댓글은 삭제할 수 없습니다.");
                         return;
+                    } else {    // 댓글의 대댓글이 없을 경우
+                        this.removeCheck();
                     }
+                } else {    // 대댓글일 때
+                    this.removeCheck();
                 }
                 await ReplyService.deleteReply(data.replyId);
                 this.retrieveReply();
@@ -717,7 +748,7 @@ export default {
             }
         },
     },
-    mounted() {
+    async mounted() {
         console.log(
             "부서코드 : ",
             this.smcode,
@@ -726,9 +757,9 @@ export default {
             "/ 로그인ID : ",
             this.member.memberId
         );
-        console.log("권한 ::: ", this.auth);
-        this.retrieveMember();
-        this.retrieveBoard();
+        await this.retrieveMember();
+        await this.retrieveBoard();
+        await this.retrieveReply();
         this.checkAuth();
         this.retrieveCode();
         this.retrieveVote();
@@ -736,24 +767,26 @@ export default {
         this.retrieveImg();
         this.retrieveRecommend();
         this.retrieveRecommendCnt();
-        this.retrieveReply();
         this.retrieveReplyCount();
+        console.log("권한 ::: ", this.auth);
 
-        // let placeResponse = await BoardDetailService.getPlace(this.boardId);
-        // if (placeResponse.data.address) {
-        //     this.address = placeResponse.data.address;
-        //     if (window.kakao && window.kakao.maps) {
-        //         this.retrievePlace();
-        //     } else {
-        //         const script = document.createElement("script");
-        //         script.onload = () => {
-        //             this.retrievePlace();
-        //         };
-        //         script.src =
-        //             "//dapi.kakao.com/v2/maps/sdk.js?appkey=55b411073309a73c48d56caa594311c8"; // 발급받은 API 키로 변경
-        //         document.head.appendChild(script);
-        //     }
-        // }
+        // this.getBlob();
+
+        let placeResponse = await BoardDetailService.getPlace(this.boardId);
+        if (placeResponse.data.address) {
+            this.address = placeResponse.data.address;
+            if (window.kakao && window.kakao.maps) {
+                this.retrievePlace();
+            } else {
+                const script = document.createElement("script");
+                script.onload = () => {
+                    this.retrievePlace();
+                };
+                script.src =
+                    "//dapi.kakao.com/v2/maps/sdk.js?appkey=55b411073309a73c48d56caa594311c8"; // 발급받은 API 키로 변경
+                document.head.appendChild(script);
+            }
+        }
     },
 }
 </script>

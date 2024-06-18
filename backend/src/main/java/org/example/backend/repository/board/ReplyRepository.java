@@ -30,46 +30,94 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
     Long countByBoardId(Long boardId);
 
     // 글번호로 댓글 조회
-    @Query(value = "SELECT R.BOARD_ID AS boardId,\n" +
-            "        R.REPLY_ID AS replyId,\n" +
-            "        R.MEMBER_ID AS memberId,\n" +
-            "        M.MEMBER_NAME AS memberName,\n" +
-            "        M.NICKNAME AS nickname,\n" +
-            "        R.RE_REPLY AS reReply,\n" +
-            "        R.REPLY AS reply,\n" +
-            "        R.ADD_DATE AS addDate,\n" +
-            "        F.FILE_URL AS fileUrl,\n" +
-            "        F.FILE_NAME AS fileName\n" +
-            "FROM TB_REPLY R, TB_FILE F, TB_REPLY_FILE RF, TB_MEMBER M\n" +
-            "WHERE R.REPLY_ID = RF.REPLY_ID(+)\n" +
-            "AND F.UUID(+) = RF.UUID\n" +
-            "AND R.MEMBER_ID = M.MEMBER_ID\n" +
+    @Query(value = "SELECT B.REPLY_ID AS replyId,\n" +
+            "        A.FILE_URL AS fileUrl,\n" +
+            "        A.FILE_NAME AS fileName,\n" +
+            "        B.BOARD_ID AS boardId,\n" +
+            "        B.MEMBER_ID AS memberId,\n" +
+            "        B.MEMBER_NAME AS memberName,\n" +
+            "        B.NICKNAME AS nickname,\n" +
+            "        B.RE_REPLY AS reReply,\n" +
+            "        B.REPLY AS reply,\n" +
+            "        B.ADD_DATE AS addDate\n" +
+            "FROM (SELECT RF.REPLY_ID,\n" +
+            "        F.FILE_URL,\n" +
+            "        F.FILE_NAME\n" +
+            "FROM TB_FILE F, TB_REPLY_FILE RF\n" +
+            "WHERE F.UUID = RF.UUID\n" +
+            "AND F.STATUS = 'Y'\n" +
+            "AND RF.STATUS = 'Y') A, \n" +
+            "(SELECT R.BOARD_ID,\n" +
+            "        R.REPLY_ID,\n" +
+            "        M.MEMBER_ID,\n" +
+            "        M.MEMBER_NAME,\n" +
+            "        M.NICKNAME,\n" +
+            "        R.RE_REPLY,\n" +
+            "        R.REPLY,\n" +
+            "        R.ADD_DATE\n" +
+            "FROM TB_REPLY R, TB_MEMBER M\n" +
+            "WHERE R.MEMBER_ID = M.MEMBER_ID\n" +
             "AND R.BOARD_ID = :boardId\n" +
             "AND R.RE_REPLY IS NULL\n" +
-            "AND R.STATUS = 'Y'\n" +
-            "ORDER BY R.ADD_DATE ASC"
+            "AND R.STATUS = 'Y') B\n" +
+            "WHERE A.REPLY_ID(+) = B.REPLY_ID"
+            , countQuery = "SELECT count(*) " +
+                            "FROM (SELECT RF.REPLY_ID,\n" +
+                            "        F.FILE_URL,\n" +
+                            "        F.FILE_NAME\n" +
+                            "FROM TB_FILE F, TB_REPLY_FILE RF\n" +
+                            "WHERE F.UUID = RF.UUID\n" +
+                            "AND F.STATUS = 'Y'\n" +
+                            "AND RF.STATUS = 'Y') A, \n" +
+                            "(SELECT R.BOARD_ID,\n" +
+                            "        R.REPLY_ID,\n" +
+                            "        M.MEMBER_ID,\n" +
+                            "        M.MEMBER_NAME,\n" +
+                            "        M.NICKNAME,\n" +
+                            "        R.RE_REPLY,\n" +
+                            "        R.REPLY,\n" +
+                            "        R.ADD_DATE\n" +
+                            "FROM TB_REPLY R, TB_MEMBER M\n" +
+                            "WHERE R.MEMBER_ID = M.MEMBER_ID\n" +
+                            "AND R.BOARD_ID = :boardId\n" +
+                            "AND R.RE_REPLY IS NULL\n" +
+                            "AND R.STATUS = 'Y') B\n" +
+                            "WHERE A.REPLY_ID(+) = B.REPLY_ID"
             , nativeQuery = true)
     Page<IReplyDto> findReply(@Param("boardId") Long boardId, Pageable pageable);
 
     // 대댓글 조회
-    @Query(value = "SELECT R.BOARD_ID AS boardId,\n" +
-            "        R.REPLY_ID AS replyId,\n" +
-            "        R.MEMBER_ID AS memberId,\n" +
-            "        M.MEMBER_NAME AS memberName,\n" +
-            "        M.NICKNAME AS nickname,\n" +
-            "        R.RE_REPLY AS reReply,\n" +
-            "        R.REPLY AS reply,\n" +
-            "        R.ADD_DATE AS addDate,\n" +
-            "        F.FILE_URL AS fileUrl,\n" +
-            "        F.FILE_NAME AS fileName\n" +
-            "FROM TB_REPLY R, TB_FILE F, TB_REPLY_FILE RF, TB_MEMBER M\n" +
-            "WHERE R.REPLY_ID = RF.REPLY_ID(+)\n" +
-            "AND F.UUID(+) = RF.UUID\n" +
-            "AND R.MEMBER_ID = M.MEMBER_ID\n" +
+    @Query(value = "SELECT B.REPLY_ID AS replyId,\n" +
+            "        A.FILE_URL AS fileUrl,\n" +
+            "        A.FILE_NAME AS fileName,\n" +
+            "        B.BOARD_ID AS boardId,\n" +
+            "        B.MEMBER_ID AS memberId,\n" +
+            "        B.MEMBER_NAME AS memberName,\n" +
+            "        B.NICKNAME AS nickname,\n" +
+            "        B.RE_REPLY AS reReply,\n" +
+            "        B.REPLY AS reply,\n" +
+            "        B.ADD_DATE AS addDate\n" +
+            "FROM (SELECT RF.REPLY_ID,\n" +
+            "        F.FILE_URL,\n" +
+            "        F.FILE_NAME\n" +
+            "FROM TB_FILE F, TB_REPLY_FILE RF\n" +
+            "WHERE F.UUID = RF.UUID\n" +
+            "AND F.STATUS = 'Y'\n" +
+            "AND RF.STATUS = 'Y') A, \n" +
+            "(SELECT R.BOARD_ID,\n" +
+            "        R.REPLY_ID,\n" +
+            "        M.MEMBER_ID,\n" +
+            "        M.MEMBER_NAME,\n" +
+            "        M.NICKNAME,\n" +
+            "        R.RE_REPLY,\n" +
+            "        R.REPLY,\n" +
+            "        R.ADD_DATE\n" +
+            "FROM TB_REPLY R, TB_MEMBER M\n" +
+            "WHERE R.MEMBER_ID = M.MEMBER_ID\n" +
             "AND R.BOARD_ID = :boardId\n" +
             "AND R.RE_REPLY = :replyId\n" +
-            "AND R.STATUS = 'Y'\n" +
-            "ORDER BY R.ADD_DATE ASC"
+            "AND R.STATUS = 'Y') B\n" +
+            "WHERE A.REPLY_ID(+) = B.REPLY_ID"
             , nativeQuery = true)
     List<IReplyDto> findReReply(@Param("boardId") Long boardId, @Param("replyId") Long replyId);
 

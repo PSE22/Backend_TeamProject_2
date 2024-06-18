@@ -85,6 +85,7 @@ public interface BoardDetailRepository extends JpaRepository<Board, Long> {
             "              F.FILE_NAME AS fileName " +
             "        FROM TB_BOARD_FILE BF, TB_FILE F\n" +
             "        WHERE BF.UUID = F.UUID\n" +
+            "        AND F.STATUS = 'Y'\n" +
             "        AND BF.BOARD_ID = :boardId"
             , nativeQuery = true)
     List<IBoardDetailDto> findBoardImg(@Param("boardId") Long boardId);

@@ -25,5 +25,5 @@ public interface IReplyDto {
     String getReply();      // 댓글내용
     String getAddDate();    // 작성일
     String getFileUrl();    // 파일 URL
-    String getFileName();    // 파일 URL
+    String getFileName();    // 파일 저장 이름
 }

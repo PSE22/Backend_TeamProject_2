@@ -150,9 +150,14 @@ public class BoardDetailController {
 
     // 추천 저장함수
     @PostMapping("/board-detail/recommend-exist")
-    public ResponseEntity<Object> createRecommend(@RequestBody Recommend recommend) {
+    public ResponseEntity<Object> createRecommend(
+            @RequestParam Long boardId,
+            @RequestParam String memberId,
+            @RequestParam String currentUrl
+    ) {
         try {
-            boardDetailService.saveRecommend(recommend);
+            Recommend recommend = new Recommend(boardId, memberId);
+            boardDetailService.saveRecommend(recommend, currentUrl);
             return new ResponseEntity<>("추천 저장 성공", HttpStatus.OK);
         } catch (Exception e) {
             return handleException(e);
@@ -173,17 +178,18 @@ public class BoardDetailController {
     // 첨부파일 다운로드
     @GetMapping("/file/upload2/{uuid}")
     public ResponseEntity<byte[]> fileDownload(@PathVariable String uuid) {
-        File file = boardDetailService.fileDownload(uuid).get();
+        log.debug("::: 다운" + uuid);
+        Optional<File> file = boardDetailService.fileDownload(uuid);
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFileName() + "\"")
-                .body(file.getData()); // BLOB 데이터
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.get().getFileName() + "\"")
+                .body(file.get().getData()); // BLOB 데이터
     }
 
     // 글번호로 댓글 조회
     @GetMapping("/board-detail/reply")
     public ResponseEntity<Object> findReplyCount(
             @RequestParam Long boardId,
-            @PageableDefault(size = 5) Pageable pageable) {
+            @PageableDefault Pageable pageable) {
         try {
             Page<IReplyDto> list = replyService.findReply(boardId, pageable);
             if (list.isEmpty() == true) {
@@ -233,12 +239,12 @@ public class BoardDetailController {
             @RequestParam(defaultValue = "") String memberId,
             @RequestParam(defaultValue = "") String reply,
             @RequestParam(required = false) Long reReply,
+            @RequestParam String currentUrl,
             @RequestPart(value = "file", required = false) MultipartFile file
-    ) {
+            ) {
         try {
             ReplyDto replyDto = new ReplyDto(null, boardId, memberId, reply, reReply);
-            log.debug("댓글 저장 ReplyDto :::: {}", replyDto);
-            replyService.saveReply(replyDto, file);
+            replyService.saveReply(replyDto, file, currentUrl);
             return new ResponseEntity<>("댓글 저장 성공", HttpStatus.OK);
         } catch (Exception e) {
             return handleException(e);
