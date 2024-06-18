@@ -60,13 +60,13 @@
                 <div v-if="data.status === 'Y'">
                   <button
                     type="button"
-                    class="btn btn-primary"
+                    class="btn btn-secondary"
                     @click="confirmReDelete(data.reportId)"
                   >
-                    확인
+                    취소
                   </button>
                   <button
-                    class="delete-button"
+                    class="btn btn-danger"
                     @click="confirmBoDelete(data.boardId)"
                   >
                     삭제
@@ -127,23 +127,23 @@
                 <div v-if="data.status === 'Y'">
                   <button
                     type="button"
-                    class="btn btn-primary"
+                    class="btn btn-secondary"
                     @click="confirmReReplyDelete(data.reportId)"
                   >
-                    확인
+                    취소
                   </button>
                   <button
-                    class="delete-button"
-                    @click="confirmBoDelete(data.boardId)"
+                    class="btn btn-danger"
+                    @click="confirmReplyDelete(data.replyId)"
                   >
                     삭제
                   </button>
                 </div>
                 <div v-if="data.status === 'N'">
-                  게시글 삭제 완료
+                  댓글 삭제 완료
                   <span
                     class="badge text-bg-secondary"
-                    @click="confirmReDelete(data.reportId)"
+                    @click="confirmReReplyDelete(data.reportId)"
                     >영구삭제</span
                   >
                 </div>
@@ -171,6 +171,7 @@
 import BoardDetailService from "@/services/board/BoardDetailService";
 import ReportService from "@/services/admin/ReportService";
 import AdminSidebar from "@/components/common/AdminSidebar.vue";
+import ReplyService from "@/services/board/ReplyService";
 
 export default {
   components: {
@@ -184,6 +185,7 @@ export default {
       boardId: this.$route.params.boardId, // 현재 글 ID 가져오기
       bocode: this.$route.params.bocode,
       smcode: this.$route.params.smcode,
+      replyId: this.$route.params.replyId,
 
       page: 1, // 현재 페이지 번호
       count: 0, // 전체 데이터 개수
@@ -226,13 +228,13 @@ export default {
         this.replyCount = response.data.totalElements;
         this.boardPage = 1;
         // 로깅
-        console.log("report data:", this.report); // 데이터 출력
-        console.log("글 목록", response.data);
+        console.log("replyReport data:", this.replyReport); // 데이터 출력
+        console.log("댓글 목록", response.data);
       } catch (e) {
         console.log(e); // 웹브라우저 콘솔탭에 에러표시
       }
     },
-    // 탭 전환
+    // 게시글/댓글 탭 전환
     showReport(type) {
       this.activeTab = type;
       if (type === "board") {
@@ -260,47 +262,79 @@ export default {
         this.deleteBoard(boardId);
       }
     },
-    // 신고 삭제
+    // 게시글 신고 삭제
     async deleteReport(reportId) {
       try {
         let response = await ReportService.deleteReport(reportId);
         console.log(response);
         console.log("신고 아이디", reportId);
-        alert("신고가 삭제되었습니다.");
+        alert("게시글 신고가 삭제되었습니다.");
         this.retrieveReport(); // 신고 목록을 다시 가져옴
       } catch (e) {
         console.log("에러", e);
-        alert("신고 삭제가 실패하였습니다.");
+        alert("게시글 신고 삭제가 실패하였습니다.");
       }
     },
+    // 게시글 신고 삭제 확인
+    confirmReDelete(reportId) {
+      if (confirm("신고 내역을 삭제하시겠습니까?")) {
+        this.deleteReport(reportId);
+      }
+    },
+
+    // 댓글 삭제
+    async deleteReply(replyId) {
+      try {
+        let response = await ReplyService.deleteReply(replyId);
+        console.log("삭제", response);
+        console.log("댓글 아이디", replyId);
+        alert("댓글이 삭제되었습니다.");
+        this.retrieveReplyReport(); // 신고 목록을 다시 가져옴
+      } catch (error) {
+        console.log("삭제 에러", error);
+        alert("댓글 삭제에 실패했습니다.");
+      }
+    },
+    // 댓글 삭제 확인
+    confirmReplyDelete(replyId) {
+      if (confirm("댓글을 삭제하시겠습니까?")) {
+        this.deleteReply(replyId);
+      }
+    },
+
+    
     // 댓글신고 삭제
     async deleteReplyReport(reportId) {
       try {
         let response = await ReportService.deleteReplyReport(reportId);
         console.log(response);
         console.log("댓글신고 아이디", reportId);
-        alert("댓글신고가 삭제되었습니다.");
+        alert("댓글 신고가 삭제되었습니다.");
         this.retrieveReplyReport(); // 댓글신고 목록을 다시 가져옴
       } catch (e) {
         console.log("에러", e);
-        alert("댓글신고 삭제가 실패하였습니다.");
+        alert("댓글 신고 삭제가 실패하였습니다.");
       }
     },
-    // 게시글 삭제 확인
-    confirmReDelete(reportId) {
-      if (confirm("신고를 삭제 하시겠습니까?")) {
-        this.deleteReport(reportId);
-      }
-    },
-    // 게시글 삭제 확인
+    // 댓글신고 삭제 확인
     confirmReReplyDelete(reportId) {
-      if (confirm("댓글신고를 삭제 하시겠습니까?")) {
+      if (confirm("댓글 신고 내역을 삭제하시겠습니까?")) {
         this.deleteReplyReport(reportId);
       }
     },
     // 게시글로 이동
     goBoardDetail(bocode, smcode, boardId) {
-      this.$router.push(`/board/club/${bocode}/${smcode}/${boardId}`);
+      if (bocode === "BO03") {
+        this.$router.push(`/board/free/${boardId}`);
+      } else if (bocode === "BO04") {
+        this.$router.push(`/board/suggest/${boardId}`);
+      } else if (bocode === "BO05") {
+        this.$router.push(`/board/praise/${boardId}`);
+      } else if (bocode === "BO01") {
+        this.$router.push(`/board/dept/${smcode}/${boardId}`);
+      } else {
+        this.$router.push(`/board/club/${bocode}/${smcode}/${boardId}`);
+      }
     },
   },
   mounted() {
@@ -393,24 +427,6 @@ button {
   cursor: pointer;
   font-size: 14px;
   transition: background-color 0.3s ease;
-}
-
-.dept-button {
-  background-color: black;
-}
-
-.delete-button {
-  background-color: #f44336;
-}
-
-.delete-button:hover {
-  background-color: #d32f2f;
-}
-
-.button-container {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
 }
 
 .horizontal-text {
