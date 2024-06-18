@@ -165,20 +165,14 @@ export default {
     goBoardDetail(bocode, smcode, boardId) {
       if (bocode === "BO01") {
         this.$router.push(`/board/dept/${smcode}/${boardId}`);
-      } else if (bocode === "BO0201") {
-        this.$router.push(`/board/club/BO0201/${smcode}/${boardId}`);
-      } else if (bocode === "BO0202") {
-        this.$router.push(`/board/club/BO0202/${smcode}/${boardId}`);
-      } else if (bocode === "BO0203") {
-        this.$router.push(`/board/club/BO0203/${smcode}/${boardId}`);
-      } else if (bocode === "BO0204") {
-        this.$router.push(`/board/club/BO0204/${smcode}/${boardId}`);
+      } else if (bocode === "BO0201" || bocode === "BO0202" || bocode === "BO0203" || bocode === "BO0204") {
+        this.$router.push(`/board/club/${bocode}/${smcode}/${boardId}`);
       } else if (bocode === "BO03") {
-        this.$router.push(`/board/free/${smcode}/${boardId}`);
+        this.$router.push(`/board/free/${boardId}`);
       } else if (bocode === "BO04") {
-        this.$router.push(`/board/suggest/${smcode}/${boardId}`);
+        this.$router.push(`/board/suggest/${boardId}`);
       } else if (bocode === "BO05") {
-        this.$router.push(`/board/praise/${smcode}/${boardId}`);
+        this.$router.push(`/board/praise/${boardId}`);
       }
     },
   },
