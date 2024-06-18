@@ -202,6 +202,7 @@ export default {
         let response = await LoginService.register(temp);
         // 공유 저장소의 register 성공 함수 실행
         this.$store.commit("registerSuccess");
+        this.errorMessage = "";
         this.message = "사용자가 등록되었습니다";
         this.$router.push("/login");
         // 로깅

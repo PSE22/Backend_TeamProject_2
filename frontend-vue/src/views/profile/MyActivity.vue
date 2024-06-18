@@ -185,8 +185,9 @@ export default {
 
 <style scoped>
 .container {
-  display: flex;
+  margin-top: 50px;
   height: 100vh;
+  display: flex;
   font-family: "Arial, sans-serif";
 }
 

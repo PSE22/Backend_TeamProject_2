@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import MemberService from "@/services/member/MemberService";
+import LoginService from "@/services/login/LoginService";
 
 export default {
   data() {
@@ -73,7 +73,7 @@ export default {
 
     async findMember() {
       try {
-        let response = await MemberService.getId(this.memberEmail);
+        let response = await LoginService.getId(this.memberEmail);
         this.message = "회원님의 아이디는 " + response.data + " 입니다.";
         this.errorMessage = "";
         console.log(response.data);
