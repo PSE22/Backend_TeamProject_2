@@ -27,7 +27,7 @@
                 </tr>
             </thead>
             <!-- 테이블 : 공지사항 -->
-            <tbody v-if="smcode == this.$store.state.member?.deptCode">
+            <tbody v-if="smcode == member?.deptCode || member.memberCode === 'AT01'">
                 <tr v-for="(data, index) in deptNotice" :key="index"  @click="goBoardDetail(smcode, data.boardId)">
                     <td class="text-center col-1">{{ data.boardId }}</td>
                     <td class="col-5">
@@ -38,7 +38,7 @@
                 </tr>
             </tbody>
             <!-- 테이블 : 일반글 -->
-            <tbody v-if="smcode == this.$store.state.member?.deptCode">
+            <tbody v-if="smcode == member.deptCode || member.memberCode === 'AT01' ">
                 <tr v-for="(data, index) in board" :key="index"  @click="goBoardDetail(smcode, data.boardId)">
                     <td class="text-center">{{ data.boardId }}</td>
                     <td>{{ data.boardTitle }}</td>
@@ -84,6 +84,7 @@ import DeptBoardService from "@/services/board/DeptBoardService";
 export default {
     data() {
         return {
+            member: this.$store.state.member,
             deptNotice: [],
             board: [],
             searchTitle: "",

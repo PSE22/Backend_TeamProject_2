@@ -72,7 +72,7 @@ public class ReplyService {
 
     // 댓글 저장
     @Transactional
-    public Reply saveReply(ReplyDto replyDto, MultipartFile file) {
+    public Reply saveReply(ReplyDto replyDto, MultipartFile file, String currentUrl) {
         // DTO -> Entity 매핑
         Reply reply = modelMapper.map(replyDto, Reply.class);
 
@@ -95,16 +95,16 @@ public class ReplyService {
         }
 
         // 댓글 알림
-//        Long boardId = replyDto.getBoardId();
-//        NotifyDto notifyDto = new NotifyDto();
-////        notifyDto.setNotiUrl();
-//        notifyService.createReplyNotify(boardId, notifyDto);
-//
-//        // 핫토픽 알림
-//        int count = countReply(boardId);
-//        if (count >= 10) {
-//            notifyService.createHotTopicNotify(boardId, notifyDto);
-//        }
+        Long boardId = replyDto.getBoardId();
+        NotifyDto notifyDto = new NotifyDto();
+        notifyDto.setNotiUrl(currentUrl);
+        notifyService.createReplyNotify(boardId, notifyDto);
+
+        // 핫토픽 알림
+        int count = countReply(boardId);
+        if (count >= 10) {
+            notifyService.createHotTopicNotify(boardId, notifyDto);
+        }
 
         return reply;
     }
@@ -129,7 +129,7 @@ public class ReplyService {
             // ReplyFile 에서 파일 정보 삭제
             replyFileRepository.delete(existingFile);
             // File 에서 삭제
-            deleteFile(existingFile.getUuid());
+            fileRepository.deleteById(existingFile.getUuid());
         }
 
         replyRepository.save(reply);
@@ -145,14 +145,6 @@ public class ReplyService {
         }
 
         return reply;
-    }
-
-    // File 테이블에서 파일 삭제 (hard delete)
-    public void deleteFile(String uuid) {
-        if (fileRepository.existsById(uuid) == true) {
-            // hard delete
-            fileRepository.deleteById2(uuid);
-        }
     }
 
     // 댓글 파일 첨부 저장
