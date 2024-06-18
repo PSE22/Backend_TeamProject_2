@@ -67,9 +67,9 @@ public class AuthController {
 
 
     @GetMapping("/register/{memberId}")
-    public ResponseEntity<Object> reId(@RequestParam String memberId) {
+    public ResponseEntity<Object> reId(@PathVariable String memberId) {
         try {
-            if(memberService.existById(memberId)) {
+            if(memberService.existById(memberId) == true) {
                 return ResponseEntity.badRequest().body("이미 가입된 회원입니다.");
             } else {
                 return ResponseEntity.ok("사용 가능한 ID 입니다.");
@@ -97,17 +97,25 @@ public class AuthController {
                     signUpRequest.getDeptCode(),
                     signUpRequest.getPosCode()
             );
-//            if (member.getMemberEmail() != null) {
-//                return ResponseEntity.badRequest().body("이미 존재하는 이메일입니다.");
-//            }
+            if (member.getMemberPw().isEmpty()) {
+                return ResponseEntity.badRequest().body("비밀번호를 입력해주세요.");
+            }
+            if (member.getMemberName().isEmpty()) {
+                return ResponseEntity.badRequest().body("이름을 입력해주세요.");
+            }
+            if (member.getMemberEmail().isEmpty()) {
+                return ResponseEntity.badRequest().body("이메일을 입력해주세요.");
+            } else if (memberService.existByEmail(member.getMemberEmail()) == true) {
+                return ResponseEntity.badRequest().body("이미 사용중인 이메일입니다.");
+            }
+            if (member.getMemberExt().isEmpty()) {
+                return ResponseEntity.badRequest().body("전화번호를 입력해주세요.");
+            }
             memberService.insert(member);
             return ResponseEntity.ok("회원가입이 완료되었습니다.");
 
-        } catch (DataIntegrityViolationException e) {
-            log.debug("확인" + e);
-            return ResponseEntity.badRequest().body("이메일 중복.");
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("g");
+            return ResponseEntity.internalServerError().body("알 수 없는 오류가 발생하였습니다.");
         }
     }
 
