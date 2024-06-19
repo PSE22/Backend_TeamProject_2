@@ -4,7 +4,7 @@
       <div id="footer_box">
         <!-- 꼬리말 로고 시작 -->
         <div id="footer_logo">
-          서울쥐
+          SM Company
         </div>
         <!-- 꼬리말 로고 끝 -->
   
