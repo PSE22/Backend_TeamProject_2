@@ -1,8 +1,7 @@
-package org.example.backend.service;
+package org.example.backend.service.auth;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.backend.model.dto.NotifyDto;
-import org.example.backend.service.auth.SseService;
+import org.example.backend.model.entity.Notify;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
@@ -35,7 +34,7 @@ public class NotifySubService implements MessageListener {
     @Override
     public void onMessage(Message message, byte[] pattern) {
         // 레디스에서 수신한 메세지 역직렬화
-        NotifyDto notifyDto = (NotifyDto) notifyRedisTemplate.getValueSerializer().deserialize(message.getBody());
-        sseService.sendSseEvent(notifyDto);
+        Notify notify = (Notify) notifyRedisTemplate.getValueSerializer().deserialize(message.getBody());
+        sseService.sendSseEvent(notify);
     }
 }

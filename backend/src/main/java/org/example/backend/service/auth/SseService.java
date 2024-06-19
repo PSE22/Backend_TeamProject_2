@@ -2,6 +2,7 @@ package org.example.backend.service.auth;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.NotifyDto;
+import org.example.backend.model.entity.Notify;
 import org.example.backend.service.RedisPubService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,13 +37,13 @@ public class SseService {
     private static final ConcurrentHashMap<String, CopyOnWriteArrayList<SseEmitter>> sseEmitters = new ConcurrentHashMap<>();
     private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
 
-    public void sendSseEvent(NotifyDto notifyDto) {
-        List<SseEmitter> emitters = sseEmitters.get(notifyDto.getMemberId());
+    public void sendSseEvent(Notify notify) {
+        List<SseEmitter> emitters = sseEmitters.get(notify.getMemberId());
         if (emitters != null) {
             for (SseEmitter emitter : emitters) {
                 try {
                     log.debug("에미터로 알림 발송 성공: {}", emitter);
-                    emitter.send(SseEmitter.event().name("notification").data(notifyDto));
+                    emitter.send(SseEmitter.event().name("notification").data(notify));
                 } catch (IOException e) {
                     log.error("에미터로 알림 발송 실패: {}", emitter, e);
                     emitter.completeWithError(e);
