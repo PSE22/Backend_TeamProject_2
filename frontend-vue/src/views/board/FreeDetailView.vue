@@ -563,7 +563,7 @@ import BoardEditService from "@/services/board/BoardEditService";
 export default {
   data() {
     return {
-      currentUrl: window.location,
+      currentUrl: window.location.pathname,
       member: this.$store.state.member, // 현재 로그인된 회원 가져오기
       boardId: this.$route.params.boardId, // 현재 글 ID 가져오기
 
