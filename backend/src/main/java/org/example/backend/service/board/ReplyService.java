@@ -102,7 +102,7 @@ public class ReplyService {
 
         // 핫토픽 알림
         int count = countReply(boardId);
-        if (count >= 10) {
+        if (count == 10) {
             notifyService.createHotTopicNotify(boardId, notifyDto);
         }
 
