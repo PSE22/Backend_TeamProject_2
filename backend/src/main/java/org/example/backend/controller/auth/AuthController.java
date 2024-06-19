@@ -81,7 +81,7 @@ public class AuthController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<Object> signUp(@Valid @RequestBody SignUpRequest signUpRequest, Errors errors) {
+    public ResponseEntity<Object> signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
         try {
             if(memberService.existById(signUpRequest.getMemberId())) {
 //                return ResponseEntity.badRequest().body("이미 가입된 회원입니다.");
