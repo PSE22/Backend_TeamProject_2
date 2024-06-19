@@ -22,7 +22,13 @@ class BoardDetailService {
   }
   // 글번호로 투표 조회
   getVote(boardId) {
-    return http.get(`/board/board-votes?boardId=${boardId}`, {
+    return http.get(`/board/board-detail/vote?boardId=${boardId}`, {
+      headers: LoginHeader(),
+    });
+  }
+  // 투표 회원 조회
+  getVoteMember(boardId, memberId) {
+    return http.get(`/board/board-detail/vote-member?boardId=${boardId}&memberId=${memberId}`, {
       headers: LoginHeader(),
     });
   }
@@ -40,16 +46,6 @@ class BoardDetailService {
       headers: LoginHeader(),
     });
   }
-
-  // getBlob(fileUrl3) {
-  //   console.log ("getBlob 요고는 실행??");
-  //   return http.get(`${fileUrl3}`, {
-  //     responseType: "blob",
-  //     // headers: {
-  //     //   someToken: "TOKEN",
-  //     // },
-  //   });
-  // }
 
   // 첨부파일 다운로드
   getFileDownload(uuid) {
@@ -79,8 +75,7 @@ class BoardDetailService {
     }
 
     return http.post("/board/board-detail/recommend-exist", formData, {
-      headers: 
-      {
+      headers: {
         ...LoginHeader(),
         "Content-Type": "multipart/form-data",
       },
@@ -89,6 +84,12 @@ class BoardDetailService {
   // 신고글 저장
   createReport(report) {
     return http.post("/board/board-detail/report", report, {
+      headers: LoginHeader(),
+    });
+  }
+  // 투표 저장 
+  createVoteMember(vote) {
+    return http.post("/board/board-detail/vote", vote, {
       headers: LoginHeader(),
     });
   }

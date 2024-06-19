@@ -80,7 +80,7 @@ public class BoardEditService {
         }
     }
 
-    public List<Vote> findAll(Long boardId) {
-        return voteRepository.findByBoardId(boardId);
-    }
+//    public List<Vote> findAll(Long boardId) {
+//        return voteRepository.findByBoardId(boardId);
+//    }
 }

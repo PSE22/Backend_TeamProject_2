@@ -4,10 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.common.BoardIdMemberIdPk;
-import org.example.backend.model.dto.board.IBoardDetailDto;
-import org.example.backend.model.dto.board.IBoardDto;
-import org.example.backend.model.dto.board.IReplyDto;
-import org.example.backend.model.dto.board.IUserDto;
+import org.example.backend.model.dto.board.*;
 import org.example.backend.model.dto.board.Reply.ReplyDto;
 import org.example.backend.model.entity.board.*;
 import org.example.backend.service.board.BoardDetailService;
@@ -93,13 +90,28 @@ public class BoardDetailController {
 
     // 글번호로 투표 조회
     @GetMapping("/board-detail/vote")
-    public ResponseEntity<Object> findVote(@RequestParam Long boardId) {
+    public ResponseEntity<Object> getAll(@RequestParam Long boardId){
         try {
             List<Vote> list = boardDetailService.findVote(boardId);
             if (list.isEmpty() == true) {
                 return new ResponseEntity<>("데이터 없음", HttpStatus.NO_CONTENT);
             } else {
                 return new ResponseEntity<>(list, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            return handleException(e);
+        }
+    }
+
+    // 투표 회원 조회
+    @GetMapping("/board-detail/vote-member")
+    public ResponseEntity<Object> findVoteMember(@RequestParam Long boardId, @RequestParam String memberId) {
+        try {
+            Optional<VoteMember> optional = boardDetailService.findVoteMember(boardId, memberId);
+            if (optional.isEmpty() == true) {
+                return new ResponseEntity<>("데이터 없음", HttpStatus.NO_CONTENT);
+            } else {
+                return new ResponseEntity<>(optional, HttpStatus.OK);
             }
         } catch (Exception e) {
             return handleException(e);
@@ -318,6 +330,18 @@ public class BoardDetailController {
             return handleException(e);
         }
     }
+
+    // 투표 저장
+    @PostMapping("/board-detail/vote")
+    public ResponseEntity<Object> createVoteMember(@RequestBody VoteMember voteMember) {
+        try {
+            boardDetailService.saveVoteAndCount(voteMember);
+            return new ResponseEntity<>("투표 저장 성공", HttpStatus.OK);
+        } catch (Exception e) {
+            return handleException(e);
+        }
+    }
+
 
     // 예외 처리 메서드
     @ExceptionHandler(Exception.class)

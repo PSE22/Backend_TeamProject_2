@@ -5,10 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.protocol.types.Field;
 import org.example.backend.model.common.BoardIdMemberIdPk;
 import org.example.backend.model.dto.NotifyDto;
-import org.example.backend.model.dto.board.DelBoardDto;
-import org.example.backend.model.dto.board.IBoardDetailDto;
-import org.example.backend.model.dto.board.IBoardDto;
-import org.example.backend.model.dto.board.IUserDto;
+import org.example.backend.model.dto.board.*;
 import org.example.backend.model.entity.board.*;
 import org.example.backend.repository.board.*;
 import org.example.backend.service.auth.NotifyService;
@@ -46,6 +43,7 @@ public class BoardDetailService {
     private final VoteMemberRepository voteMemberRepository;
     private final VoteRepository voteRepository;
     private final ReplyService replyService;
+    ModelMapper modelMapper = new ModelMapper();
 
     // 로그인된 회원 정보 조회
     public Optional<IUserDto> findMember(String memberId) {
@@ -67,8 +65,13 @@ public class BoardDetailService {
 
     // 글번호로 투표 조회
     public List<Vote> findVote(Long boardId) {
-        List<Vote> list = boardDetailRepository.findVote(boardId);
-        return list;
+        return voteRepository.findByBoardId(boardId);
+    }
+
+    // 투표 회원 조회
+    public Optional<VoteMember> findVoteMember(Long boardId, String memberId) {
+        BoardIdMemberIdPk id = new BoardIdMemberIdPk(boardId, memberId);
+        return voteMemberRepository.findById(id);
     }
 
     // 글번호로 장소 조회 (게시글 하나당 장소 하나)
@@ -121,6 +124,28 @@ public class BoardDetailService {
     public Report saveReport(Report report) {
         Report report2 = reportRepository.save(report);
         return report2;
+    }
+
+    // 투표 저장
+    @Transactional
+    public void saveVoteAndCount(VoteMember voteMember) {
+        Vote vote = voteRepository.findById(voteMember.getVoteId())
+                .orElseThrow(() -> new RuntimeException("투표를 찾을 수 없습니다."));
+
+        // Vote 투표수 + 1
+        int count = vote.getVoteCnt() + 1;
+        vote.setVoteCnt(count);
+
+        voteRepository.save(vote);
+
+        // VoteMember에 저장
+        VoteMember voteMember1 = new VoteMember();
+//        VoteMember voteMember1 = new VoteMember(MemberId, BoardId, voteId);
+
+        voteMember1.setVoteId(voteMember.getVoteId());
+        voteMember1.setBoardId(voteMember.getBoardId());
+        voteMember1.setMemberId(voteMember.getMemberId());
+        voteMemberRepository.save(voteMember1);
     }
 
     @Transactional
