@@ -180,7 +180,7 @@ export default {
         this.message = "사용가능한 ID 입니다.";
         return response.data;
       } catch (e) {
-        this.message = "중복된 ID 입니다.";
+        this.message = e.response.data;
         console.log(e);
       }
     },
