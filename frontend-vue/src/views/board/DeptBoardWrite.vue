@@ -11,7 +11,7 @@
           </div>
 
           <div class="form-group col-4">
-            <input type="text" class="form-control"  placeholder="부서 게시판" disabled/>
+            <input type="text" class="form-control" v-model="cmcd.cmCdName" disabled/>
           </div>
         </div>
         
@@ -302,6 +302,7 @@
   
   <script>
   let daum = window.daum;
+import BoardDetailService from "@/services/board/BoardDetailService";
   import BoardWriteService from "@/services/board/BoardWriteService";
   
   export default {
@@ -309,7 +310,8 @@
       return {
         isAdmin: this.$store.state.member != null && this.$store.state.member.memberCode === "AT01",
         bocode: "BO01", // 대분류 코드 고정
-        smcode: this.$route.query.smcode,
+        smcode: this.$route.params.smcode,
+        cmcd: "",
         board: {
           boardTitle: "",
           boardContent: "",
@@ -390,6 +392,15 @@
           alert("내용을 입력해주세요.");
         }
       },
+      async retrieveCode() {
+            try {
+                let response = await BoardDetailService.getCmCd(this.smcode);
+                this.cmcd = response.data;
+                console.log(this.cmcd);
+            } catch (e) {
+                console.log("retrieveCode 에러", e);
+            }
+        },
       resetVoteForm() {
         this.vote = {
           voteName: "",
@@ -492,6 +503,7 @@
     mounted() {
       this.loadDaumPostcodeScript();
       this.loadKakaoMapScript();
+      this.retrieveCode();
     },
   };
   </script>
