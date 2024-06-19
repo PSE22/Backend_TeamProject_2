@@ -483,7 +483,17 @@ export default {
         this.$router.push(`/board/club`);
       } catch (e) {
         console.log(e);
-        alert("내용을 입력해주세요.");
+        if(!this.club.bocode || !this.club.smcode) {
+          alert("게시판을 선택해주세요.")
+        }
+        else if(!this.club.boardTitle) {
+          alert("제목을 입력해주세요.")
+        } else if(!this.club.boardContent) {
+          alert("내용을 입력해주세요.")
+        }
+        else{
+        alert("게시글 등록이 실패하였습니다.");
+        }
       }
     },
     // 투표 취소 시 초기화

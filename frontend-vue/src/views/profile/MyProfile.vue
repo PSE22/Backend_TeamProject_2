@@ -168,7 +168,7 @@ export default {
   padding: 40px;
   background-color: #f4f4f9;
   border-radius: 15px;
-  margin: 20px;
+  margin: 0 20px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 

@@ -508,7 +508,6 @@ export default {
     // 카카오 API 호출하고, 장소 추가 후 확인 버튼 이벤트
     placeEdit() {
       this.placeExists = true;
-      console.log("장소 어디?? : ", this.address.address);
     },
     // 글번호로 이미지 가져오기
     async retrieveImg() {
@@ -678,13 +677,14 @@ export default {
             });
           })
         );
-        fileDtos = fileDtos.concat(this.existingFiles);
+        fileDtos = fileDtos.concat(this.existingFiles).filter(file => file && file.fileName && file.data);
         let response = await BoardWrite.update({
           boardDto,
-          placeDto: placeDto,
-          fileDtos: fileDtos.length > 0 ? fileDtos : null,
+          placeDto : this.address,
+          fileDtos: fileDtos.length > 0 ? fileDtos : [],
         });
-        console.log(response);
+        console.log("API response: ", response);
+        console.log("장소",placeDto);
         this.submitted = true;
         alert("게시글이 등록되었습니다.");
         this.$router.push(`/board/club`);
