@@ -26,7 +26,6 @@ import java.time.format.DateTimeFormatter;
 @SequenceGenerator(
         name = "VOTE_ID_SEQ_GENERATOR"
         , sequenceName = "VOTE_ID_SEQ"
-        , initialValue = 1
         , allocationSize = 1
 )
 @Getter
@@ -46,15 +45,16 @@ public class Vote {
     private Long boardId;   // 글번호
     private String voteName;    // 투표명
     private String voteList;    // 투표항목명
-    private Integer voteCnt = 0;    // 투표수
+    private Integer voteCnt;    // 투표수
     private String addDate;
     private String delDate;
-    private String status = "Y";
+    private String status;
 
     @PrePersist
     void OnPrePersist() {
         this.addDate = LocalDateTime.now()
                 .format(DateTimeFormatter
                         .ofPattern("yyyy-MM-dd HH:mm:ss"));
+        this.status = "Y";
     }
 }

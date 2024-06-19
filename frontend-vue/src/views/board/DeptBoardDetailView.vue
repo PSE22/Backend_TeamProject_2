@@ -25,15 +25,18 @@
                     <div class="card-body">
                         <div class="form-check" v-for="(data, index) in vote" :key="index">
                             <input class="form-check-input" type="radio" name="voteRadios" id="voteRadios"
-                                :value="data.voteId" checked />
-                            <label class="form-check-label" for="voteRadios">
+                                :value="data.voteId" />
+                            <label class="form-check-label justify-content-start" for="voteRadios">
                                 {{ data.voteList }}
+                            </label>
+                            <label class="form-check-label justify-content-end" for="voteRadios">
+                                {{ data.voteCnt }}
                             </label>
                             <hr />
                         </div>
                         <p class="card-text-date">{{ vote[0]?.delDate }} 까지</p>
                         <div class="d-md-flex justify-content-md-end">
-                            <button type="button" class="btn btn-secondary" @click="voterClick()">투표하기</button>
+                            <button type="button" class="btn btn-secondary" @click="saveVote()">투표하기</button>
                         </div>
                     </div>
                 </div>
@@ -212,7 +215,7 @@
             </ul>
         </div>
         <!-- 페이징 -->
-        <b-pagination class="col-12 mb-3 justify-content-center" v-model="replyPage" :total-rows="replyPageCount"
+        <b-pagination v-if="reply" class="col-12 mb-3 justify-content-center" v-model="replyPage" :total-rows="replyPageCount"
             :per-page="pageSize" @click="retrieveReply()"></b-pagination>
         <!-- 댓글 신고 Modal -->
         <div class="modal fade" id="reportReplyModal" tabindex="-1" aria-labelledby="reportReplyModalLabel"
@@ -318,7 +321,8 @@ export default {
             board: "",          // 게시글
             cmcd: "",           // 부서코드, 부서명
             vote: [],           // 투표
-            boardFile: [],     // 글 첨부 이미지
+            voteMember: [],     // 투표 회원
+            boardFile: [],      // 글 첨부 이미지
             recommend: "",      // 추천 존재 여부
             recommendCnt: "",   // 추천 수
             reply: [],          // 댓글 목록
@@ -385,7 +389,7 @@ export default {
                     boardId: this.boardId,
                     memberId: this.member.memberId
                 };
-                await BoardDetailService.createRecommend(recommend, this.currentUrl);
+                await BoardDetailService.createRecommend(recommend);
                 console.log("추천 저장 완료")
             } catch (e) {
                 console.log("saveRecommend 에러", e);
@@ -454,9 +458,17 @@ export default {
             }
         },
         // 투표 저장
-        async voterClick() {
+        async saveVote() {
             try {
-                console.log(document.querySelector('input[name="voteRadios"]:checked').value);
+                console.log("당신의 선택은? ", document.querySelector('input[name="voteRadios"]:checked').value);
+                // 현재 선택된 라디오버튼
+                let vote = {
+                    memberId: this.member.memberId,
+                    boardId: this.boardId,
+                    voteId: document.querySelector('input[name="voteRadios"]:checked').value        // 현재 선택된 투표 ID
+                }
+                await BoardDetailService.createVoteMember(vote);
+                this.retrieveVote();
             } catch (e) {
                 console.log();
             }
@@ -501,6 +513,16 @@ export default {
                 console.log("vote ::: ", response.data);
             } catch (e) {
                 console.log("retrieveVote 에러", e);
+            }
+        },
+        // 투표 회원 가져오기
+        async retrieveVoteMember() {
+            try {
+                let response = await BoardDetailService.getVoteMember(this.boardId, this.member.memberId);
+                this.voteMember = response.data;
+                console.log("voteMember ::: ", response.data);
+            } catch (e) {
+                console.log("retrieveVoteMember 에러", e);
             }
         },
         // 글번호로 장소 가져오기
@@ -786,6 +808,7 @@ export default {
         this.checkAuth();
         this.retrieveCode();
         this.retrieveVote();
+        this.retrieveVoteMember();
         this.retrievePlace();
         this.retrieveRecommend();
         this.retrieveRecommendCnt();

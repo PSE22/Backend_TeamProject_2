@@ -48,23 +48,4 @@ public class BoardEditController {
             return ResponseEntity.badRequest().body("게시글 수정에 실패했습니다." + e);
         }
     }
-
-    @GetMapping("/board-votes")
-    public ResponseEntity<Object> getAll(@RequestParam Long boardId){
-        try {
-//            전체 조회 서비스 실행
-            List<Vote> list
-                    = boardEditService.findAll(boardId);
-            if (list.isEmpty() == false) {
-//                조회 성공
-                return new ResponseEntity<>(list, HttpStatus.OK);
-            } else {
-//                데이터 없음
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-        } catch (Exception e) {
-            log.debug("에러 : " + e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 }
