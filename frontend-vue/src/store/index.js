@@ -87,9 +87,6 @@ export default createStore({
             commit('incrementRetryCount');
           } else {
             console.error('재시도 한도 초과.');
-            localStorage.removeItem('member');
-            alert('예기치 못한 오류로 로그아웃 되었습니다. 다시 로그인 해주세요.');
-            this.$router.push('/login');
           }
 
           commit('setEventSource', null);
