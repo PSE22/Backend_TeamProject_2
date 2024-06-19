@@ -563,6 +563,7 @@ import BoardEditService from "@/services/board/BoardEditService";
 export default {
   data() {
     return {
+      currentUrl: window.location,
       member: this.$store.state.member, // 현재 로그인된 회원 가져오기
       boardId: this.$route.params.boardId, // 현재 글 ID 가져오기
 
@@ -738,7 +739,7 @@ export default {
           boardId: this.boardId,
           memberId: this.member.memberId,
         };
-        await BoardDetailService.createRecommend(recommend);
+        await BoardDetailService.createRecommend(recommend, this.currentUrl);
       } catch (e) {
         console.log("saveRecommend 에러", e);
       }
@@ -879,7 +880,7 @@ export default {
           reply: this.replyTextarea,
           reReply: "",
         };
-        let response = await ReplyService.createReply(temp, this.currentFile);
+        let response = await ReplyService.createReply(temp, this.currentFile, this.currentUrl);
         console.log("댓글 전송 : ", response);
         this.retrieveReply();
         this.retrieveReplyCount();
@@ -961,7 +962,7 @@ export default {
           reply: this.reReplyTextarea,
           reReply: reReplyData,
         };
-        let response = await ReplyService.createReply(temp, this.currentReFile);
+        let response = await ReplyService.createReply(temp, this.currentReFile, this.currentUrl);
         console.log("대댓글 전송 : ", response);
         this.retrieveReply();
         this.retrieveReplyCount();

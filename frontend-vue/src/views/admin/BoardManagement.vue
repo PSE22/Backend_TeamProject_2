@@ -182,10 +182,11 @@ export default {
 
 .main-content {
   flex-grow: 1;
-  padding: 0 40px;
+  padding: 40px;
   border-radius: 15px;
-  margin: 20px;
-  overflow-y: auto; /* 스크롤바 추가 */
+  margin: 0 20px;
+  border-radius: 10px;
+  border: 1px solid #959595;
 }
 
 .header {
