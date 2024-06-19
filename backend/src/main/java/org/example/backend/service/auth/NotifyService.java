@@ -49,11 +49,9 @@ public class NotifyService {
         notify.setMemberId(board.getMemberId());
         notify.setNotiContent(content);
         notify.setNotiUrl(notifyDto.getNotiUrl());
-        notifyRepository.save(notify);
+        Notify savedNotify = notifyRepository.save(notify);
 
-        NotifyDto notifyDTO = modelMapper.map(notify, NotifyDto.class);
-        log.debug("0" + notifyDto);
-        redisPubService.notifyPublish("notification", notifyDTO);
+        redisPubService.notifyPublish("notification", savedNotify);
     }
 
     @Transactional
@@ -64,10 +62,9 @@ public class NotifyService {
         notify.setMemberId(board.getMemberId());
         notify.setNotiContent(content);
         notify.setNotiUrl(notifyDto.getNotiUrl());
-        notifyRepository.save(notify);
+        Notify savedNotify = notifyRepository.save(notify);
 
-        NotifyDto notifyDTO = modelMapper.map(notify, NotifyDto.class);
-        redisPubService.notifyPublish("notification", notifyDTO);
+        redisPubService.notifyPublish("notification", savedNotify);
     }
 
     @Transactional
@@ -78,10 +75,9 @@ public class NotifyService {
         notify.setMemberId(board.getMemberId());
         notify.setNotiContent(content);
         notify.setNotiUrl(notifyDto.getNotiUrl());
-        notifyRepository.save(notify);
+        Notify savedNotify = notifyRepository.save(notify);
 
-        NotifyDto notifyDTO = modelMapper.map(notify, NotifyDto.class);
-        redisPubService.notifyPublish("notification", notifyDTO);
+        redisPubService.notifyPublish("notification", savedNotify);
     }
 
     @Transactional

@@ -24,8 +24,8 @@
                     </h5>
                     <div class="card-body">
                         <div class="form-check" v-for="(data, index) in vote" :key="index">
-                            <input class="form-check-input" type="radio" name="exampleRadios" id="voteRadios"
-                                value="option1" checked />
+                            <input class="form-check-input" type="radio" name="voteRadios" id="voteRadios"
+                                :value="data.voteId" checked />
                             <label class="form-check-label" for="voteRadios">
                                 {{ data.voteList }}
                             </label>
@@ -33,7 +33,7 @@
                         </div>
                         <p class="card-text-date">{{ vote[0]?.delDate }} 까지</p>
                         <div class="d-md-flex justify-content-md-end">
-                            <button type="button" class="btn btn-secondary" @click="vote">투표하기</button>
+                            <button type="button" class="btn btn-secondary" @click="voterClick()">투표하기</button>
                         </div>
                     </div>
                 </div>
@@ -41,11 +41,16 @@
                 <div v-if="address">
                     <div id="map" style="width: 600px; height: 400px" ref="map" class="img-thumbnail"></div>
                 </div>
-                <!-- 글 이미지 -->
+                <!-- 이미지 -->
                 <div class="board-images mb-3">
-                    <div v-for="(data, index) in boardFile" :key="index" class="mb-2">
+                    <div v-for="(data, index) in images" :key="index" class="mb-2">
                         <img :src="data.fileUrl" class="img-fluid">
-                        <a :href="data.fileUrl" class="btn btn-outline-info btn-sm btn-outline-grey" download> <i
+                    </div>
+                </div>
+                <!-- 파일 -->
+                <div class="board-images mb-3">
+                    <div v-for="(data, index) in nonImages" :key="index" class="mb-2">
+                        <a :href="data.fileUrl" class="btn btn-outline-dark btn-sm btn-outline-grey" download> <i
                                 class="bi bi-download"></i> {{ data.fileName }}</a>
                     </div>
                 </div>
@@ -299,6 +304,9 @@ export default {
             currentFile: undefined,       // 댓글파일선택
             currentReFile: undefined,     // 대댓글파일선택
             showWriteReReply: false,      // 대댓글쓰기
+            images: [],
+            nonImages: [],
+
 
             // 페이징
             pageSize: 5,        // 화면에 보여질 개수
@@ -316,14 +324,6 @@ export default {
             reply: [],          // 댓글 목록
             replyCount: "",     // 댓글수
             currentUrl: window.location,   // 현재 페이지 Url
-
-
-            arrFileUrl: [
-                {
-                    fileUrlPre: "",     // 파일 확장자 앞부분
-                    fileUrlExt: "",     // 파일 확장자
-                }
-            ],
 
             // 장소 
             map: null,
@@ -438,7 +438,28 @@ export default {
         },
         // 파일 타입 분류
         classifyFilesByType() {
-            
+            if (this.boardFile) {
+                this.boardFile.forEach(file => {
+                    if (file.fileName.substring(file.fileName.lastIndexOf('.') + 1) === "png" ||
+                        file.fileName.substring(file.fileName.lastIndexOf('.') + 1) === "jpg" ||
+                        file.fileName.substring(file.fileName.lastIndexOf('.') + 1) === "jpeg" ||
+                        file.fileName.substring(file.fileName.lastIndexOf('.') + 1) === "gif") {
+                        this.images.push(file);
+                    } else {
+                        this.nonImages.push(file);
+                    }
+                });
+                console.log("images", this.images);
+                console.log("nonImages", this.nonImages);
+            }
+        },
+        // 투표 저장
+        async voterClick() {
+            try {
+                console.log(document.querySelector('input[name="voteRadios"]:checked').value);
+            } catch (e) {
+                console.log();
+            }
         },
 
         // ------------------------ retrieve 함수 ------------------------
@@ -618,7 +639,7 @@ export default {
                     reply: this.replyTextarea,
                     reReply: "",
                 }
-                let response = await ReplyService.createReply(temp, this.currentFile, this.currentUrl);
+                let response = await ReplyService.createReply(temp, this.currentFile);
                 console.log("댓글 전송 : ", response);
                 this.retrieveReply();
                 this.retrieveReplyCount();
@@ -760,17 +781,16 @@ export default {
         await this.retrieveMember();
         await this.retrieveBoard();
         await this.retrieveReply();
+        await this.retrieveImg();
+        this.classifyFilesByType();
         this.checkAuth();
         this.retrieveCode();
         this.retrieveVote();
         this.retrievePlace();
-        this.retrieveImg();
         this.retrieveRecommend();
         this.retrieveRecommendCnt();
         this.retrieveReplyCount();
         console.log("권한 ::: ", this.auth);
-
-        // this.getBlob();
 
         let placeResponse = await BoardDetailService.getPlace(this.boardId);
         if (placeResponse.data.address) {
