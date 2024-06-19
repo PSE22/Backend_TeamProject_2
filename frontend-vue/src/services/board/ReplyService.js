@@ -32,7 +32,6 @@ class ReplyService {
   // 댓글(대댓글) 저장
   createReply(temp, file, currentUrl) {
     let formData = new FormData(); // form 객체
-    // formData.append("replyDto", JSON.stringify(temp));
     formData.append("boardId", temp.boardId);
     formData.append("memberId", temp.memberId);
     formData.append("reply", temp.reply);

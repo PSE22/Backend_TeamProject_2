@@ -9,10 +9,7 @@ import org.example.backend.model.dto.board.IReplyDto;
 import org.example.backend.model.dto.board.Reply.IDelReplyDto;
 import org.example.backend.model.dto.board.Reply.ReplyDto;
 import org.example.backend.model.entity.board.*;
-import org.example.backend.repository.board.FileRepository;
-import org.example.backend.repository.board.ReplyFileRepository;
-import org.example.backend.repository.board.ReplyReportRepository;
-import org.example.backend.repository.board.ReplyRepository;
+import org.example.backend.repository.board.*;
 import org.example.backend.service.auth.NotifyService;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -50,6 +47,7 @@ public class ReplyService {
     private final ReplyReportRepository replyReportRepository;
     private final FileRepository fileRepository;
     private final ReplyFileRepository replyFileRepository;
+    private final BoardRepository boardRepository;
     ModelMapper modelMapper = new ModelMapper();
 
     // 글번호로 댓글 조회
@@ -102,7 +100,8 @@ public class ReplyService {
 
         // 핫토픽 알림
         int count = countReply(boardId);
-        if (count >= 10) {
+        Board board = boardRepository.findById(boardId).orElse(null);
+        if (board.getBocode().equals("BO03") && count == 10) {
             notifyService.createHotTopicNotify(boardId, notifyDto);
         }
 
