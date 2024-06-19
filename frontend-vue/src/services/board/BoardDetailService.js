@@ -40,6 +40,24 @@ class BoardDetailService {
       headers: LoginHeader(),
     });
   }
+
+  // getBlob(fileUrl3) {
+  //   console.log ("getBlob 요고는 실행??");
+  //   return http.get(`${fileUrl3}`, {
+  //     responseType: "blob",
+  //     // headers: {
+  //     //   someToken: "TOKEN",
+  //     // },
+  //   });
+  // }
+
+  // 첨부파일 다운로드
+  getFileDownload(uuid) {
+    return http.get(`/board/file/upload2/${uuid}`, {
+      headers: LoginHeader(),
+    });
+  }
+
   // 추천 데이터 존재 확인
   getRecommend(boardId, memberId) {
     return http.get(
@@ -50,9 +68,22 @@ class BoardDetailService {
     );
   }
   // 추천 데이터 저장
-  createRecommend(recommend) {
-    return http.post("/board/board-detail/recommend-exist", recommend, {
-      headers: LoginHeader(),
+  createRecommend(recommend, currentUrl) {
+    let formData = new FormData();
+    formData.append("boardId", recommend.boardId);
+    formData.append("memberId", recommend.memberId);
+    formData.append("currentUrl", currentUrl);
+
+    for (const x of formData) {
+      console.log("formData ::: ", x);
+    }
+
+    return http.post("/board/board-detail/recommend-exist", formData, {
+      headers: 
+      {
+        ...LoginHeader(),
+        "Content-Type": "multipart/form-data",
+      },
     });
   }
   // 신고글 저장

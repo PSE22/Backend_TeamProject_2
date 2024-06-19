@@ -73,9 +73,7 @@ public class BoardDetailService {
 
     // 글번호로 장소 조회 (게시글 하나당 장소 하나)
     public Optional<Place> findPlace(Long boardId) {
-        log.debug("Service 문제?? boardId :: ", boardId);
         Optional<Place> optional = boardDetailRepository.findPlace(boardId);
-        log.debug("Service 문제?? optional :: ", optional);
 
         return optional;
     }
@@ -98,14 +96,14 @@ public class BoardDetailService {
     }
 
     // 추천 저장
-    public Recommend saveRecommend(Recommend recommend) {
+    public Recommend saveRecommend(Recommend recommend, String currentUrl) {
         Recommend recommend2 = recommendRepository.save(recommend);
 
         // 베스트 알림
         Long boardId = recommend2.getBoardId();
         int count = countRecommend(boardId);
         NotifyDto notifyDto = new NotifyDto();
-//        notifyDto.setNotiUrl();
+        notifyDto.setNotiUrl(currentUrl);
         if (count >= 10) {
             notifyService.createBestNotify(boardId, notifyDto);
         }

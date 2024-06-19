@@ -30,7 +30,7 @@ class ReplyService {
     });
   }
   // 댓글(대댓글) 저장
-  createReply(temp, file) {
+  createReply(temp, file, currentUrl) {
     let formData = new FormData(); // form 객체
     // formData.append("replyDto", JSON.stringify(temp));
     formData.append("boardId", temp.boardId);
@@ -38,6 +38,7 @@ class ReplyService {
     formData.append("reply", temp.reply);
     formData.append("reReply", temp.reReply);
     formData.append("file", file);
+    formData.append("currentUrl", currentUrl);
 
     //formData 로그
     for (const x of formData) {
@@ -45,7 +46,9 @@ class ReplyService {
     }
 
     return http.post("/board/board-detail/reply", formData, {
-      headers: {
+      headers: 
+      {
+        ...LoginHeader(),
         "Content-Type": "multipart/form-data",
       },
     });
@@ -67,6 +70,7 @@ class ReplyService {
     
     return http.put(`/board/board-detail/reply`, formData, {
       headers: {
+        ...LoginHeader(),
         "Content-Type": "multipart/form-data",
       },
     });

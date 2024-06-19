@@ -73,7 +73,6 @@ export default {
   },
   data() {
     return {
-      loginMember: {},
       boards: [], // 게시판 데이터를 담을 배열
       showForm: false,
       newBoardCd: '',
@@ -175,18 +174,17 @@ export default {
 
 <style scoped>
 .container {
+  margin-top: 50px;
   display: flex;
-  height: 100vh;
   font-family: "Arial, sans-serif";
+  height: 130vh;
 }
 
 .main-content {
   flex-grow: 1;
-  padding: 40px;
-  background-color: #f4f4f9;
+  padding: 0 40px;
   border-radius: 15px;
   margin: 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   overflow-y: auto; /* 스크롤바 추가 */
 }
 
@@ -195,7 +193,6 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 10px 0;
-  background-color: #f4f4f9;
 }
 
 .controls {
