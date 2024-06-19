@@ -1,8 +1,8 @@
 package org.example.backend.service.auth;
 
 import org.example.backend.security.jwt.JwtUtils;
-import org.example.backend.service.dto.LoginRequest;
-import org.example.backend.service.dto.LoginResponse;
+import org.example.backend.security.dto.LoginRequest;
+import org.example.backend.security.dto.LoginResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

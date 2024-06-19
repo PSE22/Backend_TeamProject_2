@@ -1,4 +1,4 @@
-package org.example.backend.service.dto;
+package org.example.backend.security.dto;
 
 import lombok.*;
 

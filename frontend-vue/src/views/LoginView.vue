@@ -98,7 +98,7 @@ export default {
       } catch (e) {
         this.$store.commit("loginFailure");
         this.errorMessage = "로그인에 실패했습니다. 다시 시도해 주세요.";
-        console.log(e);
+        console.log(e.response.data);
       }
     },
   },
