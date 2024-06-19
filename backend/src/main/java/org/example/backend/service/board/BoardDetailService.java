@@ -101,10 +101,11 @@ public class BoardDetailService {
 
         // 베스트 알림
         Long boardId = recommend2.getBoardId();
+        Board board = boardDetailRepository.findById(boardId).orElse(null);
         int count = countRecommend(boardId);
-        NotifyDto notifyDto = new NotifyDto();
-        notifyDto.setNotiUrl(currentUrl);
-        if (count >= 10) {
+        if (board.getBocode().equals("BO03") && count >= 10) {
+            NotifyDto notifyDto = new NotifyDto();
+            notifyDto.setNotiUrl(currentUrl);
             notifyService.createBestNotify(boardId, notifyDto);
         }
 
