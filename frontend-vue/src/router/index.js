@@ -128,20 +128,25 @@ const routes = [
       path: "/board/suggest-write",
       component: () => import("../views/board/SuggestWrite.vue"),
     },
-    // 건의게시판
+    // 칭찬게시판
     {
       path: "/board/praise",
       component: () => import("../views/board/PraiseBoard.vue"),
     },
-    // 건의게시판 상세글 조회
+    // 칭찬게시판 상세글 조회
     {
       path: "/board/praise/:boardId",
       component: () => import("../views/board/PraiseDetailView.vue"),
     },
-    // 건의게시판 등록(글쓰기)
+    // 칭찬게시판 등록(글쓰기)
     {
       path: "/board/praise-write",
       component: () => import("../views/board/PraiseWrite.vue"),
+    },
+        // 칭찬게시판 수정
+    {
+      path: "/board/praise-edit/:boardId",
+      component: () => import("../views/board/PraiseBoardEdit.vue"),
     },
   
   {

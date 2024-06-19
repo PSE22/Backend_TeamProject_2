@@ -68,15 +68,14 @@ public class BoardEditService {
         if (fileDtos != null) {
             fileService.saveFiles(fileDtos, board.getBoardId());
         } else {
-            List<BoardFile> boardFiles = boardFileRepository.findByBoardId(boardId);
-            for (BoardFile boardFile : boardFiles) {
-                boardFileRepository.deleteByUuid(boardFile.getUuid());
-                fileRepository.deleteById(boardFile.getUuid());
-            }
-
-            if (boardWriteDto.getPlaceDto() != null) {
-                placeService.savePlace(board.getBoardId(), boardWriteDto.getPlaceDto());
-            }
+                List<BoardFile> boardFiles = boardFileRepository.findByBoardId(boardId);
+                for (BoardFile boardFile : boardFiles) {
+                    boardFileRepository.deleteByUuid(boardFile.getUuid());
+                    fileRepository.deleteById(boardFile.getUuid());
+                }
+        }
+        if (boardWriteDto.getPlaceDto() != null) {
+            placeService.savePlace(board.getBoardId(), boardWriteDto.getPlaceDto());
         }
     }
 
