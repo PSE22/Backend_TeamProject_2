@@ -73,10 +73,9 @@ public class BoardEditService {
                 boardFileRepository.deleteByUuid(boardFile.getUuid());
                 fileRepository.deleteById(boardFile.getUuid());
             }
-
-            if (boardWriteDto.getPlaceDto() != null) {
-                placeService.savePlace(board.getBoardId(), boardWriteDto.getPlaceDto());
-            }
+        }
+        if (boardWriteDto.getPlaceDto() != null) {
+            placeService.savePlace(board.getBoardId(), boardWriteDto.getPlaceDto());
         }
     }
 
