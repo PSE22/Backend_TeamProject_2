@@ -3,7 +3,7 @@
     <AdminSidebar />
     <div class="main-content">
       <div class="header">
-        <h2>게시판목록</h2>
+        <h3>게시판목록</h3>
         <p>게시판을 생성/수정/삭제합니다.</p>
       </div>
       <div class="controls">
