@@ -67,7 +67,7 @@ const routes = [
     component: () => import("../views/board/DeptBoardEdit.vue"),
   },
   {
-    path: "/board/dept-write",
+    path: "/board/dept-write/:smcode",
     name: "DeptBoardWrite",
     component: () => import("../views/board/DeptBoardWrite.vue"),
   },

@@ -138,7 +138,7 @@ export default {
         },
         // 글쓰기 페이지로 이동
         goWritePage() {
-            this.$router.push({ path: '/board/dept-write', query: { smcode: this.smcode } });
+            this.$router.push(`/board/dept-write/${this.smcode}`);
         },
     },
     mounted() {

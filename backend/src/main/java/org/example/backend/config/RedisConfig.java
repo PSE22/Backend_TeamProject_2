@@ -1,7 +1,7 @@
 package org.example.backend.config;
 
 import org.example.backend.model.dto.ChatMessageDto;
-import org.example.backend.model.dto.NotifyDto;
+import org.example.backend.model.entity.Notify;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,7 +47,7 @@ public class RedisConfig {
 
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         // NotifyDto 직렬화
-        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(NotifyDto.class));
+        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Notify.class));
         return redisTemplate;
     }
 

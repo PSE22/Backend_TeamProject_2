@@ -1,22 +1,21 @@
 package org.example.backend.controller.auth;
 
-import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.entity.auth.Member;
 import org.example.backend.security.jwt.JwtUtils;
 import org.example.backend.service.auth.LoginService;
 import org.example.backend.service.auth.MemberService;
-import org.example.backend.service.dto.LoginRequest;
-import org.example.backend.service.dto.LoginResponse;
-import org.example.backend.service.dto.SignUpRequest;
+import org.example.backend.security.dto.LoginRequest;
+import org.example.backend.security.dto.LoginResponse;
+import org.example.backend.security.dto.SignUpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -54,12 +53,13 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<Object> login(@Valid @RequestBody LoginRequest loginRequest) {
         try {
             LoginResponse loginResponse = loginService.authenticate(loginRequest);
             return new ResponseEntity<>(loginResponse, HttpStatus.OK);
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("ID 또는 비밀번호가 일치하지 않습니다.");
+
+//        } catch (MethodArgumentNotValidException e) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("ID 또는 비밀번호가 일치하지 않습니다.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -81,10 +81,11 @@ public class AuthController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<Object> signUp(@RequestBody SignUpRequest signUpRequest) {
+    public ResponseEntity<Object> signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
         try {
             if(memberService.existById(signUpRequest.getMemberId())) {
-                return ResponseEntity.badRequest().body("이미 가입된 회원입니다.");
+//                return ResponseEntity.badRequest().body("이미 가입된 회원입니다.");
+                return new ResponseEntity<>("이미 가입된 회원입니다.", HttpStatus.BAD_REQUEST);
             }
             Member member = new Member(
                     signUpRequest.getMemberId(),
@@ -97,20 +98,20 @@ public class AuthController {
                     signUpRequest.getDeptCode(),
                     signUpRequest.getPosCode()
             );
-            if (member.getMemberPw().isEmpty()) {
-                return ResponseEntity.badRequest().body("비밀번호를 입력해주세요.");
-            }
-            if (member.getMemberName().isEmpty()) {
-                return ResponseEntity.badRequest().body("이름을 입력해주세요.");
-            }
-            if (member.getMemberEmail().isEmpty()) {
-                return ResponseEntity.badRequest().body("이메일을 입력해주세요.");
-            } else if (memberService.existByEmail(member.getMemberEmail()) == true) {
-                return ResponseEntity.badRequest().body("이미 사용중인 이메일입니다.");
-            }
-            if (member.getMemberExt().isEmpty()) {
-                return ResponseEntity.badRequest().body("전화번호를 입력해주세요.");
-            }
+//            if (member.getMemberPw().isEmpty()) {
+//                return ResponseEntity.badRequest().body("비밀번호를 입력해주세요.");
+//            }
+//            if (member.getMemberName().isEmpty()) {
+//                return ResponseEntity.badRequest().body("이름을 입력해주세요.");
+//            }
+//            if (member.getMemberEmail().isEmpty()) {
+//                return ResponseEntity.badRequest().body("이메일을 입력해주세요.");
+//            } else if (memberService.existByEmail(member.getMemberEmail()) == true) {
+//                return ResponseEntity.badRequest().body("이미 사용중인 이메일입니다.");
+//            }
+//            if (member.getMemberExt().isEmpty()) {
+//                return ResponseEntity.badRequest().body("전화번호를 입력해주세요.");
+//            }
             memberService.insert(member);
             return ResponseEntity.ok("회원가입이 완료되었습니다.");
 

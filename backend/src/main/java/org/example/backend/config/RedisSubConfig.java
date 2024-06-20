@@ -1,7 +1,7 @@
 package org.example.backend.config;
 
 import org.example.backend.service.ChatSubService;
-import org.example.backend.service.NotifySubService;
+import org.example.backend.service.auth.NotifySubService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

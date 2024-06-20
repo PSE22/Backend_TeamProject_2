@@ -1,4 +1,4 @@
-package org.example.backend.service.dto;
+package org.example.backend.security.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -24,7 +24,6 @@ import lombok.*;
 @NoArgsConstructor
 public class SignUpRequest {
     @NotBlank(message = "ID는 필수 입력 값입니다.")
-    @Email(message = "올바른 이메일 주소를 입력하세요.")
     private String memberId;
 
     @NotBlank(message = "비밀번호는 필수 입력 값입니다.")
@@ -34,20 +33,17 @@ public class SignUpRequest {
     private String memberName;
 
     @NotBlank(message = "이메일은 필수 입력 값입니다.")
+    @Email(message = "올바른 이메일 주소를 입력하세요.")
     private String memberEmail;
 
     @NotBlank(message = "전화번호는 필수 입력 값입니다.")
     private String memberExt;
 
-    @NotBlank
     private String nickname;
 
-    @NotBlank
     private String memberCode;
 
-    @NotBlank
     private String deptCode;
 
-    @NotBlank
     private String posCode;
 }

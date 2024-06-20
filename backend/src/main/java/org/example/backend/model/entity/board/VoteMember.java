@@ -2,6 +2,7 @@ package org.example.backend.model.entity.board;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.backend.model.common.BoardIdMemberIdPk;
 
 /**
  * packageName : org.example.backend.model.entity.board
@@ -18,23 +19,16 @@ import lombok.*;
  */
 @Entity
 @Table(name="TB_VOTE_MEMBER")
-@SequenceGenerator(
-        name = "VOTE_MEMBER_ID_SEQ_GENERATOR"
-        , sequenceName = "VOTE_MEMBER_ID_SEQ"
-        , initialValue = 1
-        , allocationSize = 1
-)
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@IdClass(BoardIdMemberIdPk.class)
 public class VoteMember {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE
-            , generator = "VOTE_MEMBER_ID_SEQ_GENERATOR"
-    )
-    private Long voteMemberId;
-    private Long boardId;
-    private String memberId;
+    private String memberId;    // 회원 ID
+    @Id
+    private Long boardId;       // 게시글 ID
+    private Long voteId;        // 투표 ID
 }

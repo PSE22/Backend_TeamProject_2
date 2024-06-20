@@ -334,7 +334,7 @@
         <button type="button" class="btn btn-danger me-md-2" @click="editBoard">
           수정
         </button>
-        <button type="button" class="btn btn-secondary" @click="deleteBoard">
+        <button type="button" class="btn btn-secondary">
           취소
         </button>
       </div>
@@ -508,7 +508,7 @@ export default {
     // 카카오 API 호출하고, 장소 추가 후 확인 버튼 이벤트
     placeEdit() {
       this.placeExists = true;
-      console.log("장소 어디?? : ", this.address.address);
+      console.log("장소 어디?? : ", this.address);
     },
     // 글번호로 이미지 가져오기
     async retrieveImg() {
@@ -678,12 +678,14 @@ export default {
             });
           })
         );
-        fileDtos = fileDtos.concat(this.existingFiles);
+        fileDtos = fileDtos.concat(this.existingFiles).filter(file => file && file.fileName);
+        console.log("파일Dto:::", fileDtos)
         let response = await BoardWrite.update({
           boardDto,
           placeDto: placeDto,
-          fileDtos: fileDtos.length > 0 ? fileDtos : null,
+          fileDtos: fileDtos.length > 0 ? fileDtos : [],
         });
+        console.log("existingFiles:::", this.existingFiles)
         console.log(response);
         this.submitted = true;
         alert("게시글이 등록되었습니다.");

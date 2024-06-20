@@ -279,66 +279,57 @@ import ReplyService from '@/services/board/ReplyService';
 
 export default {
   data() {
-      return {
-          member: this.$store.state.member,       // 현재 로그인된 회원 가져오기
-          boardId: this.$route.params.boardId,    // 현재 글 ID 가져오기
-          smcode: this.$route.params.smcode,      // 현재 소메뉴 코드 가져오기
+    return {
+      currentUrl: window.location.pathname,
+      member: this.$store.state.member, // 현재 로그인된 회원 가져오기
+      boardId: this.$route.params.boardId, // 현재 글 ID 가져오기
 
-          auth: "",                     // 로그인 사용자 권한 체크
-          replyTextarea: "",
-          reReplyTextarea: "",
-          parentId: "",                 // 현재 대댓글의 상위 댓글의 replyId
-          recommendIcon: true,          // 추천 아이콘 (true는 빈 아이콘)
-          reportReason: "",             // 글 신고 사유
-          report: {                    // 댓글 신고 객체
-              replyId: "",
-              memberName: "",           // 댓글 작성자명
-              reply: "",                // 댓글 내용
-              reportReason: ""          // 신고 사유
-          },
-          currentFile: undefined,       // 댓글파일선택
-          currentReFile: undefined,     // 대댓글파일선택
-          showWriteReReply: false,      // 대댓글쓰기
+      auth: "", // 로그인 사용자 권한 체크
+      replyTextarea: "",
+      reReplyTextarea: "",
+      parentId: "", // 현재 대댓글의 상위 댓글의 replyId
+      recommendIcon: true, // 추천 아이콘 (true는 빈 아이콘)
+      reportReason: "", // 신고사유 입력
+      report: {
+        // 댓글 신고 객체
+        replyId: "",
+        memberName: "", // 댓글 작성자명
+        reply: "", // 댓글 내용
+        reportReason: "", // 신고 사유
+      },
+      currentFile: undefined, // 댓글파일선택
+      currentReFile: undefined, // 대댓글파일선택
+      showWriteReReply: false,
 
-          // 페이징
-          pageSize: 5,        // 화면에 보여질 개수
-          replyPage: 1,       // 현재 페이지 번호
-          replyPageCount: 0,  // 댓글 전체 데이터 개수
+      // 페이징
+      pageSize: 5, // 화면에 보여질 개수
+      replyPage: 1, // 현재 페이지 번호
+      replyPageCount: 0, // 댓글 전체 데이터 개수
 
-          // retrieve 
-          memberInfo: "",     // 회원정보
-          board: "",          // 게시글
-          cmcd: "",           // 부서코드, 부서명
-          vote: [],           // 투표
-          boardFile: [],     // 글 첨부 이미지
-          recommend: "",      // 추천 존재 여부
-          recommendCnt: "",   // 추천 수
-          reply: [],          // 댓글 목록
-          replyCount: "",     // 댓글수
-          currentUrl: window.location,   // 현재 페이지 Url
+      // retrieve
+      memberInfo: "", // 회원정보
+      board: "", // 게시글
+      cmcd: "", // 부서코드, 부서명
+      vote: [], // 투표
+      boardImage: [], // 글 첨부 이미지
+      recommend: "", // 추천 존재 여부
+      recommendCnt: "", // 추천 수
+      reply: [], // 댓글 목록
+      replyCount: "", // 댓글수
 
-
-          arrFileUrl: [
-              {
-                  fileUrlPre: "",     // 파일 확장자 앞부분
-                  fileUrlExt: "",     // 파일 확장자
-              }
-          ],
-
-          // 장소 
-          map: null,
-          infowindow: null,
-          markers: [],
-          options: {
-              //지도를 생성할 때 필요한 기본 옵션
-              center: {
-                  lat: 33.450701,
-                  lng: 126.570667,
-              }, //지도의 중심좌표.
-              level: 4, //지도의 레벨(확대, 축소 정도)
-          },
-          address: "",
-      };
+      map: null,
+      infowindow: null,
+      markers: [],
+      options: {
+        //지도를 생성할 때 필요한 기본 옵션
+        center: {
+          lat: 33.450701,
+          lng: 126.570667,
+        }, //지도의 중심좌표.
+        level: 4, //지도의 레벨(확대, 축소 정도)
+      },
+      address: "",
+    };
   },
   methods: {
       // 회원 권한 체크
@@ -725,28 +716,303 @@ export default {
                   reReply.isReReplyEditing = true;
               }
           });
-      },
-      closeReReplyUpdate(replyId) {
-          this.reply.forEach(reply => {
-              const reReplies = Array.isArray(reply.reReplies) ? reply.reReplies : [];
-              const reReply = reReplies.find(r => r.replyId === replyId);
-              if (reReply) {
-                  reReply.isReReplyEditing = false;
-              }
-          });
-          this.retrieveReply();
-      },
-      // 대댓글 수정 후 등록
-      async updateReReply(reReply) {
-          try {
-              let response = await ReplyService.updateReply(reReply, this.currentReFile);
-              console.log("대댓글 수정 : ", response.data);
-              this.retrieveReply();
-              this.retrieveReplyCount();
-          } catch (e) {
-              console.log("updateReReply 에러", e);
+      }
+    },
+    // 추천 저장함수
+    async saveRecommend() {
+      try {
+        let recommend = {
+          boardId: this.boardId,
+          memberId: this.member.memberId,
+        };
+        await BoardDetailService.createRecommend(recommend, this.currentUrl);
+      } catch (e) {
+        console.log("saveRecommend 에러", e);
+      }
+    },
+    // 글 신고 저장
+    async createReport() {
+      try {
+        if (!this.reportReason) {
+          alert("신고 사유를 입력해주세요.");
+        } else {
+          let report = {
+            memberId: this.member.memberId,
+            boardId: this.boardId,
+            reportReason: this.reportReason,
+          };
+          await BoardDetailService.createReport(report);
+          alert("신고가 완료되었습니다.");
+          this.reportReason = "";
+        }
+      } catch (e) {
+        console.log("createReport 에러", e);
+      }
+    },
+    // 댓글 신고 저장
+    async createReplyReport() {
+      try {
+        if (!this.report.reportReason) {
+          alert("신고 사유를 입력해주세요.");
+        } else {
+          let report = {
+            memberId: this.member.memberId,
+            replyId: this.report.replyId,
+            reportReason: this.report.reportReason,
+          };
+          await ReplyService.createReplyReport(report);
+          alert("신고가 완료되었습니다.");
+          this.report.reportReason = "";
+        }
+      } catch (e) {
+        console.log("createReplyReport 에러", e);
+      }
+    },
+    // 댓글 신고 모달 열기
+    openReplyReport(data) {
+      // 반복문의 현재 댓글 정보(댓글Id, 작성자명, 댓글내용) 저장
+      this.report.replyId = data.replyId;
+      this.report.memberName = data.memberName;
+      this.report.reply = data.reply;
+    },
+
+    // 추천 데이터 존재 여부 가져오기
+    async retrieveRecommend() {
+      try {
+        let response = await BoardDetailService.getRecommend(
+          this.boardId,
+          this.member.memberId
+        );
+        this.recommend = response.data;
+        if (response.data === 1) {
+          this.recommendIcon = false;
+        } else {
+          this.recommendIcon = true;
+        }
+      } catch (e) {
+        console.log("retrieveRecommend 에러", e);
+      }
+    },
+    // 추천 수 가져오기
+    async retrieveRecommendCnt() {
+      try {
+        let response = await BoardDetailService.getRecommendCnt(this.boardId);
+        this.recommendCnt = response.data;
+      } catch (e) {
+        console.log("retrieveRecommendCnt 에러", e);
+      }
+    },
+    // 글번호로 댓글 가져오기
+    async retrieveReply() {
+      try {
+        let response = await ReplyService.getReply(
+          this.boardId,
+          this.replyPage - 1,
+          this.pageSize
+        );
+        this.reply = response.data.content;
+        this.replyPageCount = response.data.totalElements;
+
+        // 각 댓글에 대한 대댓글 가져오기
+        for (let i = 0; i < this.reply.length; i++) {
+          let comment = this.reply[i];
+          // 대댓글 가져오기
+          let reReplyResponse = await ReplyService.getReReply(
+            this.boardId,
+            comment.replyId
+          );
+          // 각 댓글 객체에 대댓글 객체 추가
+          this.reply[i].reReplies = reReplyResponse.data;
+        }
+        console.log("reply 데이터 : ", this.reply);
+      } catch (e) {
+        console.log("retrieveReply 에러", e);
+      }
+    },
+    // 댓글 수 가져오기
+    async retrieveReplyCount() {
+      try {
+        let response = await ReplyService.getReplyCount(this.boardId);
+        this.replyCount = response.data;
+      } catch (e) {
+        console.log("retrieveReplyCount 에러", e);
+      }
+    },
+
+    // ------------------------ 댓글 CUD 관련 함수 ------------------------
+    // 새 댓글 작성 시 파일 선택
+    selectReplyFile() {
+      this.currentFile = this.$refs.replyFile.files[0];
+    },
+    // 댓글 수정 시 파일 선택상자
+    selectReplyFile2(event, data) {
+      data.fileName = null;
+      data.fileUrl = null;
+      this.currentFile = event.target.files[0];
+    },
+    // 댓글(대댓글) 수정시 파일 삭제 버튼
+    removeFile(data) {
+      data.fileName = null;
+      data.fileUrl = null;
+      this.currentFile = null;
+      this.currentReFile = null;
+    },
+    // 댓글 + 파일 저장
+    async createReply() {
+      try {
+        let temp = {
+          boardId: this.boardId,
+          memberId: this.member.memberId,
+          reply: this.replyTextarea,
+          reReply: "",
+        };
+        let response = await ReplyService.createReply(temp, this.currentFile, this.currentUrl);
+        console.log("댓글 전송 : ", response);
+        this.retrieveReply();
+        this.retrieveReplyCount();
+        this.replyTextarea = "";
+        this.currentFile = undefined;
+      } catch (e) {
+        this.currentFile = undefined;
+        console.log(e);
+      }
+    },
+    // 댓글 수정 버튼 클릭 시 호출
+    openReplyUpdate(replyId) {
+      const reply = this.reply.find((r) => r.replyId === replyId);
+      if (reply) {
+        reply.isEditing = true;
+      }
+    },
+    closeReplyUpdate(replyId) {
+      const reply = this.reply.find((r) => r.replyId === replyId);
+      if (reply) {
+        reply.isEditing = false;
+      }
+      this.retrieveReply();
+    },
+    // 댓글 수정 후 등록
+    async updateReply(replyId) {
+      const reply = this.reply.find((r) => r.replyId === replyId);
+      reply.reReply = ""; // reReply에는 빈문자열 전달 (undefined 에러 방지)
+      try {
+        let response = await ReplyService.updateReply(reply, this.currentFile);
+        console.log("댓글 수정 : ", response.data);
+        this.retrieveReply();
+        this.retrieveReplyCount();
+      } catch (e) {
+        console.log("updateReply 에러", e);
+      }
+    },
+    // 댓글(대댓글) 삭제
+    async deleteReply(data) {
+      try {
+        if (data.reReply === null) {
+          if (data.reReplies) {
+            // 댓글의 대댓글이 있을 경우
+            alert("대댓글이 있는 댓글은 삭제할 수 없습니다.");
+            return;
           }
-      },
+        }
+        await ReplyService.deleteReply(data.replyId);
+        this.retrieveReply();
+        this.retrieveReplyCount();
+        console.log("댓글 삭제 성공");
+      } catch (e) {
+        console.log("deleteReply 에러 : ", e);
+      }
+    },
+
+    // ------------------------ 대댓글 CUD 관련 함수 ------------------------
+    // 대댓글 쓰기 버튼 클릭 시 호출
+    openReReply(replyId) {
+      this.parentId = replyId; // 현재 댓글ID를 저장
+      this.showWriteReReply = !this.showWriteReReply; // 대댓글쓰기창 토글
+    },
+    // 새 대댓글 작성 시 파일 선택
+    selectReReplyFile(event) {
+      this.currentReFile = event.target.files[0];
+    },
+    // 대댓글 수정 시 파일 선택
+    selectReReplyFile2(event, data) {
+      data.fileName = null;
+      data.fileUrl = null;
+      this.currentReFile = event.target.files[0];
+    },
+    // 대댓글 + 파일 저장
+    async createReReply(reReplyData) {
+      try {
+        let temp = {
+          boardId: this.boardId,
+          memberId: this.member.memberId,
+          reply: this.reReplyTextarea,
+          reReply: reReplyData,
+        };
+        let response = await ReplyService.createReply(temp, this.currentReFile, this.currentUrl);
+        console.log("대댓글 전송 : ", response);
+        this.retrieveReply();
+        this.retrieveReplyCount();
+        this.reReplyTextarea = "";
+        this.currentReFile = undefined;
+        this.showWriteReReply = !this.showWriteReReply; // 대댓글쓰기창 토글
+      } catch (e) {
+        this.currentReFile = undefined;
+        this.showWriteReReply = !this.showWriteReReply; // 대댓글쓰기창 토글
+        console.log(e);
+      }
+    },
+    // 대댓글 수정 버튼 클릭 시 호출
+    openReReplyUpdate(replyId) {
+      this.reply.forEach((reply) => {
+        const reReplies = Array.isArray(reply.reReplies) ? reply.reReplies : [];
+        const reReply = reReplies.find((r) => r.replyId === replyId);
+        if (reReply) {
+          reReply.isReReplyEditing = true;
+        }
+      });
+    },
+    closeReReplyUpdate(replyId) {
+      this.reply.forEach((reply) => {
+        const reReplies = Array.isArray(reply.reReplies) ? reply.reReplies : [];
+        const reReply = reReplies.find((r) => r.replyId === replyId);
+        if (reReply) {
+          reReply.isReReplyEditing = false;
+        }
+      });
+      this.retrieveReply();
+    },
+    // 대댓글 수정 후 등록
+    async updateReReply(reReply) {
+      try {
+        let response = await ReplyService.updateReply(
+          reReply,
+          this.currentReFile
+        );
+        console.log("대댓글 수정 : ", response.data);
+        this.retrieveReply();
+        this.retrieveReplyCount();
+      } catch (e) {
+        console.log("updateReReply 에러", e);
+      }
+    },
+
+    // 글 수정 페이지로 이동
+    moveToFreeEdit() {
+      this.$router.push(`/board/free-edit/${this.boardId}`);
+    },
+
+    // 게시글 삭제
+    async deleteBoard() {
+      try {
+        let response = await BoardDetailService.deleteBoard(this.boardId);
+        console.log("삭제", response);
+        this.$router.push(`/board/free`);
+        alert("삭제되었습니다.");
+      } catch (error) {
+        console.log("삭제 에러", error);
+        alert("삭제에 실패했습니다.");
+      }
+    },
   },
   async mounted() {
       console.log(

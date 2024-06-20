@@ -17,7 +17,7 @@ body, html {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
+  padding: 30px 20px;
   margin-left: 150px;
   margin-right: 150px;
 }
@@ -72,9 +72,8 @@ body, html {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 10px 0;
-  background-color: #f9f9f9;
-  border-top: 1px solid #ccc;
+  padding: 15px 0;
+  background-color: #b3000f;
 }
 
 .header-nav ul {
@@ -82,7 +81,7 @@ body, html {
   padding: 0;
   margin: 0;
   display: flex;
-  gap: 20px;
+  gap: 50px;
 }
 
 .header-nav ul li {
@@ -91,8 +90,31 @@ body, html {
 
 .header-nav ul li a {
   text-decoration: none;
-  color: black;
+  color: rgb(255, 255, 255);
   font-size: 14px;
+}
+.search-box {
+  position: relative;
+}
+
+.search-box input[type="text"] {
+  padding: 10px;
+  width: 400px;
+  border: 2px solid #b3000f;
+  border-radius: 25px;
+  outline: none;
+}
+
+.search-box button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #b3000f;
+  font-size: px;
+  cursor: pointer;
 }
 
 /* TODO: footer */
@@ -103,8 +125,8 @@ body, html {
 }
 
 footer {
-  background-color: #ccc;
-  height: 150px;
+  background-color: #f9f9f9;
+  height: 180px;
   margin-top: 100px !important; 
   color: black;
   display: flex;
@@ -112,12 +134,15 @@ footer {
   align-items: center;
   padding: 30px 100px 0px 100px;
   box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+  border-top: 1px solid rgb(208, 208, 208);
 }
 
 #footer_logo {
   font-size: 30px;
-  font-family: 'YClover-Bold', sans-serif;
   float: left;
+  font-family: "Playwrite NZ", cursive;
+  font-weight: 400;
+  font-style: normal;
 }
 
 #address {
@@ -258,6 +283,7 @@ footer {
 
 .notifications-popup {
   position: absolute;
+  width: 300px;
   right: 210px;
   top: 60px;
   background-color: #f9f9f9;
@@ -272,8 +298,14 @@ footer {
   z-index: 100;
 }
 
+.notification-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* 세로축 정렬 */
+}
+
 .mark-all-read {
-  background-color: #28a745; /* 초록색 배경 */
+  background-color: rgb(0, 0, 0); /* 초록색 배경 */
   color: white;
   padding: 2px 4px;
   border: none;
@@ -313,11 +345,21 @@ footer {
 .notification-item button {
   padding: 2px 6px;
   border: none;
-  background-color: #f44336;  /* 빨간색 배경 */
-  color: white;
+  background-color: #ffffff;  /* 빨간색 배경 */
+  color: rgb(255, 0, 0);
   cursor: pointer;
   border-radius: 50%;  /* 원형 버튼 */
-  font-size: 12px;
+  font-size: 20px;
+}
+
+/* RouterLink 커스텀 스타일 */
+.custom-logo {
+  color: black; /* 기본 텍스트 색상 */
+  text-decoration: none; /* 밑줄 제거 */
+  font-family: "Playwrite NZ", cursive;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
 }
 
 /* RouterLink 커스텀 스타일 */

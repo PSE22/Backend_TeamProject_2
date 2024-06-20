@@ -2,19 +2,23 @@
   <header class="header">
     <div class="header-top">
       <div class="header-left">
-        <router-link to="/" class="custom-link">
+        <router-link to="/" class="custom-logo">
           <h1>SM Company</h1>
         </router-link>
       </div>
       <div class="header-center">
-        <input
-          type="text"
-          placeholder="검색어를 입력하세요"
-          class="search-input"
-          v-model="searchQuery"
-          @keydown.enter="executeSearch"
-        />
-        <button @click="executeSearch" class="search-button">검색</button>
+        <div class="search-box">
+          <input
+            type="text"
+            placeholder="검색어를 입력하세요"
+            class="search-input"
+            v-model="searchQuery"
+            @keydown.enter="executeSearch"
+          />
+          <button @click="executeSearch" class="search-button">
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
       </div>
       <div class="header-right">
         <div
@@ -22,39 +26,69 @@
           class="notification-icon"
           @click="toggleNotifications"
         >
-          <i class="bi bi-bell"></i> <span class="notification-count">{{ notificationCount }}</span>
+          <i class="bi bi-bell"></i>
+          <span class="notification-count">{{ notificationCount }}</span>
         </div>
         <router-link to="/profile" v-if="isLoggedIn" class="profile-icon">
           <i class="bi bi-person-circle"></i>
         </router-link>
         <a><router-link to="/login" v-if="!isLoggedIn">로그인</router-link></a>
-        <a><router-link to="/register" v-if="!isLoggedIn">회원가입</router-link></a>
+        <a
+          ><router-link to="/register" v-if="!isLoggedIn"
+            >회원가입</router-link
+          ></a
+        >
         <a href="/" @click.prevent="handleLogout" v-if="isLoggedIn">로그아웃</a>
-        <a v-if="isLoggedIn && memberCode === 'AT01'"><router-link to="/admin/register-mgmt">관리자 페이지</router-link></a>
+        <a v-if="isLoggedIn && memberCode === 'AT01'"
+          ><router-link to="/admin/register-mgmt">관리자 페이지</router-link></a
+        >
       </div>
     </div>
     <nav class="header-nav">
       <ul>
         <li>
-          <a @click.prevent="checkLoginAndNavigate('/board/dept')" class="router-link nav-link">부서 게시판</a>
+          <a
+            @click.prevent="checkLoginAndNavigate('/board/dept')"
+            class="router-link nav-link"
+            >부서 게시판</a
+          >
         </li>
         <li>
-          <a @click.prevent="checkLoginAndNavigate('/board/club')" class="router-link nav-link">동호회 게시판</a>
+          <a
+            @click.prevent="checkLoginAndNavigate('/board/club')"
+            class="router-link nav-link"
+            >동호회 게시판</a
+          >
         </li>
         <li>
-          <a @click.prevent="checkLoginAndNavigate('/board/free')" class="router-link nav-link">자유 게시판</a>
+          <a
+            @click.prevent="checkLoginAndNavigate('/board/free')"
+            class="router-link nav-link"
+            >자유 게시판</a
+          >
         </li>
         <li>
-          <a @click.prevent="checkLoginAndNavigate('/board/suggest')" class="router-link nav-link">건의 게시판</a>
+          <a
+            @click.prevent="checkLoginAndNavigate('/board/suggest')"
+            class="router-link nav-link"
+            >건의 게시판</a
+          >
         </li>
         <li>
-          <a @click.prevent="checkLoginAndNavigate('/board/praise')" class="router-link nav-link">칭찬 게시판</a>
+          <a
+            @click.prevent="checkLoginAndNavigate('/board/praise')"
+            class="router-link nav-link"
+            >칭찬 게시판</a
+          >
         </li>
       </ul>
     </nav>
     <!-- 알림 팝업 -->
     <div v-if="showNotifications" class="notifications-popup">
-      <button class="mark-all-read" @click="markAllAsRead">모두 확인</button>
+      <div class="notification-bar">
+        <h5>알림</h5>
+        <button class="mark-all-read" @click="markAllAsRead">모두 확인</button>
+      </div>
       <div
         v-for="notification in notifications"
         :key="notification.notifyId"
@@ -82,20 +116,19 @@
         </div>
       </div>
       <div class="chat-input">
-        <input
-          type="text"
-          v-model="newMessage"
-          @keyup.enter="sendMessage"
-        />
+        <input type="text" v-model="newMessage" @keyup.enter="sendMessage" />
         <button @click="sendMessage">전송</button>
       </div>
     </div>
-    <button class="chat-toggle-button" @click="toggleChat" v-if="isLoggedIn && !showChat">
+    <button
+      class="chat-toggle-button"
+      @click="toggleChat"
+      v-if="isLoggedIn && !showChat"
+    >
       채팅 열기
     </button>
   </header>
 </template>
-
 
 <script>
 import NotificationService from "@/services/board/NotificationService";
@@ -122,8 +155,10 @@ export default {
       return this.$store.state.loggedIn;
     },
     memberCode() {
-      return this.$store.state.member ? this.$store.state.member.memberCode : null;
-    }
+      return this.$store.state.member
+        ? this.$store.state.member.memberCode
+        : null;
+    },
   },
   watch: {
     isLoggedIn(LoggedIn) {
