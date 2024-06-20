@@ -296,8 +296,6 @@ export default {
       isAdmin: this.$store.state.member != null && this.$store.state.member.memberCode === "AT01",
       bocode: "BO03", // 대분류 코드 고정
       board: {
-        boardTitle: "",
-        boardContent: "",
         noticeYn: false, // 공지사항 초기값
       },
       vote: {
@@ -395,9 +393,12 @@ export default {
       if (voteItems.length < 2) {
         alert("투표 항목을 2개 이상 입력해주세요.");
         return;
-      } else {
-        this.showSuccessMessage = true;
       }
+      if (!this.vote.delDate) {
+        alert("투표 종료일을 선택해주세요.");
+        return;
+      }
+      this.showSuccessMessage = true;
     },
     handleFileUpload(event) {
       const newFiles = Array.from(event.target.files);

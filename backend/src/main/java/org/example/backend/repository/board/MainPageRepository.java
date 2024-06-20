@@ -32,15 +32,15 @@ public interface MainPageRepository extends JpaRepository<Board, Long> {
                     "    GROUP BY BOARD_ID" +
                     ")" +
                     " SELECT '자유게시판' AS board," +
-                    "B.BOARD_ID AS boardId,\n" +
+                    "        B.BOARD_ID AS boardId," +
                     "        B.BOARD_TITLE AS boardTitle," +
                     "        M.NICKNAME AS nickName," +
-                    "        B.GOOD AS good," +
+                    "        (SELECT COUNT(*) FROM TB_RECOMMEND RE WHERE RE.BOARD_ID = B.BOARD_ID) AS good," +
                     "        NVL(R.total_reply_count, 0) AS totalReplyCount," +
                     "        B.ADD_DATE AS addDate," +
                     "        B.BOCODE AS boCode" +
                     " FROM TB_BOARD B" +
-                    " LEFT JOIN TB_MEMBER M ON B.MEMBER_ID = M.MEMBER_ID" + // 수정된 부분
+                    " LEFT JOIN TB_MEMBER M ON B.MEMBER_ID = M.MEMBER_ID" +
                     " LEFT JOIN all_replies R ON B.BOARD_ID = R.BOARD_ID" +
                     " WHERE B.STATUS = 'Y' AND B.BOCODE = 'BO03'" +
                     " ORDER BY B.ADD_DATE DESC", nativeQuery = true)
@@ -58,7 +58,7 @@ public interface MainPageRepository extends JpaRepository<Board, Long> {
                     "B.BOARD_ID AS boardId,\n" +
                     "        B.BOARD_TITLE AS boardTitle," +
                     "        M.NICKNAME AS nickName," + // 수정된 부분
-                    "        B.GOOD AS good," +
+                    "        (SELECT COUNT(*) FROM TB_RECOMMEND RE WHERE RE.BOARD_ID = B.BOARD_ID) AS good," +
                     "        NVL(R.total_reply_count, 0) AS totalReplyCount," +
                     "        B.ADD_DATE AS addDate," +
                     "        B.BOCODE AS boCode" +
@@ -81,7 +81,7 @@ public interface MainPageRepository extends JpaRepository<Board, Long> {
                     "B.BOARD_ID AS boardId,\n" +
                     "        B.BOARD_TITLE AS boardTitle," +
                     "        M.NICKNAME AS nickName," + // 수정된 부분
-                    "        B.GOOD AS good," +
+                    "        (SELECT COUNT(*) FROM TB_RECOMMEND RE WHERE RE.BOARD_ID = B.BOARD_ID) AS good," +
                     "        NVL(R.total_reply_count, 0) AS totalReplyCount," +
                     "        B.ADD_DATE AS addDate," +
                     "        B.BOCODE AS boCode" +
@@ -104,7 +104,7 @@ public interface MainPageRepository extends JpaRepository<Board, Long> {
                     "B.BOARD_ID AS boardId,\n" +
                     "        B.BOARD_TITLE AS boardTitle," +
                     "        M.NICKNAME AS nickName," + // 수정된 부분
-                    "        B.GOOD AS good," +
+                    "        (SELECT COUNT(*) FROM TB_RECOMMEND RE WHERE RE.BOARD_ID = B.BOARD_ID) AS good," +
                     "        NVL(R.total_reply_count, 0) AS totalReplyCount," +
                     "        B.ADD_DATE AS addDate," +
                     "        B.BOCODE AS boCode" +

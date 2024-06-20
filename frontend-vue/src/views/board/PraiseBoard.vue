@@ -159,7 +159,7 @@ export default {
     goPraiseDetail(boardId) {
       this.$router.push(`/board/praise/${boardId}`);
     },
-    moveToFreeWrite() {
+    moveToPraiseWrite() {
       this.$router.push("/board/praise-write");
     },
   },
