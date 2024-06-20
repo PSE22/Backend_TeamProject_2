@@ -24,29 +24,37 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface MainSearchRepository extends JpaRepository<Board, Long> {
-    @Query(value = "SELECT \n" +
-            "B.BOARD_ID AS boardId,\n" +
-            "B.BOARD_TITLE AS boardTitle, \n" +
-            "B.ADD_DATE AS addDate, \n" +
-            "B.BOCODE AS boCode, \n" +
-            "B.SMCODE AS smCode, \n" +
-            "M.NICKNAME AS nickName, \n" +
-            "C.CM_CD AS cmCode, \n" +
-            "C.CM_CD_NAME AS cmCodeName,\n" +
-            "B.GOOD AS good, \n" +
-            "NVL(R.total_reply_count, 0) AS totalReplyCount\n" +
-            "FROM TB_BOARD B\n" +
-            "JOIN TB_MEMBER M ON B.MEMBER_ID = M.MEMBER_ID\n" +
-            "JOIN TB_CM_CODE C ON B.BOCODE = C.CM_CD\n" +
-            "LEFT JOIN (SELECT BOARD_ID, COUNT(*) AS total_reply_count\n" +
-            "           FROM TB_REPLY\n" +
-            "           WHERE STATUS = 'Y'\n" +
-            "           GROUP BY BOARD_ID) R ON B.BOARD_ID = R.BOARD_ID\n" +
-            "WHERE B.BOCODE <> 'BO01'\n" +
-            "AND B.STATUS = 'Y'\n" +
-            "AND B.NOTICE_YN = 'N'\n" +
-            "AND B.BOARD_TITLE LIKE '%' || :boardtitle || '%'\n" +
-            "AND B.BOARD_TITLE NOT IN (SELECT BOARD_TITLE FROM TB_BOARD WHERE BOCODE = 'BO01' AND STATUS = 'Y')\n" +
-            "ORDER BY B.ADD_DATE DESC", nativeQuery = true)
+    @Query(value = "SELECT " +
+            "B.BOARD_ID AS boardId, " +
+            "B.BOARD_TITLE AS boardTitle, " +
+            "B.ADD_DATE AS addDate, " +
+            "B.BOCODE AS boCode, " +
+            "B.SMCODE AS smCode, " +
+            "M.NICKNAME AS nickName, " +
+            "C.CM_CD AS cmCode, " +
+            "C.CM_CD_NAME AS cmCodeName, " +
+            "(SELECT COUNT(*) FROM TB_RECOMMEND R WHERE R.BOARD_ID = B.BOARD_ID) AS good, " +
+            "NVL(R2.total_reply_count, 0) AS totalReplyCount " +
+            "FROM TB_BOARD B " +
+            "JOIN TB_MEMBER M ON B.MEMBER_ID = M.MEMBER_ID " +
+            "JOIN TB_CM_CODE C ON B.BOCODE = C.CM_CD " +
+            "LEFT JOIN (SELECT BOARD_ID, COUNT(*) AS total_reply_count " +
+            "           FROM TB_REPLY " +
+            "           WHERE STATUS = 'Y' " +
+            "           GROUP BY BOARD_ID) R2 ON B.BOARD_ID = R2.BOARD_ID " +
+            "WHERE B.BOCODE <> 'BO01' " +
+            "AND B.STATUS = 'Y' " +
+            "AND B.NOTICE_YN = 'N' " +
+            "AND B.BOARD_TITLE LIKE '%' || :boardtitle || '%' " +
+            "ORDER BY B.ADD_DATE DESC",
+            countQuery = "SELECT count(*) " +
+                    "FROM TB_BOARD B " +
+                    "JOIN TB_MEMBER M ON B.MEMBER_ID = M.MEMBER_ID " +
+                    "JOIN TB_CM_CODE C ON B.BOCODE = C.CM_CD " +
+                    "WHERE B.BOCODE <> 'BO01' " +
+                    "AND B.STATUS = 'Y' " +
+                    "AND B.NOTICE_YN = 'N' " +
+                    "AND B.BOARD_TITLE LIKE '%' || :boardtitle || '%'",
+            nativeQuery = true)
     Page<MainPageSearchDto> searchAllByBoard(@Param("boardtitle") String boardtitle, Pageable pageable);
 }

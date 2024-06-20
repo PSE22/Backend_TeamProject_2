@@ -26,16 +26,6 @@
               v-model="board.boardTitle"
             />
           </div>
-          <div class="col-md-2 d-flex align-items-center justify-content-end">
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                v-model="isNoticeChecked"
-              />
-              <label class="form-check-label" for="noticeCheck">공지사항</label>
-            </div>
-          </div>
         </div>
         <!-- 투표 추가 -->
         <div class="d-grid gap-3 d-md-block mt-3 mb-3 text-start">

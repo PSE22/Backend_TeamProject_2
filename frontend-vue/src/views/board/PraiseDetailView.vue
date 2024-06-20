@@ -8,7 +8,7 @@
         <!-- 게시글 -->
         <div class="card mb-3">
             <div class="card-header text-white">
-                칭찬게시판
+                칭찬 게시판   <i class="bi bi-caret-right"></i> {{ cmcd?.cmCdName }}
             </div>
             <div class="card-body">
                 <h5 class="card-title">{{ board?.boardTitle }}</h5>
@@ -24,16 +24,19 @@
                     </h5>
                     <div class="card-body">
                         <div class="form-check" v-for="(data, index) in vote" :key="index">
-                            <input class="form-check-input" type="radio" name="exampleRadios" id="voteRadios"
-                                value="option1" checked />
-                            <label class="form-check-label" for="voteRadios">
+                            <input class="form-check-input" type="radio" name="voteRadios" id="voteRadios"
+                                :value="data.voteId" />
+                            <label class="form-check-label justify-content-start" for="voteRadios">
                                 {{ data.voteList }}
+                            </label>
+                            <label class="form-check-label justify-content-end" for="voteRadios">
+                                {{ data.voteCnt }}
                             </label>
                             <hr />
                         </div>
                         <p class="card-text-date">{{ vote[0]?.delDate }} 까지</p>
                         <div class="d-md-flex justify-content-md-end">
-                            <button type="button" class="btn btn-secondary" @click="vote">투표하기</button>
+                            <button type="button" class="btn btn-secondary" @click="saveVote()">투표하기</button>
                         </div>
                     </div>
                 </div>
@@ -41,11 +44,16 @@
                 <div v-if="address">
                     <div id="map" style="width: 600px; height: 400px" ref="map" class="img-thumbnail"></div>
                 </div>
-                <!-- 글 이미지 -->
+                <!-- 이미지 -->
                 <div class="board-images mb-3">
-                    <div v-for="(data, index) in boardFile" :key="index" class="mb-2">
+                    <div v-for="(data, index) in images" :key="index" class="mb-2">
                         <img :src="data.fileUrl" class="img-fluid">
-                        <a :href="data.fileUrl" class="btn btn-outline-info btn-sm btn-outline-grey" download> <i
+                    </div>
+                </div>
+                <!-- 파일 -->
+                <div class="board-images mb-3">
+                    <div v-for="(data, index) in nonImages" :key="index" class="mb-2">
+                        <a :href="data.fileUrl" class="btn btn-outline-dark btn-sm btn-outline-grey" download> <i
                                 class="bi bi-download"></i> {{ data.fileName }}</a>
                     </div>
                 </div>
@@ -207,7 +215,7 @@
             </ul>
         </div>
         <!-- 페이징 -->
-        <b-pagination class="col-12 mb-3 justify-content-center" v-model="replyPage" :total-rows="replyPageCount"
+        <b-pagination v-if="reply" class="col-12 mb-3 justify-content-center" v-model="replyPage" :total-rows="replyPageCount"
             :per-page="pageSize" @click="retrieveReply()"></b-pagination>
         <!-- 댓글 신고 Modal -->
         <div class="modal fade" id="reportReplyModal" tabindex="-1" aria-labelledby="reportReplyModalLabel"
@@ -299,6 +307,9 @@
             currentFile: undefined,       // 댓글파일선택
             currentReFile: undefined,     // 대댓글파일선택
             showWriteReReply: false,      // 대댓글쓰기
+            images: [],
+            nonImages: [],
+  
   
             // 페이징
             pageSize: 5,        // 화면에 보여질 개수
@@ -310,20 +321,13 @@
             board: "",          // 게시글
             cmcd: "",           // 부서코드, 부서명
             vote: [],           // 투표
-            boardFile: [],     // 글 첨부 이미지
+            voteMember: [],     // 투표 회원
+            boardFile: [],      // 글 첨부 이미지
             recommend: "",      // 추천 존재 여부
             recommendCnt: "",   // 추천 수
             reply: [],          // 댓글 목록
             replyCount: "",     // 댓글수
             currentUrl: window.location,   // 현재 페이지 Url
-  
-  
-            arrFileUrl: [
-                {
-                    fileUrlPre: "",     // 파일 확장자 앞부분
-                    fileUrlExt: "",     // 파일 확장자
-                }
-            ],
   
             // 장소 
             map: null,
@@ -385,7 +389,7 @@
                     boardId: this.boardId,
                     memberId: this.member.memberId
                 };
-                await BoardDetailService.createRecommend(recommend, this.currentUrl);
+                await BoardDetailService.createRecommend(recommend);
                 console.log("추천 저장 완료")
             } catch (e) {
                 console.log("saveRecommend 에러", e);
@@ -438,7 +442,37 @@
         },
         // 파일 타입 분류
         classifyFilesByType() {
-            
+            if (this.boardFile) {
+                this.boardFile.forEach(file => {
+                    if (file.fileName.substring(file.fileName.lastIndexOf('.') + 1) === "png" ||
+                        file.fileName.substring(file.fileName.lastIndexOf('.') + 1) === "jpg" ||
+                        file.fileName.substring(file.fileName.lastIndexOf('.') + 1) === "jpeg" ||
+                        file.fileName.substring(file.fileName.lastIndexOf('.') + 1) === "PNG" ||
+                        file.fileName.substring(file.fileName.lastIndexOf('.') + 1) === "gif") {
+                        this.images.push(file);
+                    } else {
+                        this.nonImages.push(file);
+                    }
+                });
+                console.log("images", this.images);
+                console.log("nonImages", this.nonImages);
+            }
+        },
+        // 투표 저장
+        async saveVote() {
+            try {
+                console.log("당신의 선택은? ", document.querySelector('input[name="voteRadios"]:checked').value);
+                // 현재 선택된 라디오버튼
+                let vote = {
+                    memberId: this.member.memberId,
+                    boardId: this.boardId,
+                    voteId: document.querySelector('input[name="voteRadios"]:checked').value        // 현재 선택된 투표 ID
+                }
+                await BoardDetailService.createVoteMember(vote);
+                this.retrieveVote();
+            } catch (e) {
+                console.log();
+            }
         },
   
         // ------------------------ retrieve 함수 ------------------------
@@ -480,6 +514,16 @@
                 console.log("vote ::: ", response.data);
             } catch (e) {
                 console.log("retrieveVote 에러", e);
+            }
+        },
+        // 투표 회원 가져오기
+        async retrieveVoteMember() {
+            try {
+                let response = await BoardDetailService.getVoteMember(this.boardId, this.member.memberId);
+                this.voteMember = response.data;
+                console.log("voteMember ::: ", response.data);
+            } catch (e) {
+                console.log("retrieveVoteMember 에러", e);
             }
         },
         // 글번호로 장소 가져오기
@@ -618,7 +662,7 @@
                     reply: this.replyTextarea,
                     reReply: "",
                 }
-                let response = await ReplyService.createReply(temp, this.currentFile, this.currentUrl);
+                let response = await ReplyService.createReply(temp, this.currentFile);
                 console.log("댓글 전송 : ", response);
                 this.retrieveReply();
                 this.retrieveReplyCount();
@@ -760,17 +804,17 @@
         await this.retrieveMember();
         await this.retrieveBoard();
         await this.retrieveReply();
+        await this.retrieveImg();
+        this.classifyFilesByType();
         this.checkAuth();
         this.retrieveCode();
         this.retrieveVote();
+        this.retrieveVoteMember();
         this.retrievePlace();
-        this.retrieveImg();
         this.retrieveRecommend();
         this.retrieveRecommendCnt();
         this.retrieveReplyCount();
         console.log("권한 ::: ", this.auth);
-  
-        // this.getBlob();
   
         let placeResponse = await BoardDetailService.getPlace(this.boardId);
         if (placeResponse.data.address) {
