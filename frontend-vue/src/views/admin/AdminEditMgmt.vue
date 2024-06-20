@@ -3,7 +3,7 @@
     <AdminSidebar />
     <div class="main-content">
       <div class="header">
-        <h2>사원관리</h2>
+        <h3>사원관리</h3>
       </div>
       <br>
       <input

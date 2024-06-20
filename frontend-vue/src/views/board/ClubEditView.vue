@@ -334,7 +334,7 @@
         <button type="button" class="btn btn-danger me-md-2" @click="editBoard">
           수정
         </button>
-        <button type="button" class="btn btn-secondary">
+        <button type="button" class="btn btn-secondary" @click="this.$router.go(-1)">
           취소
         </button>
       </div>
@@ -632,27 +632,6 @@ export default {
       }
       this.$refs.mapContainer.style.display = "none";
     },
-    //   async editBoard() {
-    //     try {
-    //       // Prepare the data for update
-    //       const boardDto = this.board;
-    //       const voteDtos = this.voteExists ? [this.vote] : [];
-    //       const fileDtos = this.files.map((file) => file.data);
-    //       const placeDto = this.placeExists ? this.address : null;
-
-    //       // Call the update function
-    //       await BoardWrite.update(boardDto, voteDtos, fileDtos, placeDto);
-    //       alert("게시글이 수정되었습니다.");
-    //       this.$router.push({
-    //         path: "/board/club",
-    //         query: { bocode: this.bocode },
-    //       });
-    //     } catch (error) {
-    //       console.error("게시글 수정 중 에러 발생:", error);
-    //       alert("게시글 수정 중 에러가 발생했습니다.");
-    //     }
-    //   },
-    // },
     async editBoard() {
       try {
         // 임시 객체 변수
