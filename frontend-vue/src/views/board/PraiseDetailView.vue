@@ -1,14 +1,15 @@
 <template>
     <div class="container mt-3 board-detail-container">
         <!-- 글 수정/삭제 버튼 -->
-        <div class="row mb-3 board-button">
-            <button v-if="auth === 'B'" class="col-1 btn btn-warning me-2" @click="moveToPraiseEdit">수정</button>
-            <button v-if="auth === 'A' || auth === 'B'" class="col-1 btn btn-danger">삭제</button>
+        <div class="row mb-3 board-button d-flex justify-content-end me-2">
+            <button v-if="auth === 'B'" class="col-1 btn btn-warning me-2" @click="moveToEdit">수정</button>
+            <button v-if="auth === 'A' || auth === 'B'" class="col-1 btn btn-danger"
+                @click="confirmBoDelete">삭제</button>
         </div>
         <!-- 게시글 -->
         <div class="card mb-3">
             <div class="card-header text-white">
-                칭찬 게시판   <i class="bi bi-caret-right"></i> {{ cmcd?.cmCdName }}
+                칭찬게시판
             </div>
             <div class="card-body">
                 <h5 class="card-title">{{ board?.boardTitle }}</h5>
@@ -23,20 +24,27 @@
                         {{ vote[0]?.voteName }}
                     </h5>
                     <div class="card-body">
-                        <div class="form-check" v-for="(data, index) in vote" :key="index">
-                            <input class="form-check-input" type="radio" name="voteRadios" id="voteRadios"
-                                :value="data.voteId" />
-                            <label class="form-check-label justify-content-start" for="voteRadios">
-                                {{ data.voteList }}
-                            </label>
-                            <label class="form-check-label justify-content-end" for="voteRadios">
-                                {{ data.voteCnt }}
-                            </label>
-                            <hr />
+                        <div v-for="(data, index) in vote" :key="index"
+                            :class="{ 'highlight': data.voteId === voteMember.voteId }">
+                            <div class="form-check-vote d-flex justify-content-between align-items-center">
+                                <input v-if="!voteMember" class="form-check-input input-vote" type="radio"
+                                    name="voteRadios" id="voteRadios" :value="data.voteId" />
+                                <label class="form-check-label vote-label" for="voteRadios">
+                                    {{ data.voteList }}
+                                </label>
+                                <label class="form-check-label vote-count" for="voteRadios">
+                                    {{ data.voteCnt }}
+                                </label>
+                            </div>
                         </div>
-                        <p class="card-text-date">{{ vote[0]?.delDate }} 까지</p>
+                        <p v-if="vote.length && vote[0].status === 'Y'" class="card-text-date mt-2">종료 날짜: {{
+                            vote[0]?.delDate }}</p>
+                        <p v-if="vote.length && vote[0].status === 'N'" class="card-text-date mt-2">종료된 투표입니다.</p>
                         <div class="d-md-flex justify-content-md-end">
-                            <button type="button" class="btn btn-secondary" @click="saveVote()">투표하기</button>
+                            <button v-if="vote.length && vote[0].status === 'N'" type="button" class="btn btn-secondary"
+                                disabled>투표하기</button>
+                            <button v-else-if="!voteMember" type="button" class="btn btn-secondary"
+                                @click="saveVote()">투표하기</button>
                         </div>
                     </div>
                 </div>
@@ -137,12 +145,12 @@
                         </div>
                     </div>
                     <button class="btn btn-secondary mt-2" @click="openReReply(data.replyId)">대댓글쓰기</button>
-  
+
                     <!-- 대댓글 작성 폼 (대댓글쓰기 버튼 클릭 시 나타남) -->
                     <div v-if="showWriteReReply && parentId === data.replyId" class="card mb-3 mt-3">
                         <div class="card-body">
                             <div class="reply-name">{{ memberInfo.nickname }}</div>
-  
+
                             <textarea v-model.lazy="reReplyTextarea" placeholder="대댓글을 남겨보세요"
                                 class="form-control mb-2 reply-content"></textarea>
                             <div class="d-flex justify-content-between">
@@ -215,8 +223,8 @@
             </ul>
         </div>
         <!-- 페이징 -->
-        <b-pagination v-if="reply" class="col-12 mb-3 justify-content-center" v-model="replyPage" :total-rows="replyPageCount"
-            :per-page="pageSize" @click="retrieveReply()"></b-pagination>
+        <b-pagination v-if="reply" class="col-12 mb-3 justify-content-center" v-model="replyPage"
+            :total-rows="replyPageCount" :per-page="pageSize" @click="retrieveReply()"></b-pagination>
         <!-- 댓글 신고 Modal -->
         <div class="modal fade" id="reportReplyModal" tabindex="-1" aria-labelledby="reportReplyModalLabel"
             aria-hidden="true">
@@ -275,23 +283,23 @@
         </div>
         <!-- 목록으로 돌아가기 버튼 -->
         <div class="d-grid">
-            <button class="col-1 btn btn-secondary" @click="this.$router.push('/board/praise')">목록</button>
+            <button class="col-1 btn btn-secondary" @click="this.$router.push(`/board/praise`)">목록</button>
         </div>
     </div>
-  </template>
-  
-  
-  <script>
-  import BoardDetailService from '@/services/board/BoardDetailService';
-  import ReplyService from '@/services/board/ReplyService';
-  
-  export default {
+</template>
+
+
+<script>
+import BoardDetailService from '@/services/board/BoardDetailService';
+import ReplyService from '@/services/board/ReplyService';
+
+export default {
     data() {
         return {
             member: this.$store.state.member,       // 현재 로그인된 회원 가져오기
             boardId: this.$route.params.boardId,    // 현재 글 ID 가져오기
             smcode: this.$route.params.smcode,      // 현재 소메뉴 코드 가져오기
-  
+
             auth: "",                     // 로그인 사용자 권한 체크
             replyTextarea: "",
             reReplyTextarea: "",
@@ -300,7 +308,7 @@
             reportReason: "",             // 글 신고 사유
             report: {                    // 댓글 신고 객체
                 replyId: "",
-                memberName: "",           // 댓글 작성자명
+                nickname: "",           // 댓글 작성자명
                 reply: "",                // 댓글 내용
                 reportReason: ""          // 신고 사유
             },
@@ -309,17 +317,16 @@
             showWriteReReply: false,      // 대댓글쓰기
             images: [],
             nonImages: [],
-  
-  
+            specificVoteId: "",
+
             // 페이징
             pageSize: 5,        // 화면에 보여질 개수
             replyPage: 1,       // 현재 페이지 번호
             replyPageCount: 0,  // 댓글 전체 데이터 개수
-  
+
             // retrieve 
             memberInfo: "",     // 회원정보
             board: "",          // 게시글
-            cmcd: "",           // 부서코드, 부서명
             vote: [],           // 투표
             voteMember: [],     // 투표 회원
             boardFile: [],      // 글 첨부 이미지
@@ -328,7 +335,7 @@
             reply: [],          // 댓글 목록
             replyCount: "",     // 댓글수
             currentUrl: window.location,   // 현재 페이지 Url
-  
+
             // 장소 
             map: null,
             infowindow: null,
@@ -358,6 +365,24 @@
                 this.auth = "C";
             }
         },
+        // 게시글 삭제
+        async deleteBoard() {
+            try {
+                let response = await BoardDetailService.deleteBoard(this.boardId);
+                console.log("삭제", response);
+                this.$router.push(`/board/praise`);
+                alert("삭제되었습니다.");
+            } catch (error) {
+                console.log("삭제 에러", error);
+                alert("삭제에 실패했습니다.");
+            }
+        },
+        // 게시글 삭제 확인
+        confirmBoDelete() {
+            if (confirm("게시글을 삭제 하시겠습니까?")) {
+                this.deleteBoard();
+            }
+        },
         // 댓글 삭제 확인
         removeCheck() {
             if (confirm("댓글을 삭제하시겠습니까?") == false) {
@@ -367,7 +392,7 @@
             }
         },
         // 글 수정 페이지로 이동
-        moveToPraiseEdit() {
+        moveToEdit() {
             this.$router.push(`/board/praise-edit/${this.boardId}`);
         },
         // 추천 버튼 클릭 시 호출 
@@ -437,7 +462,7 @@
         openReplyReport(data) {
             // 반복문의 현재 댓글 정보(댓글Id, 작성자명, 댓글내용) 저장
             this.report.replyId = data.replyId;
-            this.report.memberName = data.memberName;
+            this.report.nickname = data.nickname;
             this.report.reply = data.reply;
         },
         // 파일 타입 분류
@@ -445,24 +470,20 @@
             if (this.boardFile) {
                 this.boardFile.forEach(file => {
                     if (file.fileName.substring(file.fileName.lastIndexOf('.') + 1) === "png" ||
+                        file.fileName.substring(file.fileName.lastIndexOf('.') + 1) === "PNG" ||
                         file.fileName.substring(file.fileName.lastIndexOf('.') + 1) === "jpg" ||
                         file.fileName.substring(file.fileName.lastIndexOf('.') + 1) === "jpeg" ||
-                        file.fileName.substring(file.fileName.lastIndexOf('.') + 1) === "PNG" ||
                         file.fileName.substring(file.fileName.lastIndexOf('.') + 1) === "gif") {
                         this.images.push(file);
                     } else {
                         this.nonImages.push(file);
                     }
                 });
-                console.log("images", this.images);
-                console.log("nonImages", this.nonImages);
             }
         },
         // 투표 저장
         async saveVote() {
             try {
-                console.log("당신의 선택은? ", document.querySelector('input[name="voteRadios"]:checked').value);
-                // 현재 선택된 라디오버튼
                 let vote = {
                     memberId: this.member.memberId,
                     boardId: this.boardId,
@@ -470,18 +491,18 @@
                 }
                 await BoardDetailService.createVoteMember(vote);
                 this.retrieveVote();
+                this.retrieveVoteMember();
             } catch (e) {
                 console.log();
             }
         },
-  
+
         // ------------------------ retrieve 함수 ------------------------
         // 로그인된 회원 정보 가져오기
         async retrieveMember() {
             try {
                 let response = await BoardDetailService.getMember(this.member.memberId);
                 this.memberInfo = response.data;
-                console.log("memberInfo ::: ", response.data);
                 this.checkAuth();
             } catch (e) {
                 console.log("retrieveMember 에러", e);
@@ -492,18 +513,8 @@
             try {
                 let response = await BoardDetailService.getBoard(this.boardId);
                 this.board = response.data;
-                console.log("board ::: ", response.data);
             } catch (e) {
                 console.log("retrieveBoard 에러", e);
-            }
-        },
-        // 코드번호로 코드명 가져오기
-        async retrieveCode() {
-            try {
-                let response = await BoardDetailService.getCmCd(this.smcode);
-                this.cmcd = response.data;
-            } catch (e) {
-                console.log("retrieveCode 에러", e);
             }
         },
         // 글번호로 투표 가져오기
@@ -511,7 +522,6 @@
             try {
                 let response = await BoardDetailService.getVote(this.boardId);
                 this.vote = response.data;
-                console.log("vote ::: ", response.data);
             } catch (e) {
                 console.log("retrieveVote 에러", e);
             }
@@ -521,7 +531,6 @@
             try {
                 let response = await BoardDetailService.getVoteMember(this.boardId, this.member.memberId);
                 this.voteMember = response.data;
-                console.log("voteMember ::: ", response.data);
             } catch (e) {
                 console.log("retrieveVoteMember 에러", e);
             }
@@ -535,35 +544,35 @@
                 let kakao = window.kakao;
                 var container = this.$refs.map;
                 const { center, level } = this.options;
-  
+
                 let map = new kakao.maps.Map(container, {
                     center: new kakao.maps.LatLng(center.lat, center.lng),
                     level,
                 }); //지도 생성 및 객체 리턴
                 this.map = map;
-  
+
                 // 주소-좌표 변환 객체를 생성합니다
                 var geocoder = new kakao.maps.services.Geocoder();
-  
+
                 // 주소로 좌표를 검색합니다
                 geocoder.addressSearch(this.address, function (result, status) {
                     // 정상적으로 검색이 완료됐으면
                     if (status === kakao.maps.services.Status.OK) {
                         var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-  
+
                         // 결과값으로 받은 위치를 마커로 표시합니다
                         var marker = new kakao.maps.Marker({
                             map: map,
                             position: coords,
                         });
-  
+
                         // 인포윈도우로 장소에 대한 설명을 표시합니다
                         var infowindow = new kakao.maps.InfoWindow({
                             content:
                                 `<div style="width:150px;text-align:center;padding:6px 0;">${this.address}</div>`,
                         });
                         infowindow.open(map, marker);
-  
+
                         // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
                         map.setCenter(coords);
                     }
@@ -577,7 +586,6 @@
             try {
                 let response = await BoardDetailService.getImg(this.boardId);
                 this.boardFile = response.data;
-                console.log("image 데이터 : ", response.data);
             } catch (e) {
                 console.log("retrieveImg 에러", e);
             }
@@ -609,18 +617,19 @@
         async retrieveReply() {
             try {
                 let response = await ReplyService.getReply(this.boardId, this.replyPage - 1, this.pageSize);
-                this.reply = response.data.content;
-                this.replyPageCount = response.data.totalElements;
-  
-                // 각 댓글에 대한 대댓글 가져오기
-                for (let i = 0; i < this.reply.length; i++) {
-                    let comment = this.reply[i];
-                    // 대댓글 가져오기
-                    let reReplyResponse = await ReplyService.getReReply(this.boardId, comment.replyId);
-                    // 각 댓글 객체에 대댓글 객체 추가
-                    this.reply[i].reReplies = reReplyResponse.data;
+                if (response.data) {
+                    this.reply = response.data.content;
+                    this.replyPageCount = response.data.totalElements;
+
+                    // 각 댓글에 대한 대댓글 가져오기
+                    for (let i = 0; i < this.reply.length; i++) {
+                        let comment = this.reply[i];
+                        // 대댓글 가져오기
+                        let reReplyResponse = await ReplyService.getReReply(this.boardId, comment.replyId);
+                        // 각 댓글 객체에 대댓글 객체 추가
+                        this.reply[i].reReplies = reReplyResponse.data;
+                    }
                 }
-                console.log("reply 데이터 : ", this.reply);
             } catch (e) {
                 console.log("retrieveReply 에러", e);
             }
@@ -634,7 +643,7 @@
                 console.log("retrieveReplyCount 에러", e);
             }
         },
-  
+
         // ------------------------ 댓글 CUD 관련 함수 ------------------------
         // 새 댓글 작성 시 파일 선택
         selectReplyFile() {
@@ -721,7 +730,7 @@
                 console.log("deleteReply 에러 : ", e);
             }
         },
-  
+
         // ------------------------ 대댓글 CUD 관련 함수 ------------------------
         // 대댓글 쓰기 버튼 클릭 시 호출
         openReReply(replyId) {
@@ -793,29 +802,19 @@
         },
     },
     async mounted() {
-        console.log(
-            "부서코드 : ",
-            this.smcode,
-            "/ 글번호 : ",
-            this.boardId,
-            "/ 로그인ID : ",
-            this.member.memberId
-        );
         await this.retrieveMember();
         await this.retrieveBoard();
         await this.retrieveReply();
         await this.retrieveImg();
         this.classifyFilesByType();
         this.checkAuth();
-        this.retrieveCode();
         this.retrieveVote();
         this.retrieveVoteMember();
         this.retrievePlace();
         this.retrieveRecommend();
         this.retrieveRecommendCnt();
         this.retrieveReplyCount();
-        console.log("권한 ::: ", this.auth);
-  
+
         let placeResponse = await BoardDetailService.getPlace(this.boardId);
         if (placeResponse.data.address) {
             this.address = placeResponse.data.address;
@@ -832,104 +831,123 @@
             }
         }
     },
-  }
-  </script>
-  
-  <style scoped>
-  /* 전체 컨테이너 */
-  .board-detail-container {
+}
+</script>
+
+<style scoped>
+/* 전체 컨테이너 */
+.board-detail-container {
     background-color: #f8f9fa;
     padding: 20px;
     border-radius: 10px;
-  }
-  
-  /* 게시글 수정/삭제 버튼 */
-  .board-button .btn {
+}
+
+/* 게시글 수정/삭제 버튼 */
+.board-button .btn {
     border-radius: 50px;
     font-weight: bold;
-  }
-  
-  /* 게시판 헤더 */
-  .card-header {
+}
+
+/* 게시판 헤더 */
+.card-header {
     background-color: #b3000f;
     color: white;
     font-size: 1.2em;
-  }
-  
-  /* 글 제목 */
-  .card-title {
+}
+
+/* 글 제목 */
+.card-title {
     margin-bottom: 15px;
     font-weight: 600;
-  }
-  
-  /* 게시판 작성자 부분 */
-  .card-text-name {
+}
+
+/* 게시판 작성자 부분 */
+.card-text-name {
     font-size: 0.8em;
     margin-bottom: 5px;
     font-weight: bold;
-  }
-  
-  /* 게시판 작성일 부분 */
-  .card-text-date {
+}
+
+/* 게시판 작성일 부분 */
+.card-text-date {
     font-size: 0.8em;
     margin-bottom: 10px;
-  }
-  
-  /* 댓글 목록 */
-  .reply-content .list-group-item {
+}
+
+/* 댓글 목록 */
+.reply-content .list-group-item {
     padding: 20px 30px;
     border: none;
     border-bottom: 1px solid #e9ecef;
-  }
-  
-  /* 댓글 작성자 */
-  .reply-name {
+}
+
+/* 댓글 작성자 */
+.reply-name {
     margin-bottom: 5px;
     font-weight: bold;
-  }
-  
-  /* 댓글 내용 */
-  .reply-content {
+}
+
+/* 댓글 내용 */
+.reply-content {
     margin-bottom: 10px;
-  }
-  
-  /* 댓글 작성일 */
-  .reply-date {
+}
+
+/* 댓글 작성일 */
+.reply-date {
     font-size: 0.9em;
     margin-bottom: 10px;
-  }
-  
-  /* 대댓글 */
-  .reReply-container {
+}
+
+/* 대댓글 */
+.reReply-container {
     padding: 20px 30px;
     background-color: rgb(218, 218, 218);
-  }
-  
-  /* 모달창 */
-  .modal-content {
+}
+
+/* 모달창 */
+.modal-content {
     border-radius: 10px;
-  }
-  
-  /* 모달 헤더 */
-  .modal-header {
+}
+
+/* 모달 헤더 */
+.modal-header {
     background-color: #b3000f;
     color: white;
-  }
-  
-  /* 파일 업로드 input */
-  .file-upload-input {
-    /* width: 600px; */
-  }
-  
-  /* 파일 업로드 버튼 */
-  .file-upload-button {
+}
+
+/* 파일 업로드 버튼 */
+.file-upload-button {
     width: 100px;
     display: inline-block;
-  }
-  
-  .btn-danger {
+}
+
+.btn-danger {
     background-color: #b3000f;
     border-color: #b3000f;
-  }
-  </style>
-  
+}
+
+/* 투표 항목 행 */
+.form-check-vote {
+    border-bottom: 1px #a3a3a3 solid;
+    padding: 15px 15px;
+    width: 100%;
+}
+
+.input-vote {
+    margin-right: 10px;
+}
+
+.vote-label {
+    margin-left: 0.5rem;
+}
+
+.vote-count {
+    font-weight: 700;
+    margin-left: auto;
+}
+
+.highlight {
+    background-color: #d6d6d6;
+    font-weight: bold;
+}
+</style>

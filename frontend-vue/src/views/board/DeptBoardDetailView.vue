@@ -1,8 +1,8 @@
 <template>
     <div class="container mt-3 board-detail-container">
         <!-- 글 수정/삭제 버튼 -->
-        <div class="row mb-3 board-button">
-            <button v-if="auth === 'B'" class="col-1 btn btn-warning me-2" @click="moveToDeptEdit">수정</button>
+        <div class="row mb-3 board-button d-flex justify-content-end me-2">
+            <button v-if="auth === 'B'" class="col-1 btn btn-warning me-2" @click="moveToEdit">수정</button>
             <button v-if="auth === 'A' || auth === 'B'" class="col-1 btn btn-danger"
                 @click="confirmBoDelete">삭제</button>
         </div>
@@ -319,7 +319,6 @@ export default {
             nonImages: [],
             specificVoteId: "",
 
-
             // 페이징
             pageSize: 5,        // 화면에 보여질 개수
             replyPage: 1,       // 현재 페이지 번호
@@ -394,7 +393,7 @@ export default {
             }
         },
         // 글 수정 페이지로 이동
-        moveToDeptEdit() {
+        moveToEdit() {
             this.$router.push(`/board/dept-edit/${this.smcode}/${this.boardId}`);
         },
         // 추천 버튼 클릭 시 호출 
@@ -481,8 +480,6 @@ export default {
                         this.nonImages.push(file);
                     }
                 });
-                console.log("images", this.images);
-                console.log("nonImages", this.nonImages);
             }
         },
         // 투표 저장
@@ -507,7 +504,6 @@ export default {
             try {
                 let response = await BoardDetailService.getMember(this.member.memberId);
                 this.memberInfo = response.data;
-                console.log("memberInfo ::: ", response.data);
                 this.checkAuth();
             } catch (e) {
                 console.log("retrieveMember 에러", e);
@@ -518,7 +514,6 @@ export default {
             try {
                 let response = await BoardDetailService.getBoard(this.boardId);
                 this.board = response.data;
-                console.log("board ::: ", response.data);
             } catch (e) {
                 console.log("retrieveBoard 에러", e);
             }
@@ -537,7 +532,6 @@ export default {
             try {
                 let response = await BoardDetailService.getVote(this.boardId);
                 this.vote = response.data;
-                console.log("vote ::: ", response.data);
             } catch (e) {
                 console.log("retrieveVote 에러", e);
             }
@@ -547,7 +541,6 @@ export default {
             try {
                 let response = await BoardDetailService.getVoteMember(this.boardId, this.member.memberId);
                 this.voteMember = response.data;
-                console.log("voteMember ::: ", response.data);
             } catch (e) {
                 console.log("retrieveVoteMember 에러", e);
             }
@@ -603,7 +596,6 @@ export default {
             try {
                 let response = await BoardDetailService.getImg(this.boardId);
                 this.boardFile = response.data;
-                console.log("image 데이터 : ", response.data);
             } catch (e) {
                 console.log("retrieveImg 에러", e);
             }
@@ -635,18 +627,19 @@ export default {
         async retrieveReply() {
             try {
                 let response = await ReplyService.getReply(this.boardId, this.replyPage - 1, this.pageSize);
-                this.reply = response.data.content;
-                this.replyPageCount = response.data.totalElements;
+                if (response.data) {
+                    this.reply = response.data.content;
+                    this.replyPageCount = response.data.totalElements;
 
-                // 각 댓글에 대한 대댓글 가져오기
-                for (let i = 0; i < this.reply.length; i++) {
-                    let comment = this.reply[i];
-                    // 대댓글 가져오기
-                    let reReplyResponse = await ReplyService.getReReply(this.boardId, comment.replyId);
-                    // 각 댓글 객체에 대댓글 객체 추가
-                    this.reply[i].reReplies = reReplyResponse.data;
+                    // 각 댓글에 대한 대댓글 가져오기
+                    for (let i = 0; i < this.reply.length; i++) {
+                        let comment = this.reply[i];
+                        // 대댓글 가져오기
+                        let reReplyResponse = await ReplyService.getReReply(this.boardId, comment.replyId);
+                        // 각 댓글 객체에 대댓글 객체 추가
+                        this.reply[i].reReplies = reReplyResponse.data;
+                    }
                 }
-                console.log("reply 데이터 : ", this.reply);
             } catch (e) {
                 console.log("retrieveReply 에러", e);
             }
@@ -819,14 +812,6 @@ export default {
         },
     },
     async mounted() {
-        console.log(
-            "부서코드 : ",
-            this.smcode,
-            "/ 글번호 : ",
-            this.boardId,
-            "/ 로그인ID : ",
-            this.member.memberId
-        );
         await this.retrieveMember();
         await this.retrieveBoard();
         await this.retrieveReply();
@@ -840,7 +825,6 @@ export default {
         this.retrieveRecommend();
         this.retrieveRecommendCnt();
         this.retrieveReplyCount();
-        console.log("권한 ::: ", this.auth);
 
         let placeResponse = await BoardDetailService.getPlace(this.boardId);
         if (placeResponse.data.address) {

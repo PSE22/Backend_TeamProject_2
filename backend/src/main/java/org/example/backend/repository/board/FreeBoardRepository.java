@@ -80,7 +80,4 @@ public interface FreeBoardRepository extends JpaRepository<Board, Long> {
             "ORDER BY B.ADD_DATE DESC",
             nativeQuery = true)
     List<IFreeBoardDto> findByFreeNotice();
-
-    @Query("SELECT b FROM Board b WHERE b.bocode = :bocode AND b.boardId = :boardId")
-    Optional<Board> findByCodeAndId(@Param("bocode") String code, @Param("boardId") Long boardId);
 }
