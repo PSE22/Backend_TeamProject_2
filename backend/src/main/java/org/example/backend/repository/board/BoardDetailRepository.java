@@ -49,7 +49,6 @@ public interface BoardDetailRepository extends JpaRepository<Board, Long> {
             "B.BOARD_ID AS boardId,\n" +
             "B.BOARD_TITLE AS boardTitle,\n" +
             "B.BOARD_CONTENT AS boardContent,\n" +
-            "B.GOOD AS good,\n" +
             "B.BOCODE AS bocode,\n" +
             "B.SMCODE AS smcode,\n" +
             "B.ADD_DATE AS addDate\n" +

@@ -3,16 +3,16 @@
         <h1 class="text-center mb-5 mt-5">부서 게시판</h1>
         <!-- 게시판 소메뉴 버튼 (부서) -->
         <div class="d-flex justify-content-center mb-5">
-            <button class="custom-btn col-2" @click="pageSizeChange('DE01')">
+            <button v-if="member.deptCode === 'DE01' || member.memberCode === 'AT01'" class="custom-btn col-2" @click="pageSizeChange('DE01')">
                 영업팀
             </button>
-            <button class="custom-btn col-2" @click="pageSizeChange('DE02')">
+            <button v-if="member.deptCode === 'DE02' || member.memberCode === 'AT01'" class="custom-btn col-2" @click="pageSizeChange('DE02')">
                 인사팀
             </button>
-            <button class="custom-btn col-2" @click="pageSizeChange('DE03')">
+            <button v-if="member.deptCode === 'DE03' || member.memberCode === 'AT01'" class="custom-btn col-2" @click="pageSizeChange('DE03')">
                 행정팀
             </button>
-            <button class="custom-btn col-2" @click="pageSizeChange('DE04')">
+            <button v-if="member.deptCode === 'DE04' || member.memberCode === 'AT01'" class="custom-btn col-2" @click="pageSizeChange('DE04')">
                 보안팀
             </button>
         </div>
@@ -41,7 +41,7 @@
             <tbody v-if="smcode == member.deptCode || member.memberCode === 'AT01' ">
                 <tr v-for="(data, index) in board" :key="index"  @click="goBoardDetail(smcode, data.boardId)">
                     <td class="text-center">{{ data.boardId }}</td>
-                    <td>{{ data.boardTitle }}</td>
+                    <td class="col-5">{{ data.boardTitle }}</td>
                     <td class="text-center">{{ data.memberName }}</td>
                     <td class="text-center">{{ data.addDate }}</td>
                 </tr>
@@ -49,7 +49,7 @@
         </table>
 
         <!-- 페이징 -->
-        <div class="row justify-content-between" v-if="smcode == this.$store.state.member?.deptCode">
+        <div class="row justify-content-between" v-if="smcode">
             <div class="col-4 w-25 mb-3">
                 <select class="form-select form-select-sm" v-model="pageSize" @change="retrieveDept()">
                     <option v-for="(data, index) in pageSizes" :key="index" :value="data">
@@ -61,7 +61,7 @@
                 <button type="button" class="btn btn-dark" @click="goWritePage">글쓰기</button>
             </div>
         </div>
-        <div class="row" v-if="smcode == this.$store.state.member?.deptCode">
+        <div class="row" v-if="smcode">
             <b-pagination class="col-12 mb-3 justify-content-center" v-model="page" :total-rows="count"
                 :per-page="pageSize" @click="retrieveDept"></b-pagination>
             
@@ -88,7 +88,7 @@ export default {
             deptNotice: [],
             board: [],
             searchTitle: "",
-            smcode: "DE01",
+            smcode: this.$store.state.member.deptCode,
 
             page: 1, // 현재 페이지 번호
             count: 0, // 전체 데이터 개수
@@ -103,7 +103,6 @@ export default {
             try {
                 let response = await DeptBoardService.getNotice(this.smcode);
                 this.deptNotice = response.data;
-                console.log("공지글 : ", response.data);
             } catch (e) {
                 console.log("retrieveDeptNotice() 에러 : ", e);
             }
@@ -120,7 +119,6 @@ export default {
                 const { board, totalItems } = response.data;
                 this.board = board;
                 this.count = totalItems;
-                console.log("일반글 : ", response.data);
             } catch (e) {
                 console.log("retrieveDept() 에러 : ", e);
             }
@@ -133,8 +131,9 @@ export default {
         pageSizeChange(dept) {
             this.page = 1;          // 현재패이지번호 : 1
             this.smcode = dept;
-            this.retrieveDeptNotice();
+            this.searchTitle = "";
             this.retrieveDept();    // 재조회
+            this.retrieveDeptNotice();
         },
         // 글쓰기 페이지로 이동
         goWritePage() {
@@ -144,6 +143,7 @@ export default {
     mounted() {
         this.retrieveDept();
         this.retrieveDeptNotice();
+        console.log("회원", this.member);
     },
 };
 </script>

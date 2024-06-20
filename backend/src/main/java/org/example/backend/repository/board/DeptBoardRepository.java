@@ -31,7 +31,11 @@ public interface DeptBoardRepository extends JpaRepository<Board, Long> {
             "B.BOARD_ID AS boardId,\n" +
             "B.BOARD_TITLE AS boardTitle, \n" +
             "M.MEMBER_NAME AS memberName,\n" +
-            "B.ADD_DATE AS addDate\n" +
+            "B.ADD_DATE AS addDate,\n" +
+            "    (SELECT count(*)\n" +
+            "FROM TB_REPLY R\n" +
+            "WHERE R.BOARD_ID = B.BOARD_ID\n" +
+            "AND STATUS = 'Y') AS replyCount\n" +
             "FROM TB_BOARD B, TB_MEMBER M\n" +
             "WHERE B.MEMBER_ID = M.MEMBER_ID\n" +
             "AND B.BOCODE = 'BO01'\n" +
@@ -44,9 +48,13 @@ public interface DeptBoardRepository extends JpaRepository<Board, Long> {
     // 부서별 게시판 전체조회 - 일반글
     @Query(value = "SELECT \n" +
             "B.BOARD_ID AS boardId,\n" +
-            "B.BOARD_TITLE AS boardTitle, \n" +
+            "B.BOARD_TITLE AS boardTitle,\n" +
             "M.MEMBER_NAME AS memberName,\n" +
-            "B.ADD_DATE AS addDate\n" +
+            "B.ADD_DATE AS addDate,\n" +
+            "    (SELECT count(*)\n" +
+            "FROM TB_REPLY R\n" +
+            "WHERE R.BOARD_ID = B.BOARD_ID\n" +
+            "AND STATUS = 'Y') AS replyCount\n" +
             "FROM TB_BOARD B, TB_MEMBER M\n" +
             "WHERE B.MEMBER_ID = M.MEMBER_ID\n" +
             "AND B.BOCODE = 'BO01'\n" +
