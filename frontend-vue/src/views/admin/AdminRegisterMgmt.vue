@@ -3,7 +3,7 @@
     <AdminSidebar />
     <div class="main-content">
       <div class="header">
-        <h2>회원가입관리</h2>
+        <h3>회원가입관리</h3>
       </div>
       <div class="mt-2 mb-2">
         <input

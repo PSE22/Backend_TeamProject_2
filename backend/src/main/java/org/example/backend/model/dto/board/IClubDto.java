@@ -22,4 +22,5 @@ public interface IClubDto {
     String getCmCd();
     String getBocode();
     String getSmcode();
+    String getReplyCount();
 }

@@ -27,21 +27,31 @@ import java.util.List;
 @Repository
 public interface ClubRepository extends JpaRepository<Board, Long> {
     //    동호회 게시판 전체조회
-    @Query(value = "SELECT B.BOARD_ID AS boardId,\n" +
-            "M.MEMBER_NAME AS memberName,\n" +
-            "B.BOARD_TITLE AS boardTitle,\n" +
-            "B.ADD_DATE AS addDate,\n" +
-            "C.CM_CD_NAME AS cmCdName,\n" +
-            "B.BOCODE AS bocode, " +  // 추가된 부분
-            "B.SMCODE AS smcode " +  // 추가된 부분
-            "FROM TB_BOARD B, TB_MEMBER M, TB_CM_CODE C\n" +
-            "WHERE B.BOCODE = :bocode\n" +
-            "AND B.MEMBER_ID = M.MEMBER_ID\n" +
-            "AND B.SMCODE = C.CM_CD\n" +
-            "AND B.BOARD_TITLE LIKE '%' || :boardTitle || '%'\n" +
-            "AND B.STATUS = 'Y'\n" +
-            "AND B.NOTICE_YN = 'N'\n" +
-            "ORDER BY B.ADD_DATE DESC",
+    @Query(value = "SELECT \n" +
+            "    B.BOARD_ID AS boardId,\n" +
+            "    M.MEMBER_NAME AS memberName,\n" +
+            "    B.BOARD_TITLE AS boardTitle,\n" +
+            "    B.ADD_DATE AS addDate,\n" +
+            "    C.CM_CD_NAME AS cmCdName,\n" +
+            "    B.BOCODE AS bocode,\n" +
+            "    B.SMCODE AS smcode,\n" +
+            "    (SELECT count(*)\n" +
+            "FROM TB_REPLY R\n" +
+            "WHERE R.BOARD_ID = B.BOARD_ID\n" +
+            "AND STATUS = 'Y') AS replyCount\n" +
+            "FROM \n" +
+            "    TB_BOARD B,\n" +
+            "    TB_MEMBER M,\n" +
+            "    TB_CM_CODE C\n" +
+            "WHERE \n" +
+            "    B.BOCODE = :bocode\n" +
+            "    AND B.MEMBER_ID = M.MEMBER_ID\n" +
+            "    AND B.SMCODE = C.CM_CD\n" +
+            "    AND B.BOARD_TITLE LIKE '%' ||:boardTitle|| '%'\n" +
+            "    AND B.STATUS = 'Y'\n" +
+            "    AND B.NOTICE_YN = 'N'\n" +
+            "ORDER BY \n" +
+            "    B.ADD_DATE DESC",
             countQuery = "SELECT count(*)\n" +
                     "FROM TB_BOARD B, TB_MEMBER M, TB_CM_CODE C\n" +
                     "WHERE B.BOCODE = :bocode\n" +
@@ -57,20 +67,31 @@ public interface ClubRepository extends JpaRepository<Board, Long> {
                               Pageable pageable);
 
     //    동호회 공지 전체조회
-    @Query(value = "SELECT B.BOARD_ID AS boardId,\n" +
-            "M.MEMBER_NAME AS memberName,\n" +
-            "B.BOARD_TITLE AS boardTitle,\n" +
-            "B.ADD_DATE AS addDate,\n" +
-            "C.CM_CD_NAME AS cmCdName,\n" +
-            "B.BOCODE AS bocode, " +  // 추가된 부분
-            "B.SMCODE AS smcode " +  // 추가된 부분
-            "FROM TB_BOARD B, TB_MEMBER M, TB_CM_CODE C\n" +
-            "WHERE B.BOCODE = :bocode\n" +
-            "AND B.MEMBER_ID = M.MEMBER_ID\n" +
-            "AND B.SMCODE = C.CM_CD\n" +
-            "AND B.STATUS = 'Y'\n" +
-            "AND B.NOTICE_YN = 'Y'\n" +
-            "ORDER BY B.ADD_DATE DESC",
+    @Query(value = "SELECT \n" +
+            "    B.BOARD_ID AS boardId,\n" +
+            "    M.MEMBER_NAME AS memberName,\n" +
+            "    B.BOARD_TITLE AS boardTitle,\n" +
+            "    B.ADD_DATE AS addDate,\n" +
+            "    C.CM_CD_NAME AS cmCdName,\n" +
+            "    B.BOCODE AS bocode,\n" +
+            "    B.SMCODE AS smcode,\n" +
+            "    (SELECT count(*)\n" +
+            "FROM TB_REPLY R\n" +
+            "WHERE R.BOARD_ID = B.BOARD_ID\n" +
+            "AND STATUS = 'Y') AS replyCount\n" +
+            "FROM \n" +
+            "    TB_BOARD B,\n" +
+            "    TB_MEMBER M,\n" +
+            "    TB_CM_CODE C\n" +
+            "WHERE \n" +
+            "    B.BOCODE = :bocode\n" +
+            "    AND B.MEMBER_ID = M.MEMBER_ID\n" +
+            "    AND B.SMCODE = C.CM_CD\n" +
+            "    AND B.BOARD_TITLE LIKE '%' || '' || '%'\n" +
+            "    AND B.STATUS = 'Y'\n" +
+            "    AND B.NOTICE_YN = 'Y'\n" +
+            "ORDER BY \n" +
+            "    B.ADD_DATE DESC",
             nativeQuery = true)
     List<IClubDto> findByCodeAndNotice(@Param("bocode") String bocode);
 

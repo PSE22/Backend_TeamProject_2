@@ -1012,7 +1012,6 @@ export default {
         console.log("삭제 에러", error);
         alert("삭제에 실패했습니다.");
       }
-    },
   },
   async mounted() {
       console.log(
