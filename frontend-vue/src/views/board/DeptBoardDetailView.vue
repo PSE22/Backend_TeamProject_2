@@ -190,11 +190,11 @@
                         <div class="d-flex justify-content-between mt-2">
                             <div class="reply-date">{{ reReply.addDate }}</div>
                             <div>
-                                <button v-if="this.member.memberId === data.memberId" class="btn btn-secondary me-2"
+                                <button v-if="this.member.memberId === reReply.memberId" class="btn btn-secondary me-2"
                                     @click="openReReplyUpdate(reReply.replyId)">수정</button>
-                                <button v-if="this.member.memberId === data.memberId || auth === 'A'"
+                                <button v-if="this.member.memberId === reReply.memberId || auth === 'A'"
                                     class="btn btn-danger me-2" @click="deleteReply(reReply)">삭제</button>
-                                <button v-if="this.member.memberId !== data.memberId && auth !== 'A'"
+                                <button v-if="this.member.memberId !== reReply.memberId && auth !== 'A'"
                                     class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#reportReplyModal"
                                     @click="openReplyReport(reReply)">
                                     <i class="bi bi-exclamation-triangle"></i> 신고
@@ -335,7 +335,7 @@ export default {
             recommendCnt: "",   // 추천 수
             reply: [],          // 댓글 목록
             replyCount: "",     // 댓글수
-            currentUrl: window.location,   // 현재 페이지 Url
+            currentUrl: window.location.pathname,   // 현재 페이지 Url
 
             // 장소 
             map: null,
@@ -681,7 +681,7 @@ export default {
                     reply: this.replyTextarea,
                     reReply: "",
                 }
-                let response = await ReplyService.createReply(temp, this.currentFile);
+                let response = await ReplyService.createReply(temp, this.currentFile, this.currentUrl);
                 console.log("댓글 전송 : ", response);
                 this.retrieveReply();
                 this.retrieveReplyCount();
@@ -766,7 +766,7 @@ export default {
                     reply: this.reReplyTextarea,
                     reReply: reReplyData,
                 }
-                let response = await ReplyService.createReply(temp, this.currentReFile);
+                let response = await ReplyService.createReply(temp, this.currentReFile, this.currentUrl);
                 console.log("대댓글 전송 : ", response);
                 this.retrieveReply();
                 this.retrieveReplyCount();
