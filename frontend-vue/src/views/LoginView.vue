@@ -13,31 +13,42 @@
                   </div>
                   <!-- 사용법 : @submit.prevent="함수" -->
                   <!-- prevent : submit 의 기본 속성(다른 곳으로 이동) 막기 -->
-                  <form class="user" @submit.prevent="handleLogin">
+                  <Form
+                    class="user"
+                    @submit="handleLogin"
+                    :validation-schema="schema"
+                  >
                     <div class="form-group">
-                      <input
+                      <Field
                         type="text"
                         class="form-control form-control-user mb-3"
                         placeholder="ID 입력"
                         name="memberId"
                         v-model="member.memberId"
                       />
+                      <ErrorMessage
+                        name="memberId"
+                        class="badge text-bg-danger mb-4"
+                      />
                     </div>
                     <div class="form-group">
-                      <input
+                      <Field
                         type="password"
                         class="form-control form-control-user mb-3"
                         placeholder="패스워드 입력"
                         name="memberPw"
                         v-model="member.memberPw"
-                        @keyup.enter="handleLogin"
+                      />
+                      <ErrorMessage
+                        name="memberPw"
+                        class="badge text-bg-danger mb-4"
                       />
                     </div>
 
                     <button class="btn btn-primary btn-user w-100 mb-3">
                       로그인
                     </button>
-                  </form>
+                  </Form>
                   <div v-if="errorMessage" class="alert alert-danger mt-3">
                     {{ errorMessage }}
                   </div>
@@ -62,8 +73,15 @@
 </template>
 <script>
 import LoginService from "@/services/login/LoginService";
+import { Form, Field, ErrorMessage } from "vee-validate";
+import * as yup from "yup";
 
 export default {
+  components: {
+    Form,
+    Field,
+    ErrorMessage,
+  },
   data() {
     return {
       member: {
@@ -74,12 +92,21 @@ export default {
       errorMessage: "",
     };
   },
+  computed: {
+    // yup : 검증 스키마 정의
+    schema() {
+      return yup.object({
+        memberId: yup.string().required("ID를 입력해 주세요"),
+        memberPw: yup.string().required("비밀번호를 입력해 주세요"),
+      });
+    },
+  },
   methods: {
     // 함수 정의
     async handleLogin() {
       try {
         let response = await LoginService.login(this.member);
-        console.log("로그인 성공",response.data);
+        console.log("로그인 성공", response.data);
         localStorage.setItem("member", JSON.stringify(response.data));
         this.$store.commit("loginSuccess", response.data);
         if (response.data.memberCode == "AT04") {
