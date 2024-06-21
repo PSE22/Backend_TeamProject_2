@@ -19,4 +19,5 @@ public interface ISuggestBoardDto {
     String getNickName();
     String getAddDate();
     Integer getGood();
+    String getReplyCount();
 }

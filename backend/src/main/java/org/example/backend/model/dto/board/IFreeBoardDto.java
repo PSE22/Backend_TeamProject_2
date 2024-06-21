@@ -5,4 +5,6 @@ public interface IFreeBoardDto {
     String getBoardTitle();
     String getNickname();
     String getAddDate();
+    Integer getGood();
+    String getReplyCount();
 }

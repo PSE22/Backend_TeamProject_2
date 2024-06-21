@@ -69,7 +69,7 @@
       </select>
     </div>
     <div class="col-1">
-      <button type="button" class="btn btn-dark" @click="goClubWrite">
+      <button type="button" class="btn btn-dark" style="width: 90px" @click="goClubWrite">
         글쓰기
       </button>
     </div>
