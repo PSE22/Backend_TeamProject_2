@@ -20,6 +20,7 @@ public interface IBoardDto {
     Long getBoardId();          // 게시글 ID
     String getBoardTitle();     // 글제목
     String getBoardContent();   // 글내용
+    char getNoticeYn();   // 글내용
     Long getGood();             // 추천수
     String getBocode();         // 게시판코드
     String getSmcode();         // 소메뉴코드

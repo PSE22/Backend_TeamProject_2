@@ -345,7 +345,7 @@
         auth: "", // 로그인 사용자 권한 체크
         memberInfo: "", // 회원정보
         board: {
-          noticeYn: "N",
+          noticeYn: "",
           bocodeName: "", // board 객체에 bocodeName 속성 추가
         }, // 게시글
         boCmcd: {
@@ -395,10 +395,6 @@
         try {
           let response = await BoardEditService.getBoard(this.boardId);
           this.board = response.data;
-          // 공지사항 여부를 초기화
-          if (this.board.noticeYn !== "Y") {
-            this.board.noticeYn = "N";
-          }
           console.log("board 데이터 : ", response.data);
         } catch (e) {
           console.log("retrieveBoard 에러", e);
