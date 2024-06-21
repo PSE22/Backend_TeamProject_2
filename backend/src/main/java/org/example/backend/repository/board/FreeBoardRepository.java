@@ -19,7 +19,11 @@ public interface FreeBoardRepository extends JpaRepository<Board, Long> {
             "B.BOARD_TITLE AS boardTitle, " +
             "M.NICKNAME AS nickname, " +
             "B.ADD_DATE AS addDate, " +
-            "(SELECT COUNT(*) FROM TB_RECOMMEND R WHERE R.BOARD_ID = B.BOARD_ID) AS good " +
+            "(SELECT COUNT(*) FROM TB_RECOMMEND R WHERE R.BOARD_ID = B.BOARD_ID) AS good, " +
+            "    (SELECT count(*)\n" +
+            "FROM TB_REPLY R\n" +
+            "WHERE R.BOARD_ID = B.BOARD_ID\n" +
+            "AND STATUS = 'Y') AS replyCount\n" +
             "FROM TB_BOARD B " +
             "LEFT JOIN TB_MEMBER M ON B.MEMBER_ID = M.MEMBER_ID " +
             "WHERE B.BOCODE = 'BO03' " +
@@ -44,7 +48,11 @@ public interface FreeBoardRepository extends JpaRepository<Board, Long> {
             "B.BOARD_TITLE AS boardTitle, " +
             "M.NICKNAME AS nickname, " +
             "B.ADD_DATE AS addDate, " +
-            "(SELECT COUNT(*) FROM TB_RECOMMEND R WHERE R.BOARD_ID = B.BOARD_ID) AS good " +
+            "(SELECT COUNT(*) FROM TB_RECOMMEND R WHERE R.BOARD_ID = B.BOARD_ID) AS good, " +
+            "    (SELECT count(*)\n" +
+            "FROM TB_REPLY R\n" +
+            "WHERE R.BOARD_ID = B.BOARD_ID\n" +
+            "AND STATUS = 'Y') AS replyCount\n" +
             "FROM TB_BOARD B " +
             "LEFT JOIN TB_MEMBER M ON B.MEMBER_ID = M.MEMBER_ID " +
             "WHERE B.BOCODE = 'BO03' " +
@@ -71,7 +79,11 @@ public interface FreeBoardRepository extends JpaRepository<Board, Long> {
             "B.BOARD_TITLE AS boardTitle,\n" +
             "M.NICKNAME AS nickname,\n" +
             "B.ADD_DATE AS addDate,\n" +
-            "B.GOOD AS good " +
+            "(SELECT COUNT(*) FROM TB_RECOMMEND R WHERE R.BOARD_ID = B.BOARD_ID) AS good, " +
+            "    (SELECT count(*)\n" +
+            "FROM TB_REPLY R\n" +
+            "WHERE R.BOARD_ID = B.BOARD_ID\n" +
+            "AND STATUS = 'Y') AS replyCount\n" +
             "FROM TB_BOARD B, TB_MEMBER M\n" +
             "WHERE B.BOCODE = 'BO03'\n" +
             "AND B.MEMBER_ID = M.MEMBER_ID\n" +

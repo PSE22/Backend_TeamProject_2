@@ -17,7 +17,7 @@
         <tr v-for="(data, index) in freeNotice" :key="index" @click="goSuggestDetail(data.boardId)">
           <td class="text-center col-1">{{ data.boardId }}</td>
           <td class="col-5">
-            <span class="badge text-bg-dark me-2">공지</span>{{ data.boardTitle }}
+            <span class="badge text-bg-dark me-2">공지</span>{{ data.boardTitle }} <span v-if="data.replyCount>0" style="color: brown"><i class="bi bi-chat-text"></i> [{{ data.replyCount }}]</span>
           </td>
           <td class="text-center col-2">{{ data.nickName }}</td>
           <td class="text-center col-2">{{ data.addDate }}</td>
@@ -28,7 +28,7 @@
       <tbody>
         <tr v-for="(data, index) in board" :key="index" @click="goSuggestDetail(data.boardId)">
           <td class="text-center">{{ data.boardId }}</td>
-          <td class="col-5">{{ data.boardTitle }}</td>
+          <td class="col-5">{{ data.boardTitle }} <span v-if="data.replyCount>0" style="color: brown"><i class="bi bi-chat-text"></i> [{{ data.replyCount }}]</span></td>
           <td class="text-center">{{ data.nickName }}</td>
           <td class="text-center">{{ data.addDate }}</td>
           <td class="text-center">{{ data.good }}</td>
@@ -45,8 +45,8 @@
         </select>
       </div>
       <div class="col-1">
-        <button type="button" class="btn btn-dark" @click="moveToSuggestWrite">
-          등록
+        <button type="button" class="btn btn-dark" style="width: 90px" @click="moveToSuggestWrite">
+          글쓰기
         </button>
       </div>
     </div>

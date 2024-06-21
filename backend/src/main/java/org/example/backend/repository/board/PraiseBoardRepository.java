@@ -33,7 +33,11 @@ public interface PraiseBoardRepository extends JpaRepository<Board, Long>  {
             "B.BOARD_TITLE AS boardTitle, " +
             "M.NICKNAME AS nickname, " +
             "B.ADD_DATE AS addDate, " +
-            "(SELECT COUNT(*) FROM TB_RECOMMEND R WHERE R.BOARD_ID = B.BOARD_ID) AS good " +
+            "(SELECT COUNT(*) FROM TB_RECOMMEND R WHERE R.BOARD_ID = B.BOARD_ID) AS good, " +
+            "    (SELECT count(*)\n" +
+            "FROM TB_REPLY R\n" +
+            "WHERE R.BOARD_ID = B.BOARD_ID\n" +
+            "AND STATUS = 'Y') AS replyCount\n" +
             "FROM TB_BOARD B " +
             "LEFT JOIN TB_MEMBER M ON B.MEMBER_ID = M.MEMBER_ID " +
             "WHERE B.BOCODE = 'BO05' " +
@@ -58,7 +62,11 @@ public interface PraiseBoardRepository extends JpaRepository<Board, Long>  {
             "B.BOARD_TITLE AS boardTitle,\n" +
             "M.NICKNAME AS nickname,\n" +
             "B.ADD_DATE AS addDate,\n" +
-            "(SELECT COUNT(*) FROM TB_RECOMMEND R WHERE R.BOARD_ID = B.BOARD_ID) AS good " +
+            "(SELECT COUNT(*) FROM TB_RECOMMEND R WHERE R.BOARD_ID = B.BOARD_ID) AS good, " +
+            "    (SELECT count(*)\n" +
+            "FROM TB_REPLY R\n" +
+            "WHERE R.BOARD_ID = B.BOARD_ID\n" +
+            "AND STATUS = 'Y') AS replyCount\n" +
             "FROM TB_BOARD B, TB_MEMBER M\n" +
             "WHERE B.BOCODE = 'BO05'\n" +
             "AND B.MEMBER_ID = M.MEMBER_ID\n" +
@@ -67,7 +75,4 @@ public interface PraiseBoardRepository extends JpaRepository<Board, Long>  {
             "ORDER BY B.ADD_DATE DESC",
             nativeQuery = true)
     List<IPraiseBoardDto> findByPraiseNotice();
-
-    @Query("SELECT b FROM Board b WHERE b.bocode = :bocode AND b.boardId = :boardId")
-    Optional<Board> findByCodeAndId(@Param("bocode") String code, @Param("boardId") Long boardId);
 }
