@@ -308,7 +308,11 @@
         <button type="button" class="btn btn-danger me-md-2" @click="editBoard">
           수정
         </button>
-        <button type="button" class="btn btn-secondary" @click="this.$router.go(-1)">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          @click="this.$router.go(-1)"
+        >
           취소
         </button>
       </div>
@@ -366,6 +370,8 @@ export default {
         level: 4, //지도의 레벨(확대, 축소 정도)
       },
       address: "",
+
+      badWords: ["ㅅㅂ", "ㅂㅅ", "욕설", "바보", "멍청이", "미친"],
     };
   },
   methods: {
@@ -622,7 +628,9 @@ export default {
             });
           })
         );
-        fileDtos = fileDtos.concat(this.existingFiles).filter(file => file.fileName);
+        fileDtos = fileDtos
+          .concat(this.existingFiles)
+          .filter((file) => file.fileName);
         let response = await BoardWrite.update({
           boardDto,
           placeDto: placeDto,
@@ -637,45 +645,63 @@ export default {
         alert("내용을 입력해주세요.");
       }
     },
-    computed: {
-      isNoticeChecked: {
-        get() {
-          return this.board.noticeYn === "Y";
-        },
-        set(value) {
-          this.board.noticeYn = value ? "Y" : "N";
-        },
+    // 나쁜 단어 필터링
+    filterBadWords(text) {
+      this.badWords.forEach((word) => {
+        if (text.includes(word)) {
+          alert(`"${word}"은(는) 입력할 수 없습니다.`);
+          text = text.replace(new RegExp(word, "gi"), "");
+        }
+      });
+      return text;
+    },
+  },
+  watch: {
+    "board.boardTitle": function (newValue) {
+      this.board.boardTitle = this.filterBadWords(newValue);
+    },
+    "board.boardContent": function (newValue) {
+      this.board.boardContent = this.filterBadWords(newValue);
+    },
+  },
+  computed: {
+    isNoticeChecked: {
+      get() {
+        return this.board.noticeYn === "Y";
+      },
+      set(value) {
+        this.board.noticeYn = value ? "Y" : "N";
       },
     },
   },
-    mounted() {
-      console.log(
-        "/ 글번호 : ",
-        this.boardId,
-        "/ 로그인ID : ",
-        this.member.memberId
-      );
-      this.retrieveMember();
-      this.retrieveBoard();
-      this.retrieveBocode();
-      this.retrieveVote();
-      this.retrieveImg();
-      this.loadDaumPostcodeScript();
-      this.loadKakaoMapScript();
+  mounted() {
+    console.log(
+      "/ 글번호 : ",
+      this.boardId,
+      "/ 로그인ID : ",
+      this.member.memberId
+    );
+    this.retrieveMember();
+    this.retrieveBoard();
+    this.retrieveBocode();
+    this.retrieveVote();
+    this.retrieveImg();
+    this.loadDaumPostcodeScript();
+    this.loadKakaoMapScript();
 
-      if (window.kakao && window.kakao.maps) {
+    if (window.kakao && window.kakao.maps) {
+      this.retrievePlace();
+    } else {
+      const script = document.createElement("script");
+      script.onload = () => {
         this.retrievePlace();
-      } else {
-        const script = document.createElement("script");
-        script.onload = () => {
-          this.retrievePlace();
-        };
-        script.src =
-          "//dapi.kakao.com/v2/maps/sdk.js?appkey=55b411073309a73c48d56caa594311c8"; // 발급받은 API 키로 변경
-        document.head.appendChild(script);
-      }
-    },
-  }
+      };
+      script.src =
+        "//dapi.kakao.com/v2/maps/sdk.js?appkey=55b411073309a73c48d56caa594311c8"; // 발급받은 API 키로 변경
+      document.head.appendChild(script);
+    }
+  },
+};
 </script>
 
 <style>

@@ -21,7 +21,7 @@ class NotificationService {
 
 //   하드딜리트 함수
   deleteNotification(notifyId) {
-    return http.delete(`/notifications/${notifyId}`);
+    return http.delete(`/notifications/${notifyId}`, { headers: LoginHeader() });
   }
 
   // 알람 모두확인
