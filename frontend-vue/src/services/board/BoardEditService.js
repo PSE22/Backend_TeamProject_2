@@ -10,9 +10,7 @@ class BoardEditService {
     }
     // 게시글, 작성자 정보 상세 조회
     getBoard(boardId) {
-        // boardId를 숫자로 변환하여 전달합니다.
-        const id = Number(boardId);
-        return http.get(`/board/board-detail/edit?boardId=${id}`, {
+        return http.get(`/board/board-detail/edit?boardId=${boardId}`, {
             headers: LoginHeader(),
         });
     }

@@ -364,7 +364,7 @@ export default {
       geocoder: null,
       marker: null,
 
-      badWords : ["병신","시발","씨발","ㅅㅂ","ㅂㅅ","욕설","바보","멍청이","미친"]
+      badWords : ["ㅅㅂ","ㅂㅅ","욕설","바보","멍청이","미친"]
     };
   },
   methods: {

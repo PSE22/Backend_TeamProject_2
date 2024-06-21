@@ -148,6 +148,8 @@ export default {
       messages: [],
       stompClient: null,
       showChat: false,
+
+      badWords: ["ㅅㅂ", "ㅂㅅ", "욕설", "바보", "멍청이", "미친"],
     };
   },
   computed: {
@@ -166,6 +168,9 @@ export default {
         this.fetchNotificationsCount();
         this.fetchNotifications();
       }
+    },
+    'newMessage': function (newValue) {
+      this.newMessage = this.filterBadWords(newValue);
     },
   },
   methods: {
@@ -275,6 +280,16 @@ export default {
           query: { boardtitle: this.searchQuery.trim() },
         });
       }
+    },
+        // 나쁜 단어 필터링
+        filterBadWords(text) {
+      this.badWords.forEach((word) => {
+        if (text.includes(word)) {
+          alert(`"${word}"은(는) 입력할 수 없습니다.`);
+          text = text.replace(new RegExp(word, "gi"), "");
+        }
+      });
+      return text;
     },
   },
   mounted() {
