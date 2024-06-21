@@ -2,7 +2,6 @@ package org.example.backend.controller.board;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.backend.model.dto.board.FileDto;
 import org.example.backend.model.dto.board.FreeBoardCreateRequest;
 import org.example.backend.model.dto.board.IFreeBoardDto;
 import org.example.backend.model.entity.board.Board;
@@ -14,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;

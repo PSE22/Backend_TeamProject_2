@@ -6,6 +6,7 @@
         class="custom-btn col-2"
         v-for="(data, index) in bocodeName"
         :key="index"
+        :class="{ active: boardCode === data.cmCd }"
         @click="pageSizeChange(data.cmCd)"
       >
         {{ data.cmCdName }}
@@ -31,9 +32,9 @@
       >
         <td class="text-center col-1">{{ data.boardId }}</td>
         <td class="text-center col-1" style="color: lightgray">
-          {{ data.cmCdName }}
+          [{{ data.cmCdName }}]
         </td>
-        <td class="col-6">
+        <td class="col-5">
           <span class="badge text-center text-bg-dark me-2">공지</span>{{ data.boardTitle }} <span v-if="data.replyCount>0" style="color: brown"><i class="bi bi-chat-text"></i> [{{ data.replyCount }}]</span>
         </td>
         <td class="text-center col-2">{{ data.memberName }}</td>
@@ -45,7 +46,7 @@
       <tr v-for="(data, index) in club" :key="index" @click="goBoardDetail(data.bocode, data.smcode, data.boardId)">
         <td class="text-center col-1">{{ data.boardId }}</td>
         <td class="text-center col-1" style="color: lightgray">[{{ data.cmCdName }}]</td>
-        <td class="col-6">
+        <td class="col-5">
           {{ data.boardTitle }} <span v-if="data.replyCount>0" style="color: brown"><i class="bi bi-chat-text"></i> [{{ data.replyCount }}]</span>
         </td>
         <td class="text-center col-2">{{ data.memberName }}</td>
@@ -233,3 +234,4 @@ export default {
   background-color: #000; /* 검정색 밑줄 */
 }
 </style>
+

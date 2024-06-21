@@ -1,5 +1,6 @@
 package org.example.backend.security.service;
 
+import lombok.RequiredArgsConstructor;
 import org.example.backend.model.entity.auth.Member;
 import org.example.backend.repository.auth.MemberRepository;
 import org.example.backend.security.service.dto.LoginDto;
@@ -28,10 +29,10 @@ import java.util.Set;
  * 2024-05-22         sjuk2          최초 생성
  */
 @Service
+@RequiredArgsConstructor
 public class LoginDetailServiceImpl implements UserDetailsService {
 
-    @Autowired
-    MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
 
 
     @Override

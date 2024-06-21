@@ -1,8 +1,8 @@
 package org.example.backend.service.auth;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.entity.Notify;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -23,13 +23,12 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class NotifySubService implements MessageListener {
 
-    @Autowired
-    private RedisTemplate<String, Object> notifyRedisTemplate;
+    private final RedisTemplate<String, Object> notifyRedisTemplate;
 
-    @Autowired
-    private SseService sseService;
+    private final SseService sseService;
 
     @Override
     public void onMessage(Message message, byte[] pattern) {

@@ -1,10 +1,10 @@
 package org.example.backend.service.board;
 
+import lombok.RequiredArgsConstructor;
 import org.example.backend.model.dto.board.VoteDto;
 import org.example.backend.model.entity.board.Vote;
 import org.example.backend.repository.board.VoteRepository;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -26,11 +26,10 @@ import java.util.List;
  * 2024-05-28         kimtaewan          최초 생성
  */
 @Service
+@RequiredArgsConstructor
 public class VoteService {
-    @Autowired
-    VoteRepository voteRepository;
-    @Autowired
-    ModelMapper modelMapper;
+    private final VoteRepository voteRepository;
+    private final ModelMapper modelMapper;
 
     public void updateVoteCnt(Long voteId, String memberId, Long boardId) {
         voteRepository.updateVoteCnt(voteId, memberId, boardId);

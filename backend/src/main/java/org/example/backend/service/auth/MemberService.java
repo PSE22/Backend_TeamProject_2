@@ -1,5 +1,6 @@
 package org.example.backend.service.auth;
 
+import lombok.RequiredArgsConstructor;
 import org.example.backend.model.entity.auth.Member;
 import org.example.backend.model.entity.board.Board;
 import org.example.backend.model.entity.board.Reply;
@@ -32,24 +33,19 @@ import java.util.Optional;
  * 2024-05-22         sjuk2          최초 생성
  */
 @Service
+@RequiredArgsConstructor
 public class MemberService {
-    @Autowired
-    BoardRepository boardRepository;
+    private final BoardRepository boardRepository;
 
-    @Autowired
-    MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    BoardDetailService boardDetailService;
+    private final BoardDetailService boardDetailService;
 
-    @Autowired
-    ReplyService replyService;
+    private final ReplyService replyService;
 
-    @Autowired
-    ReplyRepository replyRepository;
+    private final ReplyRepository replyRepository;
 
     //  1) 회원 유무 확인 함수 : 회원가입
     public boolean existById(String memberId) {

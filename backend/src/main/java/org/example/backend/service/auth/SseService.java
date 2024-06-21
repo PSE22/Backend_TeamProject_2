@@ -1,18 +1,14 @@
 package org.example.backend.service.auth;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.backend.model.dto.NotifyDto;
 import org.example.backend.model.entity.Notify;
-import org.example.backend.service.RedisPubService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.*;
-
-import java.io.IOException;
-import java.util.Map;
 
 /**
  * packageName : org.example.backend.service.auth
@@ -29,10 +25,10 @@ import java.util.Map;
  */
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class SseService {
 
-    @Autowired
-    RedisPubService redisPubService;
+    private final RedisPubService redisPubService;
 
     private static final ConcurrentHashMap<String, CopyOnWriteArrayList<SseEmitter>> sseEmitters = new ConcurrentHashMap<>();
     private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);

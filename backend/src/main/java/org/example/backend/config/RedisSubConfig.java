@@ -1,6 +1,7 @@
 package org.example.backend.config;
 
-import org.example.backend.service.ChatSubService;
+import lombok.RequiredArgsConstructor;
+import org.example.backend.service.auth.ChatSubService;
 import org.example.backend.service.auth.NotifySubService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -23,16 +24,14 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
  * 2024-05-26         kimtaewan          최초 생성
  */
 @Configuration
+@RequiredArgsConstructor
 public class RedisSubConfig {
 
-    @Autowired
-    private NotifySubService notifySubService;
+    private final NotifySubService notifySubService;
 
-    @Autowired
-    private ChatSubService chatSubService;
+    private final ChatSubService chatSubService;
 
-    @Autowired
-    private RedisConnectionFactory redisConnectionFactory;
+    private final RedisConnectionFactory redisConnectionFactory;
 
     @Bean
     public RedisMessageListenerContainer redisContainer() {

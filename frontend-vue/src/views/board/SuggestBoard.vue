@@ -29,7 +29,7 @@
         </tr>
       </tbody>
       <tbody>
-        <tr v-for="(data, index) in board" :key="index" @click="goSuggestDetail">
+        <tr v-for="(data, index) in board" :key="index" @click="goSuggestDetail(data.boardId)">
           <td class="text-center">{{ data.boardId }}</td>
           <td>
             {{ data.boardTitle }}
@@ -105,6 +105,7 @@
         pageSize: 10,
   
         pageSizes: [10, 25, 50],
+        boardId: this.$route.params.boardId,
       };
     },
     methods: {

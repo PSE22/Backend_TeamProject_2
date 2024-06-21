@@ -1,9 +1,9 @@
 package org.example.backend.controller.board;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.MainPageSearchDto;
 import org.example.backend.service.board.MainSearchService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -31,9 +31,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequestMapping("/api/board")
+@RequiredArgsConstructor
 public class MainSearchController {
-    @Autowired
-    MainSearchService mainSearchService;
+    private final MainSearchService mainSearchService;
 
     @GetMapping("/main-search")
     public ResponseEntity<Page<MainPageSearchDto>> searchBoards(

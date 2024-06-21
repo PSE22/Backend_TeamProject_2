@@ -5,10 +5,7 @@ import org.example.backend.model.dto.board.PlaceDto;
 import org.example.backend.model.entity.board.Place;
 import org.example.backend.repository.board.PlaceRepository;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

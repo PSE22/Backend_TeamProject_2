@@ -1,5 +1,6 @@
 package org.example.backend.service.admin;
 
+import lombok.RequiredArgsConstructor;
 import org.example.backend.model.dto.BoardManageDto;
 import org.example.backend.model.dto.BoardEditDto;
 import org.example.backend.model.entity.CmCode;
@@ -26,10 +27,10 @@ import static org.apache.kafka.common.requests.DeleteAclsResponse.log;
  * 2024-05-29         GGG          최초 생성
  */
 @Service
+@RequiredArgsConstructor
 public class BoardManageService {
 
-    @Autowired
-    BoardManageRepository boardManageRepository;
+    private final BoardManageRepository boardManageRepository;
 
 //    CmCode 조회
 public List<BoardManageDto> getCmCodeList() {

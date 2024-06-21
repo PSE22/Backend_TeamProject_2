@@ -1,14 +1,12 @@
 package org.example.backend.service.auth;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.NotifyDto;
 import org.example.backend.model.entity.Notify;
 import org.example.backend.model.entity.board.Board;
 import org.example.backend.repository.board.BoardRepository;
 import org.example.backend.repository.profile.NotifyRepository;
-import org.example.backend.service.RedisPubService;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,17 +27,11 @@ import java.util.Optional;
  */
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class NotifyService {
-    @Autowired
-    NotifyRepository notifyRepository;
-    @Autowired
-    BoardRepository boardRepository;
-    @Autowired
-    SseService sseService;
-    @Autowired
-    RedisPubService redisPubService;
-    @Autowired
-    ModelMapper modelMapper;
+    private final NotifyRepository notifyRepository;
+    private final BoardRepository boardRepository;
+    private final RedisPubService redisPubService;
 
     @Transactional
     public void createBestNotify(Long boardId, NotifyDto notifyDto) {

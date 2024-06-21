@@ -4,18 +4,17 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.entity.auth.Member;
-import org.example.backend.security.jwt.JwtUtils;
-import org.example.backend.service.auth.LoginService;
-import org.example.backend.service.auth.MemberService;
 import org.example.backend.security.dto.LoginRequest;
 import org.example.backend.security.dto.LoginResponse;
 import org.example.backend.security.dto.SignUpRequest;
+import org.example.backend.security.jwt.JwtUtils;
+import org.example.backend.service.auth.LoginService;
+import org.example.backend.service.auth.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -39,11 +38,9 @@ public class AuthController {
 
     private final MemberService memberService;
 
-    @Autowired
-    LoginService loginService;
+    private final LoginService loginService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     JwtUtils jwtUtils;

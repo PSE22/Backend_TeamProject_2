@@ -1,5 +1,6 @@
-package org.example.backend.service;
+package org.example.backend.service.auth;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -18,12 +19,11 @@ import org.springframework.stereotype.Service;
  * 2024-05-26         kimtaewan          최초 생성
  */
 @Service
+@RequiredArgsConstructor
 public class RedisPubService {
-    @Autowired
-    private RedisTemplate<String, Object> notifyRedisTemplate;
+    private final RedisTemplate<String, Object> notifyRedisTemplate;
 
-    @Autowired
-    private RedisTemplate<String, Object> chatRedisTemplate;
+    private final RedisTemplate<String, Object> chatRedisTemplate;
 
     public void notifyPublish(String channel, Object message) {
         // 메세지 직렬화 후 레디스로 퍼블리싱

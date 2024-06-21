@@ -25,7 +25,6 @@ public class FreeBoardService {
 
     private final FreeBoardRepository freeBoardRepository;
     private final VoteService voteService;
-    private final PlaceService placeService;
     private final FileService fileService;
     private final BoardFileService boardFileService;
 

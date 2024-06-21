@@ -1,8 +1,8 @@
-package org.example.backend.service;
+package org.example.backend.service.auth;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.ChatMessageDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -24,13 +24,12 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class ChatSubService implements MessageListener {
 
-    @Autowired
-    private RedisTemplate<String, Object> chatRedisTemplate;
+    private final RedisTemplate<String, Object> chatRedisTemplate;
 
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
