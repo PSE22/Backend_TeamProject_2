@@ -34,7 +34,7 @@
         <tr v-for="(data, index) in board" :key="index" @click="goFreeDetail(data.boardId)">
           <td class="text-center">{{ data.boardId }}</td>
           <td>
-            {{ data.boardTitle }}
+            {{ data.boardTitle }} <span v-if="data.replyCount>0" style="color: brown"><i class="bi bi-chat-text"></i> [{{ data.replyCount }}]</span>
           </td>
           <td class="text-center">{{ data.nickname }}</td>
           <td class="text-center">{{ data.addDate }}</td>
@@ -52,8 +52,8 @@
         </select>
       </div>
       <div class="col-1">
-        <button type="button" class="btn btn-dark" @click="moveToFreeWrite">
-          등록
+        <button type="button" class="btn btn-dark" style="width: 90px" @click="moveToFreeWrite">
+          글쓰기
         </button>
       </div>
     </div>

@@ -31,7 +31,7 @@
                 <tr v-for="(data, index) in deptNotice" :key="index"  @click="goBoardDetail(smcode, data.boardId)">
                     <td class="text-center col-1">{{ data.boardId }}</td>
                     <td class="col-5">
-                        <span class="badge text-bg-dark me-2">공지</span>{{ data.boardTitle }}
+                        <span class="badge text-bg-dark me-2">공지</span>{{ data.boardTitle }} <span v-if="data.replyCount>0" style="color: brown"><i class="bi bi-chat-text"></i> [{{ data.replyCount }}]</span>
                     </td>
                     <td class="text-center col-2">{{ data.memberName }}</td>
                     <td class="text-center col-2">{{ data.addDate }}</td>
@@ -39,9 +39,9 @@
             </tbody>
             <!-- 테이블 : 일반글 -->
             <tbody v-if="smcode == member.deptCode || member.memberCode === 'AT01' ">
-                <tr v-for="(data, index) in board" :key="index"  @click="goBoardDetail(smcode, data.boardId)">
+                <tr v-for="(data, index) in board" :key="index"  @click="goBoardDetail(smcode, data.boardId)"> 
                     <td class="text-center">{{ data.boardId }}</td>
-                    <td class="col-5">{{ data.boardTitle }}</td>
+                    <td class="col-5">{{ data.boardTitle }} <span v-if="data.replyCount>0" style="color: brown"><i class="bi bi-chat-text"></i> [{{ data.replyCount }}]</span></td>
                     <td class="text-center">{{ data.memberName }}</td>
                     <td class="text-center">{{ data.addDate }}</td>
                 </tr>
@@ -58,7 +58,7 @@
                 </select>
             </div>
             <div class="col-1">
-                <button type="button" class="btn btn-dark" @click="goWritePage">글쓰기</button>
+                <button type="button" class="btn btn-dark" style="width: 90px" @click="goWritePage">글쓰기</button>
             </div>
         </div>
         <div class="row" v-if="smcode">
