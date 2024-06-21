@@ -307,7 +307,7 @@
           <button type="button" class="btn btn-danger me-md-2" @click="editBoard">
             수정
           </button>
-          <button type="button" class="btn btn-secondary" @click="deleteBoard">
+          <button type="button" class="btn btn-secondary" @click="this.$router.go(-1)">
             취소
           </button>
         </div>
