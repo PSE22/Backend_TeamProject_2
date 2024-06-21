@@ -128,6 +128,11 @@ const routes = [
       path: "/board/suggest-write",
       component: () => import("../views/board/SuggestWrite.vue"),
     },
+    // 건의게시판 수정
+    {
+      path: "/board/suggest-edit/:boardId",
+      component: () => import("../views/board/SuggestEdit.vue"),
+    },
     // 칭찬게시판
     {
       path: "/board/praise",
