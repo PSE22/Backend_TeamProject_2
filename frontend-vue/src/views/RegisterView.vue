@@ -9,15 +9,23 @@
               <div class="text-center">
                 <h1 class="h4 text-gray-900 mb-4">회원가입</h1>
               </div>
-              <form class="user" @submit.prevent="handleRegister">
+              <Form
+                class="user"
+                @submit="handleRegister"
+                :validation-schema="schema"
+              >
                 <div class="form-group row">
                   <div class="col-sm-9 mb-3 mb-sm-0">
-                    <input
+                    <Field
                       type="text"
                       class="form-control form-control-user mb-3"
                       placeholder="아이디 입력"
                       name="memberId"
                       v-model="member.memberId"
+                    />
+                    <ErrorMessage
+                      name="memberId"
+                      class="badge text-bg-danger mb-4"
                     />
                   </div>
                   <div class="col-sm-3 mb-3 mb-sm-0" align="right">
@@ -25,23 +33,27 @@
                       type="button"
                       id="idcheck"
                       class="btn btn-secondary"
-                      @click="heckMemberId"
+                      @click="checkMemberId"
                       value="중복확인"
-                    >
+                    />
                   </div>
                 </div>
                 <div class="form-group row">
                   <div class="col-sm-6 mb-3 mb-sm-0">
-                    <input
+                    <Field
                       type="password"
                       class="form-control form-control-user mb-3"
                       placeholder="비밀번호 입력"
                       name="memberPw"
                       v-model="member.memberPw"
                     />
+                    <ErrorMessage
+                      name="memberPw"
+                      class="badge text-bg-danger mb-4"
+                    />
                   </div>
                   <div class="col-sm-6">
-                    <input
+                    <Field
                       type="password"
                       class="form-control form-control-user mb-3"
                       id="exampleRepeatPassword"
@@ -49,44 +61,61 @@
                       name="rePw"
                       v-model="member.rePw"
                     />
-                  </div>
-                  <div v-if="!isPasswordMatch">
-                    비밀번호가 일치하지 않습니다.
+                    <ErrorMessage
+                      name="rePw"
+                      class="badge text-bg-danger mb-4"
+                    />
                   </div>
                   <div class="form-group">
-                    <input
+                    <Field
                       type="text"
                       class="form-control form-control-user mb-3"
                       placeholder="이름 입력"
                       name="memberName"
                       v-model="member.memberName"
                     />
+                    <ErrorMessage
+                      name="memberName"
+                      class="badge text-bg-danger mb-4"
+                    />
                   </div>
                   <div class="form-group">
-                    <input
+                    <Field
                       type="text"
                       class="form-control form-control-user mb-3"
                       placeholder="이메일 입력"
                       name="memberEmail"
                       v-model="member.memberEmail"
                     />
+                    <ErrorMessage
+                      name="memberEmail"
+                      class="badge text-bg-danger mb-4"
+                    />
                   </div>
                   <div class="form-group">
-                    <input
+                    <Field
                       type="text"
                       class="form-control form-control-user mb-3"
                       placeholder="번호 입력"
                       name="memberExt"
                       v-model="member.memberExt"
                     />
+                    <ErrorMessage
+                      name="memberExt"
+                      class="badge text-bg-danger mb-4"
+                    />
                   </div>
                   <div class="form-group">
-                    <input
+                    <Field
                       type="text"
                       class="form-control form-control-user mb-3"
                       placeholder="닉네임 입력"
                       name="nickname"
                       v-model="member.nickname"
+                    />
+                    <ErrorMessage
+                      name="nickname"
+                      class="badge text-bg-danger mb-4"
                     />
                   </div>
                   <div>
@@ -126,7 +155,7 @@
                 >
                   등록
                 </button>
-              </form>
+              </Form>
               <p v-if="message" class="alert alert-primary" role="alert">
                 {{ message }}
               </p>
@@ -146,8 +175,15 @@
 </template>
 <script>
 import LoginService from "@/services/login/LoginService";
+import { Form, Field, ErrorMessage } from "vee-validate";
+import * as yup from "yup";
 
 export default {
+  components: {
+    Form,
+    Field,
+    ErrorMessage,
+  },
   data() {
     return {
       member: {
@@ -163,17 +199,12 @@ export default {
         posCode: "PO01",
       },
       message: "",
-      errorMessage: ""
+      errorMessage: "",
     };
   },
   // TODO: 함수 정의
   methods: {
-    async heckMemberId() {
-      var memberId = this.member.memberId.trim();
-      if (memberId.length < 8 || !/^[a-zA-Z0-9]+$/.test(memberId)) {
-        alert("아이디는 영문자와 숫자 조합의 8자리 이상이어야 합니다.");
-        return;
-      }
+    async checkMemberId() {
       try {
         this.successMessage = "";
         let response = await LoginService.reId(this.member.memberId);
@@ -222,8 +253,29 @@ export default {
     },
   },
   computed: {
-    isPasswordMatch() {
-      return this.member.memberPw === this.member.rePw;
+    schema() {
+      return yup.object({
+        memberId: yup
+          .string()
+          .required("ID를 입력해 주세요")
+          .min(8, "아이디는 최소 8자리 이상이어야 합니다.")
+          .matches(
+            /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
+            "아이디는 영문자와 숫자를 조합하여 최소 8자리 이상이어야 합니다."
+          ),
+        memberPw: yup.string().required("비밀번호를 입력해 주세요"),
+        rePw: yup
+          .string()
+          .oneOf([yup.ref("memberPw"), null], "비밀번호가 일치하지 않습니다")
+          .required("비밀번호를 다시 입력해 주세요"),
+        memberName: yup.string().required("이름을 입력해 주세요"),
+        memberEmail: yup
+          .string()
+          .email("유효한 이메일을 입력해 주세요")
+          .required("이메일을 입력해 주세요"),
+        memberExt: yup.string().required("번호를 입력해 주세요"),
+        nickname: yup.string().required("닉네임을 입력해 주세요"),
+      });
     },
   },
   mounted() {
