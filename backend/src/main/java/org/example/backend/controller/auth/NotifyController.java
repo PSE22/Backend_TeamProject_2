@@ -1,5 +1,6 @@
 package org.example.backend.controller.auth;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.NotifyDto;
 import org.example.backend.service.auth.NotifyService;
@@ -24,9 +25,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @Slf4j
 @RequestMapping("/api/notify")
+@RequiredArgsConstructor
 public class NotifyController {
-    @Autowired
-    NotifyService notifyService;
+    private final NotifyService notifyService;
 
     @PostMapping("/best/{boardId}")
     public ResponseEntity<String> createBestNotify(@PathVariable Long boardId, @RequestBody NotifyDto notifyDto) {

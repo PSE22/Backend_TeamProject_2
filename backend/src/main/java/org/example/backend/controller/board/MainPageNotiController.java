@@ -1,11 +1,11 @@
 package org.example.backend.controller.board;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.MainPageArmDto;
 import org.example.backend.model.dto.NotifyDto;
 import org.example.backend.service.auth.NotifyService;
 import org.example.backend.service.board.MainPageNotiService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,13 +27,12 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequestMapping("/api/notifications")
+@RequiredArgsConstructor
 public class MainPageNotiController {
 
-    @Autowired
-    MainPageNotiService mainPageNotiService;
+    private final MainPageNotiService mainPageNotiService;
 
-    @Autowired
-    NotifyService notifyService;
+    private final NotifyService notifyService;
 
     // 멤버별 알람 상세 조회
     @GetMapping("/{memberId}")

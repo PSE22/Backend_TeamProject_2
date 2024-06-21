@@ -1,11 +1,10 @@
 package org.example.backend.controller.profile;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.IMyReplyDto;
 import org.example.backend.model.entity.board.Board;
-import org.example.backend.model.entity.board.Reply;
 import org.example.backend.service.profile.MyBoardService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,10 +31,10 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/api/member")
+@RequiredArgsConstructor
 public class MyBoardController {
 
-    @Autowired
-    MyBoardService myBoardService;
+    private final MyBoardService myBoardService;
 
     @GetMapping("/activity-board/{memberId}")
     public ResponseEntity<Object> findByMemberIdOfBoard(

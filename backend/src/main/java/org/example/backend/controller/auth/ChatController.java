@@ -1,12 +1,11 @@
 package org.example.backend.controller.auth;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.ChatMessageDto;
 import org.example.backend.model.entity.auth.Member;
-import org.example.backend.service.RedisPubService;
 import org.example.backend.service.auth.ChatService;
 import org.example.backend.service.auth.MemberService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,13 +26,10 @@ import java.util.Optional;
  */
 @RestController
 @Slf4j
+@RequiredArgsConstructor
 public class ChatController {
-    @Autowired
-    RedisPubService redisPubService;
-    @Autowired
-    MemberService memberService;
-    @Autowired
-    ChatService chatService;
+    private final MemberService memberService;
+    private final ChatService chatService;
 
     @MessageMapping("/message")
     public void sendMessage(ChatMessageDto message) {

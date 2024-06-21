@@ -1,5 +1,6 @@
 package org.example.backend.controller.admin;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.BoardManageDto;
 import org.example.backend.model.dto.BoardEditDto;
@@ -27,10 +28,10 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequestMapping("/api/admin")
+@RequiredArgsConstructor
 public class BoardManageController {
 
-    @Autowired
-    BoardManageService boardManageService;
+    private final BoardManageService boardManageService;
 
     @GetMapping("/board-mgmt")
     public ResponseEntity<List<BoardManageDto>> getCmCodeList() {

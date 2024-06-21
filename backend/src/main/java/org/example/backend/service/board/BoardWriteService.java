@@ -2,18 +2,12 @@ package org.example.backend.service.board;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.backend.model.dto.board.*;
+import org.example.backend.model.dto.board.BoardDto;
+import org.example.backend.model.dto.board.BoardWriteDto;
 import org.example.backend.model.entity.board.Board;
-import org.example.backend.model.entity.board.File;
-import org.example.backend.model.entity.board.Place;
 import org.example.backend.repository.board.BoardRepository;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * packageName : org.example.backend.service.board
