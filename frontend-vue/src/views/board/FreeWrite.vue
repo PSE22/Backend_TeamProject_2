@@ -1,120 +1,230 @@
 <template>
   <div align="center">
     <h1 class="text-center mb-5 mt-5">자유 게시판</h1>
-    <div class="container mt-3 free-box">
-      <!-- 자유게시판 / 닉네임 -->
-      <div>
-        <div class="row">
-          <div class="form-group col-4">
-            <input type="text" class="form-control" placeholder="자유 게시판" disabled />
-          </div>
+  </div>
+  <div class="container free-box">
+    <!-- 자유게시판 / 닉네임 -->
+    <div align="center">
+      <div class="row">
+        <div class="form-group col-4">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="자유 게시판"
+            disabled
+          />
         </div>
-        <!-- 제목 / 공지사항 -->
-        <div class="row mt-3">
-          <div class="col-md-10">
-            <input type="text" class="form-control" placeholder="제목을 입력해주세요" name="boardTitle"
-              v-model="board.boardTitle" />
-          </div>
-          <!-- 관리자만 보이게 해야함 -->
-          <div v-if="isAdmin" class="col-md-2 d-flex align-items-center justify-content-end">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" v-model="board.noticeYn" />
-              <label class="form-check-label" for="noticeCheck">공지사항</label>
-            </div>
-          </div>
-        </div>
-        <!-- 투표 추가 / 장소 추가 -->
-        <div class="d-grid gap-3 d-md-block mt-3 mb-3 text-start">
-          <button type="button" class="btn btn-outline-dark me-3" data-bs-toggle="modal" data-bs-target="#vote-modal">
-            <i class="bi bi-bar-chart-line"></i> 투표추가
-          </button>
-          <!-- 투표추가 모달 -->
-          <div class="modal fade" id="vote-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h1 class="modal-title fs-5" id="exampleModalLabel">
-                    투표 등록
-                  </h1>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  <h5 class="text-start">투표명</h5>
-                  <input type="text" class="form-control mb-3" placeholder="제목을 입력하세요" name="boardTitle"
-                    v-model.lazy="vote.voteName" />
-                  <hr />
-                  <h5 class="text-start">항목 추가</h5>
-                  <input type="text" class="form-control mb-3" placeholder="1. 항목을 입력하세요" name="boardTitle"
-                    v-model.lazy="vote.voteList.vote1" />
-                  <input type="text" class="form-control mb-3" placeholder="2. 항목을 입력하세요" name="boardTitle"
-                    v-model.lazy="vote.voteList.vote2" />
-                  <input type="text" class="form-control mb-3" placeholder="3. 항목을 입력하세요" name="boardTitle"
-                    v-model.lazy="vote.voteList.vote3" />
-                  <input type="text" class="form-control mb-3" placeholder="4. 항목을 입력하세요" name="boardTitle"
-                    v-model.lazy="vote.voteList.vote4" />
-                  <input type="text" class="form-control mb-3" placeholder="5. 항목을 입력하세요" name="boardTitle"
-                    v-model.lazy="vote.voteList.vote5" />
-                  <hr />
-                  <h5 class="text-start">
-                    종료일 :
-                    <input type="date" v-model="vote.delDate" :min="minDate" />
-                  </h5>
-                </div>
-                <div class="modal-footer">
-                  <button @reset="vote" class="btn btn-secondary" data-bs-dismiss="modal" @click="resetVoteForm">
-                    초기화
-                  </button>
-                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="submitVote">
-                    등록
-                  </button>
-                </div>
-              </div>
-            </div>
-            <!-- 투표추가 모달 끝 -->
-          </div>
-          <button type="button" class="btn btn-outline-dark me-3" data-bs-toggle="modal" data-bs-target="#place-modal">
-            <i class="bi bi-geo-alt"></i> 장소추가
-          </button>
-          <!-- 장소 Modal -->
-          <div class="modal fade" id="place-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <div class="row">
-                    <div class="col-auto">
-                      <h1 class="modal-title fs-5" id="exampleModalLabel">
-                        장소 추가
-                      </h1>
-                    </div>
+      </div>
 
-                    <div class="col-auto">
-                      <input type="button" @click="openPostcode" value="주소 검색" class="btn btn-dark" />
-                    </div>
-                  </div>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  <div id="map" ref="mapContainer" style="
-                      width: 100%;
-                      height: 500px;
-                      margin-top: 10px;
-                      display: none;
-                    "></div>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" @click="resetPlace" data-bs-dismiss="modal">
-                    취소
-                  </button>
-                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
-                    확인
-                  </button>
-                </div>
+      <!-- 제목 / 공지사항 -->
+      <div class="row mt-3">
+        <div class="col-md-10">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="제목을 입력해주세요"
+            name="boardTitle"
+            v-model="board.boardTitle"
+          />
+        </div>
+        <!-- 관리자만 보이게 해야함 -->
+        <div
+          v-if="isAdmin"
+          class="col-md-2 d-flex align-items-center justify-content-end"
+        >
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              v-model="board.noticeYn"
+            />
+            <label class="form-check-label" for="noticeCheck">공지사항</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 투표 추가 / 장소 추가 -->
+      <div class="d-grid gap-3 d-md-block mt-3 mb-3 text-start">
+        <button
+          type="button"
+          class="btn btn-outline-dark me-3"
+          data-bs-toggle="modal"
+          data-bs-target="#vote-modal"
+        >
+          <i class="bi bi-bar-chart-line"></i> 투표추가
+        </button>
+        <!-- 투표추가 모달 -->
+        <div
+          class="modal fade"
+          id="vote-modal"
+          tabindex="-1"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">
+                  투표 등록
+                </h1>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <h5 class="text-start">투표명</h5>
+                <input
+                  type="text"
+                  class="form-control mb-3"
+                  placeholder="제목을 입력하세요"
+                  name="boardTitle"
+                  v-model.lazy="vote.voteName"
+                />
+                <hr />
+                <h5 class="text-start">항목 추가</h5>
+                <input
+                  type="text"
+                  class="form-control mb-3"
+                  placeholder="1. 항목을 입력하세요"
+                  name="boardTitle"
+                  v-model.lazy="vote.voteList.vote1"
+                />
+                <input
+                  type="text"
+                  class="form-control mb-3"
+                  placeholder="2. 항목을 입력하세요"
+                  name="boardTitle"
+                  v-model.lazy="vote.voteList.vote2"
+                />
+                <input
+                  type="text"
+                  class="form-control mb-3"
+                  placeholder="3. 항목을 입력하세요"
+                  name="boardTitle"
+                  v-model.lazy="vote.voteList.vote3"
+                />
+                <input
+                  type="text"
+                  class="form-control mb-3"
+                  placeholder="4. 항목을 입력하세요"
+                  name="boardTitle"
+                  v-model.lazy="vote.voteList.vote4"
+                />
+                <input
+                  type="text"
+                  class="form-control mb-3"
+                  placeholder="5. 항목을 입력하세요"
+                  name="boardTitle"
+                  v-model.lazy="vote.voteList.vote5"
+                />
+                <hr />
+                <h5 class="text-start">
+                  종료일 :
+                  <input type="date" v-model="vote.delDate" :min="minDate" />
+                </h5>
+              </div>
+              <div class="modal-footer">
+                <button
+                  @reset="vote"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                  @click="resetVoteForm"
+                >
+                  초기화
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  data-bs-dismiss="modal"
+                  @click="submitVote"
+                >
+                  등록
+                </button>
               </div>
             </div>
           </div>
-          <!-- 장소 Modal 끝 -->
-          <span v-if="address"><i class="bi bi-geo-alt-fill"></i> {{ address }}</span>
+          <!-- 투표추가 모달 끝 -->
         </div>
+        <button
+          type="button"
+          class="btn btn-outline-dark me-3"
+          data-bs-toggle="modal"
+          data-bs-target="#place-modal"
+        >
+          <i class="bi bi-geo-alt"></i> 장소추가
+        </button>
+        <!-- 장소 Modal -->
+        <div
+          class="modal fade"
+          id="place-modal"
+          tabindex="-1"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <div class="row">
+                  <div class="col-auto">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">
+                      장소 추가
+                    </h1>
+                  </div>  
+                  <div class="col-auto">
+                    <input
+                      type="button"
+                      @click="openPostcode"
+                      value="주소 검색"
+                      class="btn btn-dark"
+                    />
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <div
+                  id="map"
+                  ref="mapContainer"
+                  style="
+                    width: 100%;
+                    height: 500px;
+                    margin-top: 10px;
+                    display: none;
+                  "
+                ></div>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  @click="resetPlace"
+                  data-bs-dismiss="modal"
+                >
+                  취소
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  data-bs-dismiss="modal"
+                >
+                  확인
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 장소 Modal 끝 -->
+        <span v-if="address"
+          ><i class="bi bi-geo-alt-fill"></i> {{ address }}</span
+        >
       </div>
     </div>
 
@@ -130,19 +240,34 @@
     <!-- 내용 입력 -->
     <div class="row">
       <div class="col-md-12">
-        <textarea class="form-control" placeholder="내용을 입력해주세요" rows="5" name="boardContent"
-          v-model="board.boardContent"></textarea>
+        <textarea
+          class="form-control"
+          placeholder="내용을 입력해주세요"
+          rows="5"
+          name="boardContent"
+          v-model="board.boardContent"
+        ></textarea>
       </div>
     </div>
 
     <!-- 파일 첨부 -->
     <div class="row mt-3">
       <div class="col-md-12">
-        <input type="file" class="form-control" multiple @change="handleFileUpload" ref="fileInput" />
+        <input
+          type="file"
+          class="form-control"
+          multiple
+          @change="handleFileUpload"
+          ref="fileInput"
+        />
         <div class="mt-2 file-list">
           <div v-for="(file, index) in files" :key="index" class="file-item">
             <p class="d-inline">{{ file.name }}</p>
-            <button type="button" class="btn btn-danger btn-sm ms-2" @click="removeFile(index)">
+            <button
+              type="button"
+              class="btn btn-danger btn-sm ms-2"
+              @click="removeFile(index)"
+            >
               X
             </button>
           </div>
@@ -152,7 +277,11 @@
 
     <!-- 등록 버튼 -->
     <div class="fixed-button">
-      <button type="button" class="btn btn-secondary me-md-2" @click="this.$router.go(-1)">
+      <button
+        type="button"
+        class="btn btn-secondary me-md-2"
+        @click="this.$router.go(-1)"
+      >
         취소
       </button>
       <button type="button" class="btn btn-primary" @click="saveFreeBoard">
@@ -164,14 +293,19 @@
 
 <script>
 let daum = window.daum;
+import BoardDetailService from "@/services/board/BoardDetailService";
 import BoardWriteService from "@/services/board/BoardWriteService";
 
 export default {
   data() {
     return {
-      isAdmin: this.$store.state.member != null && this.$store.state.member.memberCode === "AT01",
-      bocode: "BO03", // 대분류 코드 고정
+      isAdmin:
+        this.$store.state.member != null &&
+        this.$store.state.member.memberCode === "AT01",
+      bocode: "BO03", // 대분류 코드 고정a
       board: {
+        boardTitle: "",
+        boardContent: "",
         noticeYn: false, // 공지사항 초기값
       },
       vote: {
@@ -202,6 +336,7 @@ export default {
           boardTitle: this.board.boardTitle,
           boardContent: this.board.boardContent,
           bocode: this.bocode,
+          smcode: this.smcode,
           noticeYn: this.board.noticeYn ? "Y" : "N",
         };
 
@@ -248,6 +383,15 @@ export default {
         alert("내용을 입력해주세요.");
       }
     },
+    async retrieveCode() {
+      try {
+        let response = await BoardDetailService.getCmCd(this.smcode);
+        this.cmcd = response.data;
+        console.log(this.cmcd);
+      } catch (e) {
+        console.log("retrieveCode 에러", e);
+      }
+    },
     resetVoteForm() {
       this.vote = {
         voteName: "",
@@ -269,12 +413,9 @@ export default {
       if (voteItems.length < 2) {
         alert("투표 항목을 2개 이상 입력해주세요.");
         return;
+      } else {
+        this.showSuccessMessage = true;
       }
-      if (!this.vote.delDate) {
-        alert("투표 종료일을 선택해주세요.");
-        return;
-      }
-      this.showSuccessMessage = true;
     },
     handleFileUpload(event) {
       const newFiles = Array.from(event.target.files);
@@ -293,12 +434,14 @@ export default {
     },
     loadDaumPostcodeScript() {
       const script = document.createElement("script");
-      script.src = "//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+      script.src =
+        "//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
       document.head.appendChild(script);
     },
     loadKakaoMapScript() {
       const script = document.createElement("script");
-      script.src = "//dapi.kakao.com/v2/maps/sdk.js?appkey=55b411073309a73c48d56caa594311c8&libraries=services";
+      script.src =
+        "//dapi.kakao.com/v2/maps/sdk.js?appkey=55b411073309a73c48d56caa594311c8&libraries=services";
       script.onload = this.initMap;
       document.head.appendChild(script);
     },
@@ -353,6 +496,7 @@ export default {
   mounted() {
     this.loadDaumPostcodeScript();
     this.loadKakaoMapScript();
+    this.retrieveCode();
   },
 };
 </script>
@@ -363,17 +507,14 @@ export default {
   padding: 40px 30px;
   border: 1px solid #959595;
   width: 1000px;
-  position: relative;
-  /* 부모 요소를 기준으로 위치를 설정합니다 */
+  position: relative; /* 부모 요소를 기준으로 위치를 설정합니다 */
   border-radius: 10px;
 }
 
 .fixed-button {
   position: absolute;
-  bottom: -60px;
-  /* free-box 아래에 위치를 조정 (간격 조정) */
-  right: 0px;
-  /* 오른쪽 끝에 위치를 조정 */
+  bottom: -60px; /* free-box 아래에 위치를 조정 (간격 조정) */
+  right: 0px; /* 오른쪽 끝에 위치를 조정 */
 }
 
 .file-list p {
