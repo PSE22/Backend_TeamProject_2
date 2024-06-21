@@ -1,6 +1,6 @@
 package org.example.backend.controller.board;
 
-import org.example.backend.model.dto.board.HotTopicDto;
+import org.example.backend.model.dto.MainPageDto;
 import org.example.backend.service.board.HotTopicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,8 +30,8 @@ public class HotTopicController {
     private HotTopicService hotTopicService;
 
     @GetMapping("/hot-topics")
-    public ResponseEntity<List<HotTopicDto>> getHotTopics() {
-        List<HotTopicDto> hotTopics = hotTopicService.getHotTopics();
+    public ResponseEntity<List<MainPageDto>> getHotTopics() {
+        List<MainPageDto> hotTopics = hotTopicService.getHotTopics();
         return ResponseEntity.ok(hotTopics);
     }
 }

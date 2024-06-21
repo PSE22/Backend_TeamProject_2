@@ -1,6 +1,6 @@
 package org.example.backend.service.board;
 
-import org.example.backend.model.dto.board.HotTopicDto;
+import org.example.backend.model.dto.MainPageDto;
 import org.example.backend.repository.board.HotTopicRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class HotTopicService {
     @Autowired
     private HotTopicRepository hotTopicRepository;
 
-    public List<HotTopicDto> getHotTopics() {
+    public List<MainPageDto> getHotTopics() {
         return hotTopicRepository.findHotTopics();
     }
 }

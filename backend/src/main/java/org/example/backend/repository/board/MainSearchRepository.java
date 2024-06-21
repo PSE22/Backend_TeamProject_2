@@ -45,7 +45,7 @@ public interface MainSearchRepository extends JpaRepository<Board, Long> {
             "WHERE B.BOCODE <> 'BO01' " +
             "AND B.STATUS = 'Y' " +
             "AND B.NOTICE_YN = 'N' " +
-            "AND B.BOARD_TITLE LIKE '%' || :boardtitle || '%' " +
+            "AND LOWER(B.BOARD_TITLE) LIKE LOWER('%' || :boardtitle || '%')" +
             "ORDER BY B.ADD_DATE DESC",
             countQuery = "SELECT count(*) " +
                     "FROM TB_BOARD B " +
@@ -54,7 +54,7 @@ public interface MainSearchRepository extends JpaRepository<Board, Long> {
                     "WHERE B.BOCODE <> 'BO01' " +
                     "AND B.STATUS = 'Y' " +
                     "AND B.NOTICE_YN = 'N' " +
-                    "AND B.BOARD_TITLE LIKE '%' || :boardtitle || '%'",
+                    "AND LOWER(B.BOARD_TITLE) LIKE LOWER('%' || :boardtitle || '%')",
             nativeQuery = true)
     Page<MainPageSearchDto> searchAllByBoard(@Param("boardtitle") String boardtitle, Pageable pageable);
 }
