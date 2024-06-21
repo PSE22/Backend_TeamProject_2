@@ -124,8 +124,7 @@
       class="chat-toggle-button"
       @click="toggleChat"
       v-if="isLoggedIn && !showChat"
-    >
-      채팅 열기
+    >채팅 <i class="bi bi-chat-dots"></i> 
     </button>
   </header>
 </template>
@@ -366,10 +365,10 @@ export default {
   bottom: 20px;
   right: 20px;
   padding: 10px 20px;
-  background: #007bff;
-  color: #fff;
-  border: none;
+  background: #000000;
+  color: #ffffff;
   cursor: pointer;
+  border-radius: 10px;
 }
 
 .profile-icon {
