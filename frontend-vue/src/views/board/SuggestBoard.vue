@@ -14,7 +14,7 @@
       </thead>
       <!-- 테이블 내용 (공지사항) -->
       <tbody>
-        <tr v-for="(data, index) in freeNotice" :key="index" @click="goSuggestDetail">
+        <tr v-for="(data, index) in freeNotice" :key="index" @click="goSuggestDetail(data.boardId)">
           <td class="text-center col-1">{{ data.boardId }}</td>
           <td class="col-5">
             <span class="badge text-bg-dark me-2">공지</span>{{ data.boardTitle }}
