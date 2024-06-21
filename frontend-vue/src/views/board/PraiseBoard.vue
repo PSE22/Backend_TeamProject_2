@@ -1,92 +1,71 @@
 <template>
   <div class="w-100 p-3">
     <h1 class="text-center mb-5 mt-5">칭찬 게시판</h1>
-  </div>
-  <table class="table table-hover">
-    <thead class="table-light text-center">
-      <tr>
-        <th scope="col">글번호</th>
-        <th scope="col">제목</th>
-        <th scope="col">닉네임</th>
-        <th scope="col">등록일</th>
-        <th scope="col">추천수</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr
-        v-for="(data, index) in freeNotice"
-        :key="index"
-        @click="goPraiseDetail(data.boardId)"
-      >
-        <td class="text-center col-1">{{ data.boardId }}</td>
-        <td class="col-6">
-          <span class="badge text-bg-dark me-2">공지</span>{{ data.boardTitle }}
-        </td>
-        <td class="text-center col-2">{{ data.nickName }}</td>
-        <td class="text-center col-2">{{ data.addDate }}</td>
-        <td class="text-center col-2">{{ data.good }}</td>
-      </tr>
-    </tbody>
-    <tbody>
-      <tr v-for="(data, index) in board" :key="index" @click="goPraiseDetail(data.boardId)">
-        <td class="text-center">{{ data.boardId }}</td>
-        <td>
-          {{ data.boardTitle }}
-        </td>
-        <td class="text-center">{{ data.nickName }}</td>
-        <td class="text-center">{{ data.addDate }}</td>
-        <td class="text-center">{{ data.good }}</td>
-      </tr>
-    </tbody>
-  </table>
-  <!-- {/* paging 시작 */} -->
-  <div class="row justify-content-between">
-    <div class="col-4 w-25 mb-3">
-      <select
-        class="form-select form-select-sm"
-        v-model="pageSize"
-        @change="retrievePraiseBoard()"
-      >
-        <option v-for="(data, index) in pageSizes" :key="index" :value="data">
-          {{ data }}
-        </option>
-      </select>
-    </div>
-    <div class="col-1">
-      <button type="button" class="btn btn-dark" @click="moveToPraiseWrite">
-        등록
-      </button>
-    </div>
-  </div>
-  <div class="row">
-    <b-pagination
-      class="col-12 mb-3 justify-content-center"
-      v-model="page"
-      :total-rows="count"
-      :per-page="pageSize"
-      @click="retrievePraiseBoard()"
-    ></b-pagination>
-    <!-- {/* paging 끝 */} -->
-    <!-- {/* 검색어 start */} -->
-    <div class="col-md-4 mx-auto">
-      <div class="input-group mb-3">
-        <input
-          type="text"
-          class="form-control"
-          placeholder="검색어를 입력해주세요"
-          v-model="searchBoardTitle"
-          @keyup.enter="retrievePraiseBoard()"
-        />
-        <button
-          class="btn btn-outline-secondary"
-          type="button"
-          @click="retrievePraiseBoard()"
-        >
-          검색
+    <table class="table table-hover">
+      <!-- 테이블 제목 -->
+      <thead class="table-light text-center">
+        <tr>
+          <th scope="col">글번호</th>
+          <th scope="col">제목</th>
+          <th scope="col">닉네임</th>
+          <th scope="col">등록일</th>
+          <th scope="col">추천수</th>
+        </tr>
+      </thead>
+      <!-- 테이블 내용 (공지사항) -->
+      <tbody>
+        <tr v-for="(data, index) in freeNotice" :key="index" @click="goPraiseDetail(data.boardId)">
+          <td class="text-center col-1">{{ data.boardId }}</td>
+          <td class="col-5">
+            <span class="badge text-bg-dark me-2">공지</span>{{ data.boardTitle }}
+          </td>
+          <td class="text-center col-2">{{ data.nickName }}</td>
+          <td class="text-center col-2">{{ data.addDate }}</td>
+          <td class="text-center col-2">{{ data.good }}</td>
+        </tr>
+      </tbody>
+      <!-- 테이블 내용 (일반글) -->
+      <tbody>
+        <tr v-for="(data, index) in board" :key="index" @click="goPraiseDetail(data.boardId)">
+          <td class="text-center">{{ data.boardId }}</td>
+          <td class="col-5">{{ data.boardTitle }}</td>
+          <td class="text-center">{{ data.nickName }}</td>
+          <td class="text-center">{{ data.addDate }}</td>
+          <td class="text-center">{{ data.good }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <!-- {/* paging 시작 */} -->
+    <div class="row justify-content-between">
+      <div class="col-4 w-25 mb-3">
+        <select class="form-select form-select-sm" v-model="pageSize" @change="retrievePraiseBoard()">
+          <option v-for="(data, index) in pageSizes" :key="index" :value="data">
+            {{ data }}
+          </option>
+        </select>
+      </div>
+      <div class="col-1">
+        <button type="button" class="btn btn-dark" @click="moveToPraiseWrite">
+          등록
         </button>
       </div>
     </div>
-    <!-- {/* 검색어 end */} -->
+    <div class="row">
+      <b-pagination class="col-12 mb-3 justify-content-center" v-model="page" :total-rows="count" :per-page="pageSize"
+        @click="retrievePraiseBoard()"></b-pagination>
+      <!-- {/* paging 끝 */} -->
+      <!-- {/* 검색어 start */} -->
+      <div class="col-md-4 mx-auto">
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="검색어를 입력해주세요" v-model="searchBoardTitle"
+            @keyup.enter="retrievePraiseBoard()" />
+          <button class="btn btn-outline-secondary" type="button" @click="retrievePraiseBoard()">
+            검색
+          </button>
+        </div>
+      </div>
+      <!-- {/* 검색어 end */} -->
+    </div>
   </div>
 </template>
 
@@ -159,7 +138,7 @@ export default {
     goPraiseDetail(boardId) {
       this.$router.push(`/board/praise/${boardId}`);
     },
-    moveToFreeWrite() {
+    moveToPraiseWrite() {
       this.$router.push("/board/praise-write");
     },
   },
@@ -188,8 +167,10 @@ export default {
   bottom: 0;
   width: 100%;
   height: 1px;
-  background-color: lightgray; /* 밝은 회색 밑줄 */
-  transition: background-color 0.3s ease; /* 색상 변화 애니메이션 */
+  background-color: lightgray;
+  /* 밝은 회색 밑줄 */
+  transition: background-color 0.3s ease;
+  /* 색상 변화 애니메이션 */
 }
 
 .custom-btn.active,
@@ -197,12 +178,10 @@ export default {
   color: #000;
 }
 
-.custom-btn.active::after, /* 활성/호버 시 밑줄 색상 변경 */
+.custom-btn.active::after,
+/* 활성/호버 시 밑줄 색상 변경 */
 .custom-btn:hover::after {
-  background-color: #000; /* 검정색 밑줄 */
-}
-
-.text-right {
-  text-align: right;
+  background-color: #000;
+  /* 검정색 밑줄 */
 }
 </style>

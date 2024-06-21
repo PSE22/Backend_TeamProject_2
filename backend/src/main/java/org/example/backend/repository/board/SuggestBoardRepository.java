@@ -33,7 +33,7 @@ public interface SuggestBoardRepository extends JpaRepository<Board, Long> {
             "B.BOARD_TITLE AS boardTitle, " +
             "M.NICKNAME AS nickname, " +
             "B.ADD_DATE AS addDate, " +
-            "B.GOOD AS good " +
+            "(SELECT COUNT(*) FROM TB_RECOMMEND R WHERE R.BOARD_ID = B.BOARD_ID) AS good " +
             "FROM TB_BOARD B " +
             "LEFT JOIN TB_MEMBER M ON B.MEMBER_ID = M.MEMBER_ID " +
             "WHERE B.BOCODE = 'BO04' " +
@@ -58,7 +58,7 @@ public interface SuggestBoardRepository extends JpaRepository<Board, Long> {
             "B.BOARD_TITLE AS boardTitle,\n" +
             "M.NICKNAME AS nickname,\n" +
             "B.ADD_DATE AS addDate,\n" +
-            "B.GOOD AS good " +
+            "(SELECT COUNT(*) FROM TB_RECOMMEND R WHERE R.BOARD_ID = B.BOARD_ID) AS good " +
             "FROM TB_BOARD B, TB_MEMBER M\n" +
             "WHERE B.BOCODE = 'BO04'\n" +
             "AND B.MEMBER_ID = M.MEMBER_ID\n" +

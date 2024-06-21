@@ -27,8 +27,6 @@ import java.util.List;
  */
 @Repository
 public interface ReplyRepository extends JpaRepository<Reply, Long> {
-    Long countByBoardId(Long boardId);
-
     // 글번호로 댓글 조회
     @Query(value = "SELECT B.REPLY_ID AS replyId,\n" +
             "        A.FILE_URL AS fileUrl,\n" +
@@ -60,7 +58,8 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
             "AND R.BOARD_ID = :boardId\n" +
             "AND R.RE_REPLY IS NULL\n" +
             "AND R.STATUS = 'Y') B\n" +
-            "WHERE A.REPLY_ID(+) = B.REPLY_ID"
+            "WHERE A.REPLY_ID(+) = B.REPLY_ID " +
+            "ORDER BY B.ADD_DATE ASC"
             , countQuery = "SELECT count(*) " +
                             "FROM (SELECT RF.REPLY_ID,\n" +
                             "        F.FILE_URL,\n" +
@@ -117,7 +116,8 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
             "AND R.BOARD_ID = :boardId\n" +
             "AND R.RE_REPLY = :replyId\n" +
             "AND R.STATUS = 'Y') B\n" +
-            "WHERE A.REPLY_ID(+) = B.REPLY_ID"
+            "WHERE A.REPLY_ID(+) = B.REPLY_ID " +
+            "ORDER BY B.ADD_DATE ASC"
             , nativeQuery = true)
     List<IReplyDto> findReReply(@Param("boardId") Long boardId, @Param("replyId") Long replyId);
 

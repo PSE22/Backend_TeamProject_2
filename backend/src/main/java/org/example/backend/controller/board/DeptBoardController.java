@@ -74,10 +74,8 @@ public class DeptBoardController {
             response.put("totalItems", pageList.getTotalElements()); // 전체데이터개수
 
             if (pageList.isEmpty() == true) {
-                log.debug("log1 ::: ", response);
                 return new ResponseEntity<>("데이터 없음", HttpStatus.NO_CONTENT);
             } else {
-                log.debug("log2 ::: ", response);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
 
@@ -85,6 +83,4 @@ public class DeptBoardController {
             return new ResponseEntity<>("서버 오류가 발생했습니다", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
 }

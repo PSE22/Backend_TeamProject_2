@@ -14,12 +14,12 @@ import java.util.Optional;
 
 @Repository
 public interface FreeBoardRepository extends JpaRepository<Board, Long> {
-    //    최신글 전체조회
+    // 최신글 전체조회
     @Query(value = "SELECT B.BOARD_ID AS boardId, " +
             "B.BOARD_TITLE AS boardTitle, " +
             "M.NICKNAME AS nickname, " +
             "B.ADD_DATE AS addDate, " +
-            "B.GOOD AS good " +
+            "(SELECT COUNT(*) FROM TB_RECOMMEND R WHERE R.BOARD_ID = B.BOARD_ID) AS good " +
             "FROM TB_BOARD B " +
             "LEFT JOIN TB_MEMBER M ON B.MEMBER_ID = M.MEMBER_ID " +
             "WHERE B.BOCODE = 'BO03' " +
@@ -44,14 +44,14 @@ public interface FreeBoardRepository extends JpaRepository<Board, Long> {
             "B.BOARD_TITLE AS boardTitle, " +
             "M.NICKNAME AS nickname, " +
             "B.ADD_DATE AS addDate, " +
-            "B.GOOD AS good " +
+            "(SELECT COUNT(*) FROM TB_RECOMMEND R WHERE R.BOARD_ID = B.BOARD_ID) AS good " +
             "FROM TB_BOARD B " +
             "LEFT JOIN TB_MEMBER M ON B.MEMBER_ID = M.MEMBER_ID " +
             "WHERE B.BOCODE = 'BO03' " +
             "AND B.STATUS = 'Y' " +
             "AND B.NOTICE_YN = 'N' " +
             "AND B.BOARD_TITLE LIKE '%' || :boardTitle || '%' " +
-            "AND B.GOOD >= 10 " +
+            "AND (SELECT COUNT(*) FROM TB_RECOMMEND R WHERE R.BOARD_ID = B.BOARD_ID) >= 10 " +
             "ORDER BY B.ADD_DATE DESC",
             countQuery = "SELECT count(*) " +
                     "FROM TB_BOARD B " +
@@ -60,7 +60,7 @@ public interface FreeBoardRepository extends JpaRepository<Board, Long> {
                     "AND B.STATUS = 'Y' " +
                     "AND B.NOTICE_YN = 'N' " +
                     "AND B.BOARD_TITLE LIKE '%' || :boardTitle || '%' " +
-                    "AND B.GOOD >= 10",
+                    "AND (SELECT COUNT(*) FROM TB_RECOMMEND R WHERE R.BOARD_ID = B.BOARD_ID) >= 10",
             nativeQuery = true)
     Page<IFreeBoardDto> findAllByFrBoardTitleContainingAndGoodGreaterThanEqual(@Param("boardTitle") String boardTitle,
                                                                                Pageable pageable
@@ -80,7 +80,4 @@ public interface FreeBoardRepository extends JpaRepository<Board, Long> {
             "ORDER BY B.ADD_DATE DESC",
             nativeQuery = true)
     List<IFreeBoardDto> findByFreeNotice();
-
-    @Query("SELECT b FROM Board b WHERE b.bocode = :bocode AND b.boardId = :boardId")
-    Optional<Board> findByCodeAndId(@Param("bocode") String code, @Param("boardId") Long boardId);
 }
