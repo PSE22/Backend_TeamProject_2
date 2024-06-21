@@ -1,9 +1,9 @@
 package org.example.backend.service.auth;
 
-import org.example.backend.security.jwt.JwtUtils;
+import lombok.RequiredArgsConstructor;
 import org.example.backend.security.dto.LoginRequest;
 import org.example.backend.security.dto.LoginResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.example.backend.security.jwt.JwtUtils;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -27,11 +27,10 @@ import java.util.ArrayList;
  * 2024-05-29         kimtaewan          최초 생성
  */
 @Service
+@RequiredArgsConstructor
 public class LoginService {
-    @Autowired
-    AuthenticationManagerBuilder authenticationManagerBuilder;
-    @Autowired
-    JwtUtils jwtUtils;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final JwtUtils jwtUtils;
 
     public LoginResponse authenticate(LoginRequest loginRequest) throws BadCredentialsException {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(

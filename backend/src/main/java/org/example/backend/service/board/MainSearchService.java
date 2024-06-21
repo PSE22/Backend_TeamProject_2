@@ -1,8 +1,8 @@
 package org.example.backend.service.board;
 
+import lombok.RequiredArgsConstructor;
 import org.example.backend.model.dto.MainPageSearchDto;
 import org.example.backend.repository.board.MainSearchRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,10 +21,10 @@ import org.springframework.stereotype.Service;
  * 2024-05-29         GGG          최초 생성
  */
 @Service
+@RequiredArgsConstructor
 public class MainSearchService {
 
-    @Autowired
-    MainSearchRepository mainSearchRepository;
+    private final MainSearchRepository mainSearchRepository;
 
     //    검색기능
     public Page<MainPageSearchDto> searchBoard(String boardtitle, Pageable pageable) {

@@ -199,7 +199,6 @@ public class ReplyService {
     }
 
     //    댓글 삭제
-    @Transactional
     public void removeReply(Long replyId) {
         List<IDelReplyDto> delReply = replyRepository.findByReplyId(replyId);
         log.debug("댓글 삭제 디버깅 111");

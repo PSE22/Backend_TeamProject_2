@@ -1,6 +1,7 @@
 package org.example.backend.controller.profile;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.service.profile.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,9 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class EmailController {
-    @Autowired
-    private EmailService emailService;
+    private final EmailService emailService;
 
     @PutMapping("/sendEmail/{to}/{memberId}")
     public ResponseEntity<Object> sendEmail(@PathVariable String to, @PathVariable String memberId) {

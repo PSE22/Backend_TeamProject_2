@@ -1,8 +1,8 @@
 package org.example.backend.service.board;
 
+import lombok.RequiredArgsConstructor;
 import org.example.backend.model.dto.MainPageDto;
 import org.example.backend.repository.board.MainPageRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,15 +17,16 @@ import java.util.List;
  * <p>
  * ===========================================================
  * DATE            AUTHOR             NOTE
+ *
  * -----------------------------------------------------------
  * 2024-05-22         GGG          최초 생성
  */
 
 @Service
+@RequiredArgsConstructor
 public class MainPageService {
 
-    @Autowired
-    private MainPageRepository mainPageRepository;
+    private final MainPageRepository mainPageRepository;
 
 //    자유게시판
     public List<MainPageDto> getFreeBoardData() {
