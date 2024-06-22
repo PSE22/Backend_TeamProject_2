@@ -28,9 +28,12 @@ class BoardDetailService {
   }
   // 투표 회원 조회
   getVoteMember(boardId, memberId) {
-    return http.get(`/board/board-detail/vote-member?boardId=${boardId}&memberId=${memberId}`, {
-      headers: LoginHeader(),
-    });
+    return http.get(
+      `/board/board-detail/vote-member?boardId=${boardId}&memberId=${memberId}`,
+      {
+        headers: LoginHeader(),
+      }
+    );
   }
 
   // 글번호로 장소 조회 (게시글 하나당 장소 하나)
@@ -53,7 +56,15 @@ class BoardDetailService {
       headers: LoginHeader(),
     });
   }
-
+  // 신고 데이터 존재 확인
+  getReport(boardId, memberId) {
+    return http.get(
+      `/board/board-detail/report-exist?boardId=${boardId}&memberId=${memberId}`,
+      {
+        headers: LoginHeader(),
+      }
+    );
+  }
   // 추천 데이터 존재 확인
   getRecommend(boardId, memberId) {
     return http.get(
@@ -87,7 +98,7 @@ class BoardDetailService {
       headers: LoginHeader(),
     });
   }
-  // 투표 저장 
+  // 투표 저장
   createVoteMember(vote) {
     return http.post("/board/board-detail/vote", vote, {
       headers: LoginHeader(),
