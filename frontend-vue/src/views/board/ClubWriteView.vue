@@ -363,6 +363,8 @@ export default {
       map: null,
       geocoder: null,
       marker: null,
+
+      badWords : ["ㅅㅂ","ㅂㅅ","욕설","바보","멍청이","미친"]
     };
   },
   methods: {
@@ -483,7 +485,7 @@ export default {
         this.$router.push(`/board/club`);
       } catch (e) {
         console.log(e);
-        if(!this.club.bocode || !this.club.smcode) {
+        if(!this.bocode || !this.smcode) {
           alert("게시판을 선택해주세요.")
         }
         else if(!this.club.boardTitle) {
@@ -553,7 +555,25 @@ export default {
         this.$refs.fileInput.value = "";
       }
     },
+// 나쁜 단어 필터링
+filterBadWords(text) {
+      this.badWords.forEach((word) => {
+        if (text.includes(word)) {
+          alert(`"${word}"은(는) 입력할 수 없습니다.`);
+          text = text.replace(new RegExp(word, "gi"), "");
+        }
+      });
+      return text;
+    },
   },
+  watch: {
+    'club.boardTitle': function (newValue) {
+      this.club.boardTitle = this.filterBadWords(newValue);
+    },
+    'club.boardContent': function (newValue) {
+      this.club.boardContent = this.filterBadWords(newValue);
+    }
+        },
   computed: {
     // 현재 날짜 전은 선택 불가
     minDate() {

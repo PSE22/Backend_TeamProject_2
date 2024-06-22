@@ -1,6 +1,8 @@
 package org.example.backend.controller.board;
 
 import org.example.backend.model.dto.MainPageDto;
+import lombok.RequiredArgsConstructor;
+import org.example.backend.model.dto.board.HotTopicDto;
 import org.example.backend.service.board.HotTopicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +27,9 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/board")
+@RequiredArgsConstructor
 public class HotTopicController {
-    @Autowired
-    private HotTopicService hotTopicService;
+    private final HotTopicService hotTopicService;
 
     @GetMapping("/hot-topics")
     public ResponseEntity<List<MainPageDto>> getHotTopics() {

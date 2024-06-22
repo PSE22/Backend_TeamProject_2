@@ -6,6 +6,7 @@
         class="custom-btn col-2"
         v-for="(data, index) in bocodeName"
         :key="index"
+        :class="{ active: boardCode === data.cmCd }"
         @click="pageSizeChange(data.cmCd)"
       >
         {{ data.cmCdName }}
@@ -31,7 +32,7 @@
       >
         <td class="text-center col-1">{{ data.boardId }}</td>
         <td class="text-center col-1" style="color: lightgray">
-          {{ data.cmCdName }}
+          [{{ data.cmCdName }}]
         </td>
         <td class="col-5">
           <span class="badge text-center text-bg-dark me-2">공지</span>{{ data.boardTitle }} <span v-if="data.replyCount>0" style="color: brown"><i class="bi bi-chat-text"></i> [{{ data.replyCount }}]</span>
@@ -68,7 +69,7 @@
       </select>
     </div>
     <div class="col-1">
-      <button type="button" class="btn btn-dark" @click="goClubWrite">
+      <button type="button" class="btn btn-dark" style="width: 90px" @click="goClubWrite">
         글쓰기
       </button>
     </div>
@@ -233,3 +234,4 @@ export default {
   background-color: #000; /* 검정색 밑줄 */
 }
 </style>
+

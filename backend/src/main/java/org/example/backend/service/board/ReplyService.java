@@ -94,13 +94,15 @@ public class ReplyService {
 
         // 댓글 알림
         Long boardId = replyDto.getBoardId();
+        Board board = boardRepository.findById(boardId).orElse(null);
         NotifyDto notifyDto = new NotifyDto();
-        notifyDto.setNotiUrl(currentUrl);
-        notifyService.createReplyNotify(boardId, notifyDto);
+        if (!board.getMemberId().equals(replyDto.getMemberId())) {
+            notifyDto.setNotiUrl(currentUrl);
+            notifyService.createReplyNotify(boardId, notifyDto);
+        }
 
         // 핫토픽 알림
         int count = countReply(boardId);
-        Board board = boardRepository.findById(boardId).orElse(null);
         if (board.getBocode().equals("BO03") && count == 10) {
             notifyService.createHotTopicNotify(boardId, notifyDto);
         }
@@ -199,7 +201,6 @@ public class ReplyService {
     }
 
     //    댓글 삭제
-    @Transactional
     public void removeReply(Long replyId) {
         List<IDelReplyDto> delReply = replyRepository.findByReplyId(replyId);
         log.debug("댓글 삭제 디버깅 111");

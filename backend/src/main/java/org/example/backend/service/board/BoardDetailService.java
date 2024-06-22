@@ -2,10 +2,12 @@ package org.example.backend.service.board;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.protocol.types.Field;
 import org.example.backend.model.common.BoardIdMemberIdPk;
 import org.example.backend.model.dto.NotifyDto;
-import org.example.backend.model.dto.board.*;
+import org.example.backend.model.dto.board.DelBoardDto;
+import org.example.backend.model.dto.board.IBoardDetailDto;
+import org.example.backend.model.dto.board.IBoardDto;
+import org.example.backend.model.dto.board.IUserDto;
 import org.example.backend.model.entity.board.*;
 import org.example.backend.repository.board.*;
 import org.example.backend.service.auth.NotifyService;
@@ -13,8 +15,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * packageName : org.example.backend.service.board
@@ -153,30 +155,10 @@ public class BoardDetailService {
     public void deleteBoard(Long boardId) {
         List<DelBoardDto> delData = boardDetailRepository.findByBoardId(boardId);
 
-        // 댓글 파일 삭제 및 게시글 파일 삭제
-//        List<String> uuidsToDelete = new ArrayList<>(); // 삭제할 UUID 목록
-//        for (DelBoardDto item : delData) {
-//            String uuid = item.getUuid();
-//            if (uuid != null) {
-//                replyFileRepository.deleteByUuid(uuid);
-//
-//                boardFileRepository.deleteByUuid(uuid);
-//                uuidsToDelete.add(uuid); // UUID 목록에 추가
-//            }
-//        }
-//
-//        // 파일 삭제
-//        for (String uuid : uuidsToDelete) {
-//            File file = fileRepository.findById(uuid).orElse(null);
-//            if (file != null) {
-//                fileRepository.delete(file);
-//            }
-//        }
-
-
         // 게시글 파일 삭제
         for (DelBoardDto item : delData) {
             String uuid = item.getUuid();
+            log.debug("게시글 파일 삭제:::" + uuid);
             if (uuid != null) {
                 boardFileRepository.deleteByUuid(uuid);
             }
@@ -194,6 +176,7 @@ public class BoardDetailService {
         // 댓글 삭제
         for (DelBoardDto item : delData) {
             Long replyId = item.getReplyId();
+            log.debug("댓글 삭제:::" + replyId);
             if (replyId != null) {
                 replyService.removeReply(replyId);
             }

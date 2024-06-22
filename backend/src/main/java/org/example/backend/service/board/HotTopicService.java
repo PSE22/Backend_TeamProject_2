@@ -1,8 +1,9 @@
 package org.example.backend.service.board;
 
 import org.example.backend.model.dto.MainPageDto;
+import lombok.RequiredArgsConstructor;
+import org.example.backend.model.dto.board.HotTopicDto;
 import org.example.backend.repository.board.HotTopicRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,9 +22,9 @@ import java.util.List;
  * 2024-06-03         GGG          최초 생성
  */
 @Service
+@RequiredArgsConstructor
 public class HotTopicService {
-    @Autowired
-    private HotTopicRepository hotTopicRepository;
+    private final HotTopicRepository hotTopicRepository;
 
     public List<MainPageDto> getHotTopics() {
         return hotTopicRepository.findHotTopics();

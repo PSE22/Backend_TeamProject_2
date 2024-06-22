@@ -1,8 +1,8 @@
 <template>
   <div align="center">
-    <h1 class="text-center mb-5 mt-5">동호회 게시판</h1>
+    <h1 class="text-center mb-5 mt-5">건의 게시판</h1>
     <div class="container mt-3 free-box">
-      <!-- 동호회 게시판 / 닉네임 입력 -->
+      <!-- 건의 게시판 / 닉네임 입력 -->
       <div>
         <div class="row">
           <div class="col-4">
@@ -11,22 +11,6 @@
               class="form-control"
               disabled
               v-model="boardName"
-            />
-          </div>
-          <div class="col-4">
-            <input
-              type="text"
-              class="form-control"
-              disabled
-              v-model="boCmcd.cmcdName"
-            />
-          </div>
-          <div class="col-4">
-            <input
-              type="text"
-              class="form-control"
-              disabled
-              v-model="smCmcd.cmCdName"
             />
           </div>
         </div>
@@ -199,17 +183,6 @@
                         장소 추가
                       </h1>
                     </div>
-
-                    <div class="col-auto">
-                      <input
-                        class="form-control"
-                        type="text"
-                        v-model="address"
-                        placeholder="주소검색 사용"
-                        @keypress.enter="openPostcode"
-                        disabled
-                      />
-                    </div>
                     <div class="col-auto">
                       <input
                         type="button"
@@ -371,8 +344,7 @@ export default {
       boCmcd: {
         cmcdName: "", // cmcd 객체에 cmcdName 속성 추가
       }, // 부서코드, 부서명
-      smCmcd: {},
-      boardName: "동호회 게시판",
+      boardName: "건의 게시판",
 
       vote: [],
       voteExists: false, // 투표가 생성되었는지 여부를 저장하는 변수
@@ -432,19 +404,10 @@ export default {
         console.log("retrieveBocode 에러", e);
       }
     },
-    async retrieveSmcode() {
-      try {
-        let response = await BoardEditService.getCmCd(this.smcode); // DE01 코드를 가져오도록 수정
-        // 영업팀 코드명을 board 객체에 할당합니다.
-        this.smCmcd = response.data;
-      } catch (e) {
-        console.log("retrieveSmcode 에러", e);
-      }
-    },
     // 글번호로 투표 가져오기
     async retrieveVote() {
       try {
-        let response = await BoardDetailService.getVote(this.boardId);
+        let response = await BoardEditService.getVote(this.boardId);
         this.vote = response.data;
         console.log("투표 :", response);
         console.log("투표 :", this.vote);
@@ -510,7 +473,7 @@ export default {
     // 카카오 API 호출하고, 장소 추가 후 확인 버튼 이벤트
     placeEdit() {
       this.placeExists = true;
-      console.log("장소 어디?? : ", this.address);
+      console.log("장소 어디?? : ", this.address.address);
     },
     // 글번호로 이미지 가져오기
     async retrieveImg() {
@@ -634,6 +597,7 @@ export default {
       }
       this.$refs.mapContainer.style.display = "none";
     },
+
     async editBoard() {
       try {
         // 임시 객체 변수
@@ -661,18 +625,16 @@ export default {
         );
         fileDtos = fileDtos
           .concat(this.existingFiles)
-          .filter((file) => file && file.fileName);
-        console.log("파일Dto:::", fileDtos);
+          .filter((file) => file.fileName);
         let response = await BoardWrite.update({
           boardDto,
           placeDto: placeDto,
-          fileDtos: fileDtos.length > 0 ? fileDtos : [],
+          fileDtos: fileDtos.length > 0 ? fileDtos : null,
         });
-        console.log("existingFiles:::", this.existingFiles);
         console.log(response);
         this.submitted = true;
         alert("게시글이 등록되었습니다.");
-        this.$router.push(`/board/club`);
+        this.$router.push(`/board/suggest`);
       } catch (e) {
         console.log(e);
         alert("내용을 입력해주세요.");
@@ -690,13 +652,13 @@ export default {
     },
   },
   watch: {
-    'board.boardTitle': function (newValue) {
+    "board.boardTitle": function (newValue) {
       this.board.boardTitle = this.filterBadWords(newValue);
     },
-    'board.boardContent': function (newValue) {
+    "board.boardContent": function (newValue) {
       this.board.boardContent = this.filterBadWords(newValue);
-    }
-        },
+    },
+  },
   computed: {
     isNoticeChecked: {
       get() {
@@ -709,8 +671,6 @@ export default {
   },
   mounted() {
     console.log(
-      "부서코드 : ",
-      this.smcode,
       "/ 글번호 : ",
       this.boardId,
       "/ 로그인ID : ",
@@ -719,7 +679,6 @@ export default {
     this.retrieveMember();
     this.retrieveBoard();
     this.retrieveBocode();
-    this.retrieveSmcode();
     this.retrieveVote();
     this.retrieveImg();
     this.loadDaumPostcodeScript();

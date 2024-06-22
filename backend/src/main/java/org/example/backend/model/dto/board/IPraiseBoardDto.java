@@ -19,4 +19,6 @@ public interface IPraiseBoardDto {
     String getNickName();
     String getAddDate();
     Integer getGood();
+    String getReplyCount();
+
 }

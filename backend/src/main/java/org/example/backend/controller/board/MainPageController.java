@@ -1,5 +1,6 @@
 package org.example.backend.controller.board;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.MainPageDto;
 import org.example.backend.service.board.MainPageService;
@@ -28,10 +29,10 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class MainPageController {
 
-    @Autowired
-    private MainPageService mainPageService;
+    private final MainPageService mainPageService;
 
 //    자유게시판
 @GetMapping("/free_board")

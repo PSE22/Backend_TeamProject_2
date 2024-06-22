@@ -1,5 +1,6 @@
 package org.example.backend.controller.auth;
 
+import lombok.RequiredArgsConstructor;
 import org.example.backend.service.auth.SseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -25,10 +26,10 @@ import java.io.IOException;
  * 2024-05-23         kimtaewan          최초 생성
  */
 @RestController
+@RequiredArgsConstructor
 public class SseController {
 
-    @Autowired
-    SseService sseService;
+    private final SseService sseService;
 
     // 미디어 타입 설정해야 SSE 동작
     @GetMapping(value = "/api/connect/{memberId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)

@@ -17,7 +17,7 @@
         <tr v-for="(data, index) in freeNotice" :key="index" @click="goPraiseDetail(data.boardId)">
           <td class="text-center col-1">{{ data.boardId }}</td>
           <td class="col-5">
-            <span class="badge text-bg-dark me-2">공지</span>{{ data.boardTitle }}
+            <span class="badge text-bg-dark me-2">공지</span>{{ data.boardTitle }} <span v-if="data.replyCount>0" style="color: brown"><i class="bi bi-chat-text"></i> [{{ data.replyCount }}]</span>
           </td>
           <td class="text-center col-2">{{ data.nickName }}</td>
           <td class="text-center col-2">{{ data.addDate }}</td>
@@ -28,7 +28,7 @@
       <tbody>
         <tr v-for="(data, index) in board" :key="index" @click="goPraiseDetail(data.boardId)">
           <td class="text-center">{{ data.boardId }}</td>
-          <td class="col-5">{{ data.boardTitle }}</td>
+          <td class="col-5">{{ data.boardTitle }} <span v-if="data.replyCount>0" style="color: brown"><i class="bi bi-chat-text"></i> [{{ data.replyCount }}]</span></td>
           <td class="text-center">{{ data.nickName }}</td>
           <td class="text-center">{{ data.addDate }}</td>
           <td class="text-center">{{ data.good }}</td>
@@ -45,8 +45,8 @@
         </select>
       </div>
       <div class="col-1">
-        <button type="button" class="btn btn-dark" @click="moveToPraiseWrite">
-          등록
+        <button type="button" class="btn btn-dark" style="width: 90px" @click="moveToPraiseWrite">
+          글쓰기
         </button>
       </div>
     </div>
@@ -83,6 +83,8 @@ export default {
       pageSize: 10,
 
       pageSizes: [10, 25, 50],
+
+      badWords: ["ㅅㅂ", "ㅂㅅ", "욕설", "바보", "멍청이", "미친"],
     };
   },
   methods: {
@@ -140,6 +142,24 @@ export default {
     },
     moveToPraiseWrite() {
       this.$router.push("/board/praise-write");
+    },
+        // 나쁜 단어 필터링
+        filterBadWords(text) {
+      this.badWords.forEach((word) => {
+        if (text.includes(word)) {
+          alert(`"${word}"은(는) 입력할 수 없습니다.`);
+          text = text.replace(new RegExp(word, "gi"), "");
+        }
+      });
+      return text;
+    },
+  },
+  watch: {
+    "board.boardTitle": function (newValue) {
+      this.board.boardTitle = this.filterBadWords(newValue);
+    },
+    "board.boardContent": function (newValue) {
+      this.board.boardContent = this.filterBadWords(newValue);
     },
   },
   mounted() {

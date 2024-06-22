@@ -1,8 +1,8 @@
 package org.example.backend.service.board;
 
+import lombok.RequiredArgsConstructor;
 import org.example.backend.model.dto.MainPageArmDto;
 import org.example.backend.repository.board.MainPageArmRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,11 +21,11 @@ import java.util.List;
  * 2024-05-24         GGG          최초 생성
  */
 @Service
+@RequiredArgsConstructor
 public class MainPageNotiService {
 
 
-    @Autowired
-    private MainPageArmRepository mainPageArmRepository;
+    private final MainPageArmRepository mainPageArmRepository;
 
     // 알람 상세 정보 조회
     public List<MainPageArmDto> getNotificationsByMemberId(String memberId) {

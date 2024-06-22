@@ -1,11 +1,13 @@
 package org.example.backend.service.board;
 
 import lombok.RequiredArgsConstructor;
-import org.example.backend.model.dto.board.*;
+import org.example.backend.model.dto.board.BoardFileDto;
+import org.example.backend.model.dto.board.FileDto;
+import org.example.backend.model.dto.board.IPraiseBoardDto;
+import org.example.backend.model.dto.board.VoteDto;
 import org.example.backend.model.entity.board.Board;
 import org.example.backend.model.entity.board.Place;
 import org.example.backend.repository.board.PraiseBoardRepository;
-import org.example.backend.repository.board.SuggestBoardRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -33,8 +35,6 @@ public class PraiseBoardService {
 
     private final PraiseBoardRepository praiseBoardRepository;
     private final VoteService voteService;
-    private final PlaceService placeService;
-    private final FileService fileService;
     private final BoardFileService boardFileService;
 
     //    TODO: 최신글 전체조회(read)

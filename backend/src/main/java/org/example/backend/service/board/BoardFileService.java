@@ -2,12 +2,9 @@ package org.example.backend.service.board;
 
 import lombok.RequiredArgsConstructor;
 import org.example.backend.model.dto.board.BoardFileDto;
-import org.example.backend.model.dto.board.FileDto;
 import org.example.backend.model.entity.board.BoardFile;
-import org.example.backend.model.entity.board.File;
 import org.example.backend.repository.board.BoardFileRepository;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,8 +15,7 @@ import java.util.List;
 public class BoardFileService {
 
     private final BoardFileRepository boardFileRepository;
-    @Autowired
-    ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Transactional
     public void saveBoardFile(Long boardId, List<BoardFileDto> boardFileDtos) {

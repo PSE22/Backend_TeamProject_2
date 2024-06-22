@@ -1,8 +1,8 @@
 package org.example.backend.service.board;
 
+import lombok.RequiredArgsConstructor;
 import org.example.backend.model.dto.board.IClubDto;
 import org.example.backend.repository.board.DeptBoardRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,9 +23,9 @@ import java.util.List;
  * 2024-05-24         SAMSUNG          최초 생성
  */
 @Service
+@RequiredArgsConstructor
 public class DeptBoardService {
-    @Autowired
-    DeptBoardRepository deptBoardRepository;
+    private final DeptBoardRepository deptBoardRepository;
 
     // 부서별 게시판 전체조회 - 공지글
     public List<IClubDto> findAllByNotice(String smcode) {

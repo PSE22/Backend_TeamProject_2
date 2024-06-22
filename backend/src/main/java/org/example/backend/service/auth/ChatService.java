@@ -3,9 +3,6 @@ package org.example.backend.service.auth;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.backend.model.dto.ChatMessageDto;
-import org.example.backend.service.ChatSubService;
-import org.example.backend.service.RedisPubService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
@@ -29,10 +26,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 @RequiredArgsConstructor
 public class ChatService {
-    @Autowired
-    RedisPubService redisPubService;
-    @Autowired
-    ChatSubService chatSubService;
+    private final RedisPubService redisPubService;
+    private final ChatSubService chatSubService;
     // 쓰레드 세이프 자료구조 사용 -> 여러 클라이언트에서 접속가능
     private final ConcurrentHashMap<String, ChannelTopic> topics = new ConcurrentHashMap<>();
     private final RedisMessageListenerContainer redisMessageListener;

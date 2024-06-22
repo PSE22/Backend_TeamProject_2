@@ -318,7 +318,7 @@
           <button type="button" class="btn btn-danger me-md-2" @click="editBoard">
             수정
           </button>
-          <button type="button" class="btn btn-secondary" @click="deleteBoard">
+          <button type="button" class="btn btn-secondary" @click="this.$router.go(-1)">
             취소
           </button>
         </div>
@@ -345,7 +345,7 @@
         auth: "", // 로그인 사용자 권한 체크
         memberInfo: "", // 회원정보
         board: {
-          noticeYn: "N",
+          noticeYn: "",
           bocodeName: "", // board 객체에 bocodeName 속성 추가
         }, // 게시글
         boCmcd: {
@@ -376,6 +376,8 @@
           level: 4, //지도의 레벨(확대, 축소 정도)
         },
         address: "",
+
+        badWords: ["ㅅㅂ", "ㅂㅅ", "욕설", "바보", "멍청이", "미친"],
       };
     },
     methods: {
@@ -393,10 +395,6 @@
         try {
           let response = await BoardEditService.getBoard(this.boardId);
           this.board = response.data;
-          // 공지사항 여부를 초기화
-          if (this.board.noticeYn !== "Y") {
-            this.board.noticeYn = "N";
-          }
           console.log("board 데이터 : ", response.data);
         } catch (e) {
           console.log("retrieveBoard 에러", e);
@@ -647,7 +645,26 @@
           alert("내용을 입력해주세요.");
         }
       },
-      computed: {
+    // 나쁜 단어 필터링
+    filterBadWords(text) {
+      this.badWords.forEach((word) => {
+        if (text.includes(word)) {
+          alert(`"${word}"은(는) 입력할 수 없습니다.`);
+          text = text.replace(new RegExp(word, "gi"), "");
+        }
+      });
+      return text;
+    },
+    },
+    watch: {
+    "board.boardTitle": function (newValue) {
+      this.board.boardTitle = this.filterBadWords(newValue);
+    },
+    "board.boardContent": function (newValue) {
+      this.board.boardContent = this.filterBadWords(newValue);
+    },
+  },
+    computed: {
         isNoticeChecked: {
           get() {
             return this.board.noticeYn === "Y";
@@ -657,7 +674,6 @@
           },
         },
       },
-    },
       mounted() {
         console.log(
           "/ 글번호 : ",
