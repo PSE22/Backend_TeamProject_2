@@ -1,5 +1,6 @@
 package org.example.backend.service.board;
 
+import org.example.backend.model.dto.MainPageDto;
 import lombok.RequiredArgsConstructor;
 import org.example.backend.model.dto.board.HotTopicDto;
 import org.example.backend.repository.board.HotTopicRepository;
@@ -25,7 +26,7 @@ import java.util.List;
 public class HotTopicService {
     private final HotTopicRepository hotTopicRepository;
 
-    public List<HotTopicDto> getHotTopics() {
+    public List<MainPageDto> getHotTopics() {
         return hotTopicRepository.findHotTopics();
     }
 }
