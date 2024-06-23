@@ -3,7 +3,6 @@ package org.example.backend.controller.board;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.backend.model.common.BoardIdMemberIdPk;
 import org.example.backend.model.dto.board.*;
 import org.example.backend.model.dto.board.Reply.ReplyDto;
 import org.example.backend.model.entity.board.*;
@@ -18,6 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
@@ -190,10 +192,17 @@ public class BoardDetailController {
     // 첨부파일 다운로드
     @GetMapping("/file/upload2/{uuid}")
     public ResponseEntity<byte[]> fileDownload(@PathVariable String uuid) {
-        log.debug("::: 다운" + uuid);
         Optional<File> file = boardDetailService.fileDownload(uuid);
+
+        String fileName = file.get().getFileName();
+        String encodeName = null;
+        try {
+            encodeName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString()).replaceAll("\\+", "%20");
+        } catch (UnsupportedEncodingException e) {
+            log.debug("인코딩 오류", e);
+        }
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.get().getFileName() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + encodeName )
                 .body(file.get().getData()); // BLOB 데이터
     }
 
@@ -247,9 +256,9 @@ public class BoardDetailController {
     // 댓글 및 대댓글 저장
     @PostMapping("/board-detail/reply")
     public ResponseEntity<Object> createReply(
-            @RequestParam(defaultValue = "") Long boardId,
-            @RequestParam(defaultValue = "") String memberId,
-            @RequestParam(defaultValue = "") String reply,
+            @RequestParam Long boardId,
+            @RequestParam String memberId,
+            @RequestParam String reply,
             @RequestParam(required = false) Long reReply,
             @RequestParam String currentUrl,
             @RequestPart(value = "file", required = false) MultipartFile file
@@ -266,16 +275,17 @@ public class BoardDetailController {
     // 댓글 및 대댓글 수정
     @PutMapping("/board-detail/reply")
     public ResponseEntity<Object> updateReply(
-            @RequestParam(defaultValue = "") Long replyId,
-            @RequestParam(defaultValue = "") Long boardId,
-            @RequestParam(defaultValue = "") String memberId,
-            @RequestParam(defaultValue = "") String reply,
+            @RequestParam Long replyId,
+            @RequestParam Long boardId,
+            @RequestParam String memberId,
+            @RequestParam String reply,
             @RequestParam(required = false) Long reReply,
-            @RequestPart(value = "file", required = false) MultipartFile file) {
+            @RequestParam boolean isFileDeleted,
+            @RequestPart(value = "file", required = false) MultipartFile file
+            ) {
         try {
             ReplyDto replyDto = new ReplyDto(replyId, boardId, memberId, reply, reReply);
-            log.debug("댓글 수정 ReplyDto :::: {}", replyDto);
-            replyService.updateReply(replyDto, file);
+            replyService.updateReply(replyDto, file, isFileDeleted);
             return new ResponseEntity<>("댓글 수정 성공", HttpStatus.OK);
         } catch (Exception e) {
             return handleException(e);
@@ -301,6 +311,17 @@ public class BoardDetailController {
         try {
             boardDetailService.saveReport(report);
             return new ResponseEntity<>("신고 저장 성공", HttpStatus.OK);
+        } catch (Exception e) {
+            return handleException(e);
+        }
+    }
+
+    // 글 신고 데이터 존재하는지 확인
+    @GetMapping("/board-detail/report-exist")
+    public ResponseEntity<Object> existsReport(@RequestParam Long boardId, @RequestParam String memberId) {
+        try {
+            Integer report = boardDetailService.existsReport(boardId, memberId);
+            return new ResponseEntity<>(report, HttpStatus.OK);
         } catch (Exception e) {
             return handleException(e);
         }

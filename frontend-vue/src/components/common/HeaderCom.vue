@@ -40,7 +40,7 @@
         >
         <a href="/" @click.prevent="handleLogout" v-if="isLoggedIn">로그아웃</a>
         <a v-if="isLoggedIn && memberCode === 'AT01'"
-          ><router-link to="/admin/register-mgmt">관리자 페이지</router-link></a
+          ><router-link to="/admin/board-mgmt">관리자 페이지</router-link></a
         >
       </div>
     </div>
