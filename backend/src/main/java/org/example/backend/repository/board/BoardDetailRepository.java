@@ -49,6 +49,7 @@ public interface BoardDetailRepository extends JpaRepository<Board, Long> {
             "B.BOARD_ID AS boardId,\n" +
             "B.BOARD_TITLE AS boardTitle,\n" +
             "B.BOARD_CONTENT AS boardContent,\n" +
+            "B.NOTICE_YN AS noticeYn, " +
             "B.BOCODE AS bocode,\n" +
             "B.SMCODE AS smcode,\n" +
             "B.ADD_DATE AS addDate\n" +
@@ -89,6 +90,14 @@ public interface BoardDetailRepository extends JpaRepository<Board, Long> {
             "AND MEMBER_ID = :memberId"
             , nativeQuery = true)
     Integer existsRecommend(@Param("boardId") Long boardId, @Param("memberId") String memberId);
+
+    // 신고 데이터 존재하는지 확인
+    @Query(value = "SELECT count(*)\n" +
+            "FROM TB_REPORT \n" +
+            "WHERE BOARD_ID = :boardId\n" +
+            "AND MEMBER_ID = :memberId"
+            , nativeQuery = true)
+    Integer existsReport(@Param("boardId") Long boardId, @Param("memberId") String memberId);
 
     // 추천 수 카운트
     @Query(value = "SELECT count(*)\n" +

@@ -190,11 +190,11 @@
                         <div class="d-flex justify-content-between mt-2">
                             <div class="reply-date">{{ reReply.addDate }}</div>
                             <div>
-                                <button v-if="this.member.memberId === data.memberId" class="btn btn-secondary me-2"
+                                <button v-if="this.member.memberId === reReply.memberId" class="btn btn-secondary me-2"
                                     @click="openReReplyUpdate(reReply.replyId)">수정</button>
-                                <button v-if="this.member.memberId === data.memberId || auth === 'A'"
+                                <button v-if="this.member.memberId === reReply.memberId || auth === 'A'"
                                     class="btn btn-danger me-2" @click="deleteReply(reReply)">삭제</button>
-                                <button v-if="this.member.memberId !== data.memberId && auth !== 'A'"
+                                <button v-if="this.member.memberId !== reReply.memberId && auth !== 'A'"
                                     class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#reportReplyModal"
                                     @click="openReplyReport(reReply)">
                                     <i class="bi bi-exclamation-triangle"></i> 신고
@@ -306,7 +306,7 @@ export default {
             parentId: "",                 // 현재 대댓글의 상위 댓글의 replyId
             recommendIcon: true,          // 추천 아이콘 (true는 빈 아이콘)
             reportReason: "",             // 글 신고 사유
-            report: {                    // 댓글 신고 객체
+            report: {                     // 댓글 신고 객체
                 replyId: "",
                 memberName: "",           // 댓글 작성자명
                 reply: "",                // 댓글 내용
@@ -314,6 +314,7 @@ export default {
             },
             currentFile: undefined,       // 댓글파일선택
             currentReFile: undefined,     // 대댓글파일선택
+            isFileDeleted: false,         // 댓글파일 삭제여부
             showWriteReReply: false,      // 대댓글쓰기
             images: [],
             nonImages: [],
@@ -328,14 +329,15 @@ export default {
             memberInfo: "",     // 회원정보
             board: "",          // 게시글
             cmcd: "",           // 부서코드, 부서명
-            vote: [],           // 투표
+            vote: "",           // 투표
             voteMember: [],     // 투표 회원
             boardFile: [],      // 글 첨부 이미지
+            existsReport: "",   // 글 신고 존재 여부
             recommend: "",      // 추천 존재 여부
             recommendCnt: "",   // 추천 수
-            reply: [],          // 댓글 목록
+            reply: "",          // 댓글 목록
             replyCount: "",     // 댓글수
-            currentUrl: window.location,   // 현재 페이지 Url
+            currentUrl: window.location.pathname,   // 현재 페이지 Url
 
             // 장소 
             map: null,
@@ -424,17 +426,21 @@ export default {
         // 글 신고 저장
         async createReport() {
             try {
-                if (!this.reportReason) {
-                    alert("신고 사유를 입력해주세요.");
+                if (this.existsReport === 1) {
+                    alert("이미 신고한 글입니다.");
                 } else {
-                    let report = {
-                        memberId: this.member.memberId,
-                        boardId: this.boardId,
-                        reportReason: this.reportReason,
+                    if (!this.reportReason) {
+                        alert("신고 사유를 입력해주세요.");
+                    } else {
+                        let report = {
+                            memberId: this.member.memberId,
+                            boardId: this.boardId,
+                            reportReason: this.reportReason,
+                        }
+                        await BoardDetailService.createReport(report);
+                        alert("신고가 완료되었습니다.");
+                        this.reportReason = "";
                     }
-                    await BoardDetailService.createReport(report);
-                    alert("신고가 완료되었습니다.");
-                    this.reportReason = "";
                 }
             } catch (e) {
                 console.log("createReport 에러", e);
@@ -600,6 +606,15 @@ export default {
                 console.log("retrieveImg 에러", e);
             }
         },
+        // 신고 데이터 존재 여부 가져오기
+        async retrieveReport() {
+            try {
+                let response = await BoardDetailService.getReport(this.boardId, this.member.memberId);
+                this.existsReport = response.data;
+            } catch (e) {
+                console.log("retrieveReport 에러", e);
+            }
+        },
         // 추천 데이터 존재 여부 가져오기
         async retrieveRecommend() {
             try {
@@ -632,14 +647,18 @@ export default {
                     this.replyPageCount = response.data.totalElements;
 
                     // 각 댓글에 대한 대댓글 가져오기
-                    for (let i = 0; i < this.reply.length; i++) {
-                        let comment = this.reply[i];
-                        // 대댓글 가져오기
+                    const reReplyPromise = this.reply.map(async (comment) => {
                         let reReplyResponse = await ReplyService.getReReply(this.boardId, comment.replyId);
-                        // 각 댓글 객체에 대댓글 객체 추가
-                        this.reply[i].reReplies = reReplyResponse.data;
-                    }
+                        comment.reReplies = reReplyResponse.data;
+                        return comment;
+                    });
+
+                    // 모든 대댓글 요청이 완료될 때까지 기다리기
+                    this.reply = await Promise.all(reReplyPromise);
+                } else {
+                    console.log("댓글 없음")
                 }
+
             } catch (e) {
                 console.log("retrieveReply 에러", e);
             }
@@ -671,6 +690,7 @@ export default {
             data.fileUrl = null;
             this.currentFile = null;
             this.currentReFile = null;
+            this.isFileDeleted = true;
         },
         // 댓글 + 파일 저장
         async createReply() {
@@ -681,12 +701,16 @@ export default {
                     reply: this.replyTextarea,
                     reReply: "",
                 }
-                let response = await ReplyService.createReply(temp, this.currentFile);
-                console.log("댓글 전송 : ", response);
-                this.retrieveReply();
-                this.retrieveReplyCount();
-                this.replyTextarea = "";
-                this.currentFile = undefined;
+                if (temp.reply) {
+                    let response = await ReplyService.createReply(temp, this.currentFile, this.currentUrl);
+                    console.log("댓글 전송 : ", response);
+                    this.retrieveReply();
+                    this.retrieveReplyCount();
+                    this.replyTextarea = "";
+                    this.currentFile = undefined;
+                } else {
+                    alert("댓글을 입력하세요.");
+                }
             } catch (e) {
                 this.currentFile = undefined;
                 console.log(e);
@@ -710,11 +734,17 @@ export default {
         async updateReply(replyId) {
             const reply = this.reply.find(r => r.replyId === replyId);
             reply.reReply = "";    // reReply에는 빈문자열 전달 (undefined 에러 방지)
+            reply.isFileDeleted = this.isFileDeleted;
             try {
-                let response = await ReplyService.updateReply(reply, this.currentFile);
-                console.log("댓글 수정 : ", response.data);
-                this.retrieveReply();
-                this.retrieveReplyCount();
+                if (reply.reply) {
+                    let response = await ReplyService.updateReply(reply, this.currentFile);
+                    console.log("댓글 수정 : ", response.data);
+                    this.retrieveReply();
+                    this.retrieveReplyCount();
+                    this.isFileDeleted = false;
+                } else {
+                    alert("댓글을 입력하세요.");
+                }
             } catch (e) {
                 console.log("updateReply 에러", e);
             }
@@ -766,13 +796,17 @@ export default {
                     reply: this.reReplyTextarea,
                     reReply: reReplyData,
                 }
-                let response = await ReplyService.createReply(temp, this.currentReFile);
-                console.log("대댓글 전송 : ", response);
-                this.retrieveReply();
-                this.retrieveReplyCount();
-                this.reReplyTextarea = "";
-                this.currentReFile = undefined;
-                this.showWriteReReply = !this.showWriteReReply;     // 대댓글쓰기창 토글
+                if (temp.reply) {
+                    let response = await ReplyService.createReply(temp, this.currentReFile, this.currentUrl);
+                    console.log("대댓글 전송 : ", response);
+                    this.retrieveReply();
+                    this.retrieveReplyCount();
+                    this.reReplyTextarea = "";
+                    this.currentReFile = undefined;
+                    this.showWriteReReply = !this.showWriteReReply;     // 대댓글쓰기창 토글
+                } else {
+                    alert("댓글을 입력하세요.");
+                }
             } catch (e) {
                 this.currentReFile = undefined;
                 this.showWriteReReply = !this.showWriteReReply;     // 대댓글쓰기창 토글
@@ -801,11 +835,17 @@ export default {
         },
         // 대댓글 수정 후 등록
         async updateReReply(reReply) {
+            reReply.isFileDeleted = this.isFileDeleted;
             try {
-                let response = await ReplyService.updateReply(reReply, this.currentReFile);
-                console.log("대댓글 수정 : ", response.data);
-                this.retrieveReply();
-                this.retrieveReplyCount();
+                if (reReply.reply) {
+                    let response = await ReplyService.updateReply(reReply, this.currentReFile);
+                    console.log("대댓글 수정 : ", response.data);
+                    this.retrieveReply();
+                    this.retrieveReplyCount();
+                    this.isFileDeleted = false;
+                } else {
+                    alert("댓글을 입력하세요.");
+                }
             } catch (e) {
                 console.log("updateReReply 에러", e);
             }
@@ -816,6 +856,7 @@ export default {
         await this.retrieveBoard();
         await this.retrieveReply();
         await this.retrieveImg();
+        this.retrieveReport();
         this.classifyFilesByType();
         this.checkAuth();
         this.retrieveCode();
@@ -846,119 +887,5 @@ export default {
 </script>
 
 <style scoped>
-/* 전체 컨테이너 */
-.board-detail-container {
-    background-color: #f8f9fa;
-    padding: 20px;
-    border-radius: 10px;
-}
-
-/* 게시글 수정/삭제 버튼 */
-.board-button .btn {
-    border-radius: 50px;
-    font-weight: bold;
-}
-
-/* 게시판 헤더 */
-.card-header {
-    background-color: #b3000f;
-    color: white;
-    font-size: 1.2em;
-}
-
-/* 글 제목 */
-.card-title {
-    margin-bottom: 15px;
-    font-weight: 600;
-}
-
-/* 게시판 작성자 부분 */
-.card-text-name {
-    font-size: 0.8em;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-/* 게시판 작성일 부분 */
-.card-text-date {
-    font-size: 0.8em;
-    margin-bottom: 10px;
-}
-
-/* 댓글 목록 */
-.reply-content .list-group-item {
-    padding: 20px 30px;
-    border: none;
-    border-bottom: 1px solid #e9ecef;
-}
-
-/* 댓글 작성자 */
-.reply-name {
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-/* 댓글 내용 */
-.reply-content {
-    margin-bottom: 10px;
-}
-
-/* 댓글 작성일 */
-.reply-date {
-    font-size: 0.9em;
-    margin-bottom: 10px;
-}
-
-/* 대댓글 */
-.reReply-container {
-    padding: 20px 30px;
-    background-color: rgb(218, 218, 218);
-}
-
-/* 모달창 */
-.modal-content {
-    border-radius: 10px;
-}
-
-/* 모달 헤더 */
-.modal-header {
-    background-color: #b3000f;
-    color: white;
-}
-
-/* 파일 업로드 버튼 */
-.file-upload-button {
-    width: 100px;
-    display: inline-block;
-}
-
-.btn-danger {
-    background-color: #b3000f;
-    border-color: #b3000f;
-}
-
-/* 투표 항목 행 */
-.form-check-vote {
-    border-bottom: 1px #a3a3a3 solid;
-    padding: 15px 15px;
-    width: 100%;
-}
-
-.input-vote {
-    margin-right: 10px;
-}
-
-.vote-label {
-    margin-left: 0.5rem;
-}
-
-.vote-count {
-    font-weight: 700;
-    margin-left: auto;
-}
-
-.highlight {
-    background-color: #d6d6d6;
-    font-weight: bold;
-}
+@import "@/assets/css/boardDetail.css";
 </style>

@@ -172,7 +172,7 @@
                     <h1 class="modal-title fs-5" id="exampleModalLabel">
                       장소 추가
                     </h1>
-                  </div>  
+                  </div>
                   <div class="col-auto">
                     <input
                       type="button"
@@ -243,7 +243,7 @@
         <textarea
           class="form-control"
           placeholder="내용을 입력해주세요"
-          rows="5"
+          rows="10"
           name="boardContent"
           v-model="board.boardContent"
         ></textarea>
@@ -291,7 +291,7 @@
   </div>
 </template>
 
-<script>
+<script scope>
 let daum = window.daum;
 import BoardDetailService from "@/services/board/BoardDetailService";
 import BoardWriteService from "@/services/board/BoardWriteService";
@@ -326,6 +326,8 @@ export default {
       map: null,
       geocoder: null,
       marker: null,
+
+      badWords: ["ㅅㅂ", "ㅂㅅ", "욕설", "바보", "멍청이", "미친"],
     };
   },
   methods: {
@@ -483,6 +485,24 @@ export default {
         this.marker.setPosition(new daum.maps.LatLng(37.537187, 127.005476));
       }
       this.$refs.mapContainer.style.display = "none";
+    },
+    // 나쁜 단어 필터링
+    filterBadWords(text) {
+      this.badWords.forEach((word) => {
+        if (text.includes(word)) {
+          alert(`"${word}"은(는) 입력할 수 없습니다.`);
+          text = text.replace(new RegExp(word, "gi"), "");
+        }
+      });
+      return text;
+    },
+  },
+  watch: {
+    "board.boardTitle": function (newValue) {
+      this.board.boardTitle = this.filterBadWords(newValue);
+    },
+    "board.boardContent": function (newValue) {
+      this.board.boardContent = this.filterBadWords(newValue);
     },
   },
   computed: {

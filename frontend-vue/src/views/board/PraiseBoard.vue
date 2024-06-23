@@ -83,6 +83,8 @@ export default {
       pageSize: 10,
 
       pageSizes: [10, 25, 50],
+
+      badWords: ["ㅅㅂ", "ㅂㅅ", "욕설", "바보", "멍청이", "미친"],
     };
   },
   methods: {
@@ -140,6 +142,24 @@ export default {
     },
     moveToPraiseWrite() {
       this.$router.push("/board/praise-write");
+    },
+        // 나쁜 단어 필터링
+        filterBadWords(text) {
+      this.badWords.forEach((word) => {
+        if (text.includes(word)) {
+          alert(`"${word}"은(는) 입력할 수 없습니다.`);
+          text = text.replace(new RegExp(word, "gi"), "");
+        }
+      });
+      return text;
+    },
+  },
+  watch: {
+    "board.boardTitle": function (newValue) {
+      this.board.boardTitle = this.filterBadWords(newValue);
+    },
+    "board.boardContent": function (newValue) {
+      this.board.boardContent = this.filterBadWords(newValue);
     },
   },
   mounted() {

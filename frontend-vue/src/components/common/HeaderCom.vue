@@ -124,8 +124,7 @@
       class="chat-toggle-button"
       @click="toggleChat"
       v-if="isLoggedIn && !showChat"
-    >
-      채팅 열기
+    >채팅 <i class="bi bi-chat-dots"></i> 
     </button>
   </header>
 </template>
@@ -148,6 +147,8 @@ export default {
       messages: [],
       stompClient: null,
       showChat: false,
+
+      badWords: ["ㅅㅂ", "ㅂㅅ", "욕설", "바보", "멍청이", "미친"],
     };
   },
   computed: {
@@ -166,6 +167,9 @@ export default {
         this.fetchNotificationsCount();
         this.fetchNotifications();
       }
+    },
+    'newMessage': function (newValue) {
+      this.newMessage = this.filterBadWords(newValue);
     },
   },
   methods: {
@@ -276,6 +280,16 @@ export default {
         });
       }
     },
+        // 나쁜 단어 필터링
+        filterBadWords(text) {
+      this.badWords.forEach((word) => {
+        if (text.includes(word)) {
+          alert(`"${word}"은(는) 입력할 수 없습니다.`);
+          text = text.replace(new RegExp(word, "gi"), "");
+        }
+      });
+      return text;
+    },
   },
   mounted() {
     if (this.isLoggedIn) {
@@ -351,10 +365,10 @@ export default {
   bottom: 20px;
   right: 20px;
   padding: 10px 20px;
-  background: #007bff;
-  color: #fff;
-  border: none;
+  background: #000000;
+  color: #ffffff;
   cursor: pointer;
+  border-radius: 10px;
 }
 
 .profile-icon {

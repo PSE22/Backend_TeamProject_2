@@ -60,6 +60,7 @@ class ReplyService {
     formData.append("memberId", reply.memberId);
     formData.append("reply", reply.reply);
     formData.append("reReply", reply.reReply);
+    formData.append("isFileDeleted", reply.isFileDeleted);
     formData.append("file", file);
 
     //formData 로그
