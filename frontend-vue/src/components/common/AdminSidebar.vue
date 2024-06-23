@@ -3,8 +3,8 @@
       <h1 class="sidebar-title">{{ loginMember.memberName }}님</h1>
       <hr class="sidebar-divider" />
       <ul class="sidebar-list">
-        <router-link to="/admin/register-mgmt" class="profile-link">
-          <li class="sidebar-menu mb-5">회원가입관리</li>
+        <router-link to="/admin/board-mgmt" class="profile-link">
+          <li class="sidebar-menu mb-5">게시판관리</li>
         </router-link>
         <router-link to="/admin/edit-mgmt" class="profile-link">
           <li class="sidebar-menu mb-5">사원관리</li>
@@ -12,8 +12,8 @@
         <router-link to="/admin/report-mgmt" class="profile-link">
           <li class="sidebar-menu mb-5">신고관리</li>
         </router-link>
-        <router-link to="/admin/board-mgmt" class="profile-link">
-          <li class="sidebar-menu mb-5">게시판관리</li>
+        <router-link to="/admin/register-mgmt" class="profile-link">
+          <li class="sidebar-menu mb-5">회원가입관리</li>
         </router-link>
       </ul>
     </div>

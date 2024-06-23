@@ -5,7 +5,7 @@
       <div class="header">
         <h3>사원관리</h3>
       </div>
-      <br>
+      <br />
       <input
         type="text"
         class="search-input"
@@ -70,83 +70,85 @@
                   :id="'editModal-' + index"
                   tabindex="-1"
                 >
-                  <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="modalLabel">
-                          회원정보 수정
-                        </h1>
-                        <button
-                          type="button"
-                          class="btn-close"
-                          data-bs-dismiss="modal"
-                        ></button>
-                      </div>
-                      <div class="modal-body">
-                        <h3 class="fs-5 mb-2">ID</h3>
-                        <input
-                          class="form-control mb-3"
-                          v-model="data.memberId"
-                        />
-                        <h3 class="fs-5 mb-2">이름</h3>
-                        <input
-                          class="form-control mb-3"
-                          v-model="data.memberName"
-                        />
-                        <h3 class="fs-5 mb-2">이메일</h3>
-                        <input
-                          class="form-control mb-3"
-                          v-model="data.memberEmail"
-                        />
-                        <h3 class="fs-5 mb-2">번호</h3>
-                        <input
-                          class="form-control mb-3"
-                          v-model="data.memberExt"
-                        />
-                        <h3 class="fs-5 mb-2">닉네임</h3>
-                        <input
-                          class="form-control mb-3"
-                          v-model="data.nickname"
-                        />
-                        <h3 class="fs-5 mb-2">부서</h3>
-                        <select
-                          class="form-select mb-3"
-                          v-model="data.deptCode"
-                        >
-                          <option value="DE01">영업팀</option>
-                          <option value="DE02">인사팀</option>
-                          <option value="DE03">행정팀</option>
-                          <option value="DE04">보안팀</option>
-                        </select>
-                        <h3 class="fs-5 mb-2">직급</h3>
-                        <select
-                          class="form-select mb-3"
-                          v-model="data.posCode"
-                        >
-                          <option value="PO01">사원</option>
-                          <option value="PO02">주임</option>
-                          <option value="PO03">대리</option>
-                          <option value="PO04">과장</option>
-                        </select>
-                      </div>
-                      <div class="modal-footer">
-                        <button
-                          type="button"
-                          class="btn btn-secondary"
-                          data-bs-dismiss="modal"
-                        >
-                          닫기
-                        </button>
-                        <button
-                          type="button"
-                          class="btn btn-primary"
-                          @click="registerModify(data)"
-                        >
-                          등록
-                        </button>
+                  <form>
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h1 class="modal-title fs-5" id="modalLabel">
+                            회원정보 수정
+                          </h1>
+                          <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                          ></button>
+                        </div>
+                        <div class="modal-body">
+                          <h3 class="fs-5 mb-2">ID</h3>
+                          <input
+                            class="form-control mb-3"
+                            v-model="data.memberId"
+                          />
+                          <h3 class="fs-5 mb-2">이름</h3>
+                          <input
+                            class="form-control mb-3"
+                            v-model="data.memberName"
+                          />
+                          <h3 class="fs-5 mb-2">이메일</h3>
+                          <input
+                            class="form-control mb-3"
+                            v-model="data.memberEmail"
+                          />
+                          <h3 class="fs-5 mb-2">번호</h3>
+                          <input
+                            class="form-control mb-3"
+                            v-model="data.memberExt"
+                          />
+                          <h3 class="fs-5 mb-2">닉네임</h3>
+                          <input
+                            class="form-control mb-3"
+                            v-model="data.nickname"
+                          />
+                          <h3 class="fs-5 mb-2">부서</h3>
+                          <select
+                            class="form-select mb-3"
+                            v-model="data.deptCode"
+                          >
+                            <option value="DE01">영업팀</option>
+                            <option value="DE02">인사팀</option>
+                            <option value="DE03">행정팀</option>
+                            <option value="DE04">보안팀</option>
+                          </select>
+                          <h3 class="fs-5 mb-2">직급</h3>
+                          <select
+                            class="form-select mb-3"
+                            v-model="data.posCode"
+                          >
+                            <option value="PO01">사원</option>
+                            <option value="PO02">주임</option>
+                            <option value="PO03">대리</option>
+                            <option value="PO04">과장</option>
+                          </select>
+                        </div>
+                        <div class="modal-footer">
+                          <button
+                            type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal"
+                          >
+                            닫기
+                          </button>
+                          <button
+                            type="submit"
+                            class="btn btn-primary"
+                            @click="registerModify(data)"
+                          >
+                            등록
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </form>
                 </div>
               </td>
             </tr>
@@ -171,7 +173,7 @@ import AdminSidebar from "@/components/common/AdminSidebar.vue";
 
 export default {
   components: {
-    AdminSidebar
+    AdminSidebar,
   },
   data() {
     return {
@@ -188,7 +190,11 @@ export default {
   methods: {
     async getAllProfileSearch() {
       try {
-        let response = await AdminService.getMemberAllDept(this.searchMemberName, this.page - 1, this.pageSize);
+        let response = await AdminService.getMemberAllDept(
+          this.searchMemberName,
+          this.page - 1,
+          this.pageSize
+        );
         const { member, totalItems } = response.data;
         this.member = member;
         this.count = totalItems;
@@ -199,7 +205,12 @@ export default {
     },
     async getAllProfileOfDept() {
       try {
-        let response = await AdminService.getMemberOfDept("AT02", this.deptCode, this.page - 1, this.pageSize);
+        let response = await AdminService.getMemberOfDept(
+          "AT02",
+          this.deptCode,
+          this.page - 1,
+          this.pageSize
+        );
         const { member, totalItems } = response.data;
         this.member = member;
         this.count = totalItems;
