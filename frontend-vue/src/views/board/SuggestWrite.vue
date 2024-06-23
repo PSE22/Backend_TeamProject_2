@@ -133,7 +133,7 @@
                   data-bs-dismiss="modal"
                   @click="resetVoteForm"
                 >
-                  초기화
+                  취소
                 </button>
                 <button
                   type="button"
@@ -415,9 +415,12 @@ export default {
       if (voteItems.length < 2) {
         alert("투표 항목을 2개 이상 입력해주세요.");
         return;
-      } else {
-        this.showSuccessMessage = true;
       }
+      if (!this.vote.delDate) {
+        alert("투표 종료일을 선택해주세요.");
+        return;
+      }
+      this.showSuccessMessage = true;
     },
     handleFileUpload(event) {
       const newFiles = Array.from(event.target.files);

@@ -407,7 +407,7 @@ export default {
     // 글번호로 투표 가져오기
     async retrieveVote() {
       try {
-        let response = await BoardEditService.getVote(this.boardId);
+        let response = await BoardDetailService.getVote(this.boardId);
         this.vote = response.data;
         console.log("투표 :", response);
         console.log("투표 :", this.vote);

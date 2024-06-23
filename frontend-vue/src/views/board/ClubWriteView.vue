@@ -158,7 +158,7 @@
                     data-bs-dismiss="modal"
                     @click="resetVoteForm"
                   >
-                    초기화
+                    취소
                   </button>
                   <button
                     type="button"
