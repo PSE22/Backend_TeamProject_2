@@ -3,8 +3,20 @@
     <h1 class="text-center mb-5 mt-5">자유 게시판</h1>
     <!-- 게시판 소메뉴 버튼 -->
     <div class="d-flex justify-content-center mb-5">
-      <button class="custom-btn col-2" @click="orderByLatest">최신순</button>
-      <button class="custom-btn col-2" @click="orderByPopular">베스트</button>
+      <button
+        class="custom-btn col-2"
+        :class="{ active: selectedMenu === 'latest' }"
+        @click="selectMenu('latest')"
+      >
+        최신순
+      </button>
+      <button
+        class="custom-btn col-2"
+        :class="{ active: selectedMenu === 'popular' }"
+        @click="selectMenu('popular')"
+      >
+        베스트
+      </button>
     </div>
     <table class="table table-hover">
       <!-- 테이블 제목 -->
@@ -19,10 +31,15 @@
       </thead>
       <!-- 테이블 내용 (공지사항) -->
       <tbody>
-        <tr v-for="(data, index) in freeNotice" :key="index" @click="goFreeDetail(data.boardId)">
+        <tr
+          v-for="(data, index) in freeNotice"
+          :key="index"
+          @click="goFreeDetail(data.boardId)"
+        >
           <td class="text-center col-1">{{ data.boardId }}</td>
           <td class="col-6">
-            <span class="badge text-bg-dark me-2">공지</span>{{ data.boardTitle }}
+            <span class="badge text-bg-dark me-2">공지</span
+            >{{ data.boardTitle }}
           </td>
           <td class="text-center col-2">{{ data.nickname }}</td>
           <td class="text-center col-2">{{ data.addDate }}</td>
@@ -31,10 +48,17 @@
       </tbody>
       <!-- 테이블 내용 (일반글) -->
       <tbody>
-        <tr v-for="(data, index) in board" :key="index" @click="goFreeDetail(data.boardId)">
+        <tr
+          v-for="(data, index) in board"
+          :key="index"
+          @click="goFreeDetail(data.boardId)"
+        >
           <td class="text-center">{{ data.boardId }}</td>
           <td>
-            {{ data.boardTitle }} <span v-if="data.replyCount>0" style="color: brown"><i class="bi bi-chat-text"></i> [{{ data.replyCount }}]</span>
+            {{ data.boardTitle }}
+            <span v-if="data.replyCount > 0" style="color: brown"
+              ><i class="bi bi-chat-text"></i> [{{ data.replyCount }}]</span
+            >
           </td>
           <td class="text-center">{{ data.nickname }}</td>
           <td class="text-center">{{ data.addDate }}</td>
@@ -45,28 +69,51 @@
     <!-- {/* paging 시작 */} -->
     <div class="row justify-content-between">
       <div class="col-4 w-25 mb-3">
-        <select class="form-select form-select-sm" v-model="pageSize" @change="retrieveFreeBoard()">
+        <select
+          class="form-select form-select-sm"
+          v-model="pageSize"
+          @change="retrieveFreeBoard()"
+        >
           <option v-for="(data, index) in pageSizes" :key="index" :value="data">
             {{ data }}
           </option>
         </select>
       </div>
       <div class="col-1">
-        <button type="button" class="btn btn-dark" style="width: 90px" @click="moveToFreeWrite">
+        <button
+          type="button"
+          class="btn btn-dark"
+          style="width: 90px"
+          @click="moveToFreeWrite"
+        >
           글쓰기
         </button>
       </div>
     </div>
     <div class="row">
-      <b-pagination class="col-12 mb-3 justify-content-center" v-model="page" :total-rows="count" :per-page="pageSize"
-        @click="retrieveFreeBoard()"></b-pagination>
+      <b-pagination
+        class="col-12 mb-3 justify-content-center"
+        v-model="page"
+        :total-rows="count"
+        :per-page="pageSize"
+        @click="retrieveFreeBoard()"
+      ></b-pagination>
       <!-- {/* paging 끝 */} -->
       <!-- {/* 검색어 start */} -->
       <div class="col-md-4 mx-auto">
         <div class="input-group mb-3">
-          <input type="text" class="form-control" placeholder="검색어를 입력해주세요" v-model="searchBoardTitle"
-            @keyup.enter="retrieveFreeBoard()" />
-          <button class="btn btn-outline-secondary" type="button" @click="retrieveFreeBoard()">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="검색어를 입력해주세요"
+            v-model="searchBoardTitle"
+            @keyup.enter="retrieveFreeBoard()"
+          />
+          <button
+            class="btn btn-outline-secondary"
+            type="button"
+            @click="retrieveFreeBoard()"
+          >
             검색
           </button>
         </div>
@@ -90,6 +137,7 @@ export default {
       pageSize: 10,
 
       pageSizes: [10, 25, 50],
+      selectedMenu: 'latest' // 선택된 메뉴 항목을 추적하는 상태
     };
   },
   methods: {
@@ -150,6 +198,15 @@ export default {
         console.log("인기순 조회", response.data);
       } catch (e) {
         console.log(e);
+      }
+    },
+    // 메뉴 선택
+    selectMenu(menu) {
+      this.selectedMenu = menu;
+      if (menu === "latest") {
+        this.orderByLatest();
+      } else if (menu === "popular") {
+        this.orderByPopular();
       }
     },
     // TODO: 공통 페이징 함수 : select 태그

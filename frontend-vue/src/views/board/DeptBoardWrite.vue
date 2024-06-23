@@ -139,7 +139,7 @@
                   data-bs-dismiss="modal"
                   @click="resetVoteForm"
                 >
-                  초기화
+                  취소
                 </button>
                 <button
                   type="button"
@@ -345,14 +345,7 @@ export default {
       geocoder: null,
       marker: null,
 
-      badWords: [
-        "ㅅㅂ",
-        "ㅂㅅ",
-        "욕설",
-        "바보",
-        "멍청이",
-        "미친",
-      ],
+      badWords: ["ㅅㅂ", "ㅂㅅ", "욕설", "바보", "멍청이", "미친"],
     };
   },
   methods: {
@@ -440,9 +433,12 @@ export default {
       if (voteItems.length < 2) {
         alert("투표 항목을 2개 이상 입력해주세요.");
         return;
-      } else {
-        this.showSuccessMessage = true;
       }
+      if (!this.vote.delDate) {
+        alert("투표 종료일을 선택해주세요.");
+        return;
+      }
+      this.showSuccessMessage = true;
     },
     handleFileUpload(event) {
       const newFiles = Array.from(event.target.files);
