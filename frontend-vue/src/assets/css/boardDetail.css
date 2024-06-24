@@ -89,11 +89,12 @@
     border-color: #b3000f;
 }
 
-/* 투표 항목 행 */
+/* 투표 */
 .form-check-vote {
     border-bottom: 1px #a3a3a3 solid;
     padding: 15px 15px;
     width: 100%;
+    margin-bottom: 0;
 }
 
 .input-vote {
@@ -102,14 +103,17 @@
 
 .vote-label {
     margin-left: 0.5rem;
+    font-weight: bold;
 }
 
 .vote-count {
-    font-weight: 700;
+    font-size: 0.9rem;
+    color: #6c757d;
     margin-left: auto;
 }
 
 .highlight {
-    background-color: #d6d6d6;
+    background-color: #e1e1e1;
     font-weight: bold;
+    border: 2px solid #b3000f;
 }
