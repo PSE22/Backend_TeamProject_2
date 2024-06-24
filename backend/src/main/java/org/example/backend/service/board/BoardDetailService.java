@@ -135,6 +135,12 @@ public class BoardDetailService {
         return report;
     }
 
+    // 댓글 신고 데이터 존재하는지 확인
+    public Integer existsReplyReport(Long replyId, String memberId) {
+        Integer replyReport = boardDetailRepository.existsReplyReport(replyId, memberId);
+        return replyReport;
+    }
+
     // 투표 저장
     @Transactional
     public void saveVoteAndCount(VoteMember voteMember) {

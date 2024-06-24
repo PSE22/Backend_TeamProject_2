@@ -99,6 +99,14 @@ public interface BoardDetailRepository extends JpaRepository<Board, Long> {
             , nativeQuery = true)
     Integer existsReport(@Param("boardId") Long boardId, @Param("memberId") String memberId);
 
+    // 댓글 신고 데이터 존재하는지 확인
+    @Query(value = "SELECT count(*)\n " +
+            "FROM TB_REPLY_REPORT \n " +
+            "WHERE REPLY_ID = :replyId\n " +
+            "AND MEMBER_ID = :memberId "
+            , nativeQuery = true)
+    Integer existsReplyReport(@Param("replyId") Long boardId, @Param("memberId") String memberId);
+
     // 추천 수 카운트
     @Query(value = "SELECT count(*)\n" +
             "FROM TB_RECOMMEND \n" +

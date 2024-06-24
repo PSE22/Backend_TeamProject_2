@@ -65,6 +65,15 @@ class BoardDetailService {
       }
     );
   }
+  // 댓글 신고 데이터 존재 확인
+  getReplyReport(replyId, memberId) {
+    return http.get(
+      `/board/board-detail/reply-report-exist?replyId=${replyId}&memberId=${memberId}`,
+      {
+        headers: LoginHeader(),
+      }
+    );
+  }
   // 추천 데이터 존재 확인
   getRecommend(boardId, memberId) {
     return http.get(
