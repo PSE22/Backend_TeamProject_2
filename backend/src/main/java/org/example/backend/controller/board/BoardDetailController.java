@@ -327,6 +327,17 @@ public class BoardDetailController {
         }
     }
 
+    // 댓글 신고 데이터 존재하는지 확인
+    @GetMapping("/board-detail/reply-report-exist")
+    public ResponseEntity<Object> existsReplyReport(@RequestParam Long replyId, @RequestParam String memberId) {
+        try {
+            Integer replyReport= boardDetailService.existsReplyReport(replyId, memberId);
+            return new ResponseEntity<>(replyReport, HttpStatus.OK);
+        } catch (Exception e) {
+            return handleException(e);
+        }
+    }
+
     // 댓글 이미지 저장
     @PostMapping("/board-detail/file/upload")
     public ResponseEntity<Object> create(

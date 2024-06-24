@@ -333,6 +333,7 @@ export default {
             voteMember: [],     // 투표 회원
             boardFile: [],      // 글 첨부 이미지
             existsReport: "",   // 글 신고 존재 여부
+            existsReplyReport: 0,   // 댓글 신고 존재 여부
             recommend: "",      // 추천 존재 여부
             recommendCnt: "",   // 추천 수
             reply: "",          // 댓글 목록
@@ -449,18 +450,23 @@ export default {
         // 댓글 신고 저장
         async createReplyReport() {
             try {
-                if (!this.report.reportReason) {
-                    alert("신고 사유를 입력해주세요.");
+                if (this.existsReplyReport === 1) {
+                    alert("이미 신고한 댓글입니다.");
                 } else {
-                    let report = {
-                        memberId: this.member.memberId,
-                        replyId: this.report.replyId,
-                        reportReason: this.report.reportReason,
+                    if (!this.report.reportReason) {
+                        alert("신고 사유를 입력해주세요.");
+                    } else {
+                        let report = {
+                            memberId: this.member.memberId,
+                            replyId: this.report.replyId,
+                            reportReason: this.report.reportReason,
+                        }
+                        await ReplyService.createReplyReport(report);
+                        alert("신고가 완료되었습니다.");
+                        this.report.reportReason = "";
                     }
-                    await ReplyService.createReplyReport(report);
-                    alert("신고가 완료되었습니다.");
-                    this.report.reportReason = "";
                 }
+
             } catch (e) {
                 console.log("createReplyReport 에러", e);
             }
@@ -471,6 +477,7 @@ export default {
             this.report.replyId = data.replyId;
             this.report.memberName = data.memberName;
             this.report.reply = data.reply;
+            this.retrieveReplyReport(data);
         },
         // 파일 타입 분류
         classifyFilesByType() {
@@ -611,6 +618,15 @@ export default {
             try {
                 let response = await BoardDetailService.getReport(this.boardId, this.member.memberId);
                 this.existsReport = response.data;
+            } catch (e) {
+                console.log("retrieveReport 에러", e);
+            }
+        },
+        // 댓글 신고 데이터 존재 여부 가져오기
+        async retrieveReplyReport(data) {
+            try {
+                let response = await BoardDetailService.getReplyReport(data.replyId, this.member.memberId);
+                this.existsReplyReport = response.data;
             } catch (e) {
                 console.log("retrieveReport 에러", e);
             }
