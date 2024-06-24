@@ -39,8 +39,8 @@ public interface BoardManageRepository extends JpaRepository<CmCode , String> {
 
     void deleteByUpCmCd(String upCmCd);
 
-    @Modifying
     @Transactional
-    @Query("DELETE FROM CmCode c WHERE c.upCmCd = :upCmCd")
-    void deleteSubBoards(@Param("upCmCd") String upCmCd);
+    @Modifying
+    @Query(value = "UPDATE TB_CM_CODE SET STATUS = 'Y' WHERE CM_CD = :cmCd", nativeQuery = true)
+    void reactivateBoard(@Param("cmCd") String cmCd);
 }
