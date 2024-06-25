@@ -65,4 +65,11 @@ public class BoardManageController {
         boardManageService.deleteBoard(cmCd);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/reactivate/{cmCd}")
+    public ResponseEntity<Void> reactivateBoard(@PathVariable String cmCd) {
+        log.info("Reactivating board with cmCd: {}", cmCd);
+        boardManageService.reactivateBoard(cmCd);
+        return ResponseEntity.noContent().build();
+    }
 }

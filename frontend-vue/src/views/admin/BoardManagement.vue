@@ -52,7 +52,8 @@
               <td>
                 <div class="button-group">
                   <button class="edit-button" @click="editBoard(board)">수정</button>
-                  <button class="delete-button" @click="deleteBoard(board.cmCd)">삭제</button>
+                  <button v-if="board.status === 'Y'" class="deactivate-button" @click="confirmDeactivate(board.cmCd)">비활성화</button>
+                  <button v-else class="reactivate-button" @click="changeStatus(board.cmCd, 'Y')">활성화</button>
                 </div>
               </td>
             </tr>
@@ -64,7 +65,7 @@
 </template>
 
 <script>
-import AdminSidebar from  "@/components/common/AdminSidebar.vue";
+import AdminSidebar from "@/components/common/AdminSidebar.vue";
 import BoardManageService from "@/services/board/BoardManageService";
 
 export default {
@@ -155,6 +156,24 @@ export default {
         alert('게시판 삭제 중 오류가 발생했습니다.');
       }
     },
+    async changeStatus(cmCd, status) {
+      try {
+        if (status === 'Y') {
+          await BoardManageService.reactivateBoard(cmCd);
+        } else {
+          await BoardManageService.deleteBoard(cmCd);
+        }
+        this.fetchBoards();
+      } catch (error) {
+        console.error('Error changing board status:', error);
+        alert('상태 변경 중 오류가 발생했습니다.');
+      }
+    },
+    confirmDeactivate(cmCd) {
+      if (confirm("정말 비활성화하시겠습니까? 하위 게시판이 있을 경우 하위 게시판 모두 비활성화 됩니다.")) {
+        this.changeStatus(cmCd, 'N');
+      }
+    },
     cancelEdit() {
       this.showEditForm = false;
       this.showForm = false;
@@ -236,7 +255,9 @@ export default {
 
 .manage-button,
 .edit-button,
-.delete-button {
+.delete-button,
+.deactivate-button,
+.reactivate-button {
   padding: 5px 10px;
   border: none;
   cursor: pointer;
@@ -257,6 +278,16 @@ export default {
 
 .delete-button {
   background-color: #dc3545;
+  color: white;
+}
+
+.deactivate-button {
+  background-color: #6c757d;
+  color: white;
+}
+
+.reactivate-button {
+  background-color: #28a745;
   color: white;
 }
 

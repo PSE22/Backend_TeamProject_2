@@ -39,6 +39,12 @@ class BoardManageService{
             headers: LoginHeader(),
         });
     }
+
+        reactivateBoard(cmCd) {
+        return http.put(`/admin/reactivate/${cmCd}`, {}, {
+            headers: LoginHeader(),
+        });
+    }
 }
 
 export default new BoardManageService();

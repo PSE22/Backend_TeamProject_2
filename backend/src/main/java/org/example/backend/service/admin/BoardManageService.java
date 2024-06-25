@@ -81,4 +81,10 @@ public List<BoardManageDto> getCmCodeList() {
         // 상위 게시판 삭제 로그
         boardManageRepository.deleteById(cmCd);
     }
+
+    @Transactional
+    public void reactivateBoard(String cmCd) {
+        boardManageRepository.reactivateBoard(cmCd);
+    }
+
 }
