@@ -24,8 +24,8 @@ import java.time.format.DateTimeFormatter;
 @Entity
 @Table(name="TB_VOTE")
 @SequenceGenerator(
-        name = "VOTE_ID_SEQ_GENERATOR"
-        , sequenceName = "VOTE_ID_SEQ"
+        name = "TB_VOTE_SEQ_GENERATOR"
+        , sequenceName = "TB_VOTE_SEQ"
         , allocationSize = 1
 )
 @Getter
@@ -38,7 +38,7 @@ import java.time.format.DateTimeFormatter;
 public class Vote {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE
-            , generator = "VOTE_ID_SEQ_GENERATOR"
+            , generator = "TB_VOTE_SEQ_GENERATOR"
     )
     private Long voteId;    // 투표 ID(PK)
     private Long boardId;   // 글번호
