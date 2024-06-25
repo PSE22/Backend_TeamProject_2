@@ -648,23 +648,18 @@ export default {
         async retrieveReply() {
             try {
                 let response = await ReplyService.getReply(this.boardId, this.replyPage - 1, this.pageSize);
-                if (response.data) {
-                    this.reply = response.data.content;
-                    this.replyPageCount = response.data.totalElements;
+                this.reply = response.data.content;
+                this.replyPageCount = response.data.totalElements;
 
-                    // 각 댓글에 대한 대댓글 가져오기
-                    const reReplyPromise = this.reply.map(async (comment) => {
-                        let reReplyResponse = await ReplyService.getReReply(this.boardId, comment.replyId);
-                        comment.reReplies = reReplyResponse.data;
-                        return comment;
-                    });
+                // 각 댓글에 대한 대댓글 가져오기
+                const reReplyPromise = this.reply.map(async (comment) => {
+                    let reReplyResponse = await ReplyService.getReReply(this.boardId, comment.replyId);
+                    comment.reReplies = reReplyResponse.data;
+                    return comment;
+                });
 
-                    // 모든 대댓글 요청이 완료될 때까지 기다리기
-                    this.reply = await Promise.all(reReplyPromise);
-                } else {
-                    console.log("댓글 없음")
-                }
-
+                // 모든 대댓글 요청이 완료될 때까지 기다리기
+                this.reply = await Promise.all(reReplyPromise);
             } catch (e) {
                 console.log("retrieveReply 에러", e);
             }
