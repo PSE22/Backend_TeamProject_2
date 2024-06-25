@@ -132,7 +132,7 @@
                         </div>
                         <div class="modal-body text-start">
                           <h3 class="fs-5 mb-2">ID</h3>
-                          <input
+                          <input disabled
                             class="form-control mb-3"
                             v-model="data.memberId"
                           />
