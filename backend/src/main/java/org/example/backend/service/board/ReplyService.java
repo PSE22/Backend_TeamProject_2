@@ -101,6 +101,7 @@ public class ReplyService {
         // 핫토픽 알림
         int count = countReply(boardId);
         if (board.getBocode().equals("BO03") && count == 10) {
+            notifyDto.setNotiUrl(currentUrl);
             notifyService.createHotTopicNotify(boardId, notifyDto);
         }
 
