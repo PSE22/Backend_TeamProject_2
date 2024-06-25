@@ -202,6 +202,7 @@ public class ReplyService {
     }
 
     //    댓글 삭제
+    @Transactional
     public void removeReply(Long replyId) {
         List<IDelReplyDto> delReply = replyRepository.findByReplyId(replyId);
         for (IDelReplyDto replyDto : delReply) {
