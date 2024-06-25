@@ -270,7 +270,7 @@
         <!-- 댓글 작성 -->
         <div class="card mb-3">
             <div class="card-body">
-                <div class="reply-name">{{ memberInfo.memberName }} (익명게시판은 별명으로 변경하세요)</div>
+                <div class="reply-name">{{ memberInfo.memberName }}</div>
                 <textarea v-model.lazy="replyTextarea" placeholder="댓글을 남겨보세요"
                     class="form-control mb-2 reply-content"></textarea>
                 <div class="d-flex justify-content-between">
@@ -671,7 +671,7 @@ export default {
                 // 모든 대댓글 요청이 완료될 때까지 기다리기
                 this.reply = await Promise.all(reReplyPromise);
             } catch (e) {
-                console.log("retrieveReply 에러", e);
+                console.log("댓글 없음", e);
             }
         },
         // 댓글 수 가져오기
